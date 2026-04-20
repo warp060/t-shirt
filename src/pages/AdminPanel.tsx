@@ -1,0 +1,434 @@
+import React, { useEffect, useState } from 'react';
+import { api } from '../lib/api';
+import { Product, Order, UserProfile } from '../types';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Badge } from '../components/ui/badge';
+import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+
+export const AdminPanel = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({
+    name: '',
+    price: 0,
+    description: '',
+    category: 'Men',
+    image_url: '',
+    stock: 0
+  });
+
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = async () => {
+    setRefreshing(true);
+    try {
+      // Fetch everything in parallel so one failure doesn't block others
+      const [productsRes, ordersRes, usersRes] = await Promise.allSettled([
+        api.get('/products'),
+        api.get('/admin/orders'),
+        api.get('/admin/users')
+      ]);
+
+      if (productsRes.status === 'fulfilled') {
+        setProducts(productsRes.value);
+      } else {
+        console.error("Products fetch failed:", productsRes.reason);
+        toast.error("Products error: " + (productsRes.reason.message || "Access Denied"));
+      }
+
+      if (ordersRes.status === 'fulfilled') {
+        setOrders(ordersRes.value);
+      } else {
+        console.error("Orders fetch failed:", ordersRes.reason);
+        toast.error("Orders error: " + (ordersRes.reason.message || "Access Denied"));
+      }
+
+      if (usersRes.status === 'fulfilled') {
+        setUsers(usersRes.value);
+      } else {
+        console.error("Users fetch failed:", usersRes.reason);
+        toast.error("Users error: " + (usersRes.reason.message || "Access Denied"));
+      }
+
+    } catch (error) {
+      console.error("Critical error in Admin fetchData:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const totalRevenue = orders
+    .filter(o => o.status !== 'cancelled')
+    .reduce((acc, curr) => acc + (parseFloat(curr.total_amount) || 0), 0);
+
+  const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
+
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.post('/products', newProduct);
+      setNewProduct({ name: '', price: 0, description: '', category: 'Men', image_url: '', stock: 0 });
+      fetchData(); // Refresh list immediately
+      toast.success('Product added successfully!');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to add product");
+    }
+  };
+
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    try {
+      await api.put(`/products/${editingProduct.id}`, editingProduct);
+      setEditingProduct(null);
+      fetchData(); // Refresh list immediately
+      toast.success('Product updated successfully!');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update product");
+    }
+  };
+
+  const handleDeleteProduct = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    try {
+      await api.delete(`/products/${id}`);
+      fetchData(); // Refresh list immediately
+      toast.success('Product deleted successfully!');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete product");
+    }
+  };
+
+  const updateOrderStatus = async (orderId: number, status: string) => {
+    try {
+      await api.put(`/admin/orders/${orderId}/status`, { status });
+      fetchData(); // Refresh list immediately
+      toast.success('Order status updated!');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update status");
+    }
+  };
+
+  const toggleUserRole = async (userId: number, currentRole: string) => {
+    const newRole = currentRole === 'admin' ? 'customer' : 'admin';
+    try {
+      await api.put(`/admin/users/${userId}/role`, { role: newRole });
+      toast.success(`User role updated to ${newRole}`);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update role");
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center gap-4 mb-8">
+        <LayoutDashboard className="h-8 w-8 text-primary" />
+        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{products.length}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{orders.length}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <div className="text-primary font-bold">₹</div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalRevenue.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Avg. Order</CardTitle>
+            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="products" onValueChange={() => fetchData()}>
+        <TabsList className="mb-8">
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="products">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Manage Products</h2>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button><Plus className="mr-2 h-4 w-4" /> Add Product</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Add New Product</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleAddProduct} className="space-y-4">
+                  <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} required />
+                  <Input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value)})} required />
+                  <Input placeholder="Image URL" value={newProduct.image_url} onChange={e => setNewProduct({...newProduct, image_url: e.target.value})} required />
+                  <Input type="number" placeholder="Stock" value={newProduct.stock} onChange={e => setNewProduct({...newProduct, stock: parseInt(e.target.value)})} required />
+                  <textarea 
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring" 
+                    placeholder="Description"
+                    value={newProduct.description}
+                    onChange={e => setNewProduct({...newProduct, description: e.target.value})}
+                    required
+                  />
+                  <select 
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={newProduct.category}
+                    onChange={e => setNewProduct({...newProduct, category: e.target.value as any})}
+                  >
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
+                    <option value="Oversized">Oversized</option>
+                    <option value="Printed">Printed</option>
+                  </select>
+                  <Button type="submit" className="w-full">Save Product</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Image</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.map(product => (
+                <TableRow key={product.id}>
+                  <TableCell><img src={product.image_url} className="h-10 w-10 object-cover rounded" /></TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell>₹{product.price.toLocaleString('en-IN')}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Dialog open={!!editingProduct} onOpenChange={(open) => !open && setEditingProduct(null)}>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="icon" onClick={() => setEditingProduct(product)}><Pencil className="h-4 w-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Edit Product</DialogTitle>
+                          </DialogHeader>
+                          {editingProduct && (
+                            <form onSubmit={handleUpdateProduct} className="space-y-4">
+                              <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} required />
+                              <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})} required />
+                              <Input placeholder="Image URL" value={editingProduct.image_url} onChange={e => setEditingProduct({...editingProduct, image_url: e.target.value})} required />
+                              <Input type="number" placeholder="Stock" value={editingProduct.stock} onChange={e => setEditingProduct({...editingProduct, stock: parseInt(e.target.value)})} required />
+                              <textarea 
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring" 
+                                placeholder="Description"
+                                value={editingProduct.description}
+                                onChange={e => setEditingProduct({...editingProduct, description: e.target.value})}
+                                required
+                              />
+                              <select 
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                value={editingProduct.category}
+                                onChange={e => setEditingProduct({...editingProduct, category: e.target.value as any})}
+                              >
+                                <option value="Men">Men</option>
+                                <option value="Women">Women</option>
+                                <option value="Oversized">Oversized</option>
+                                <option value="Printed">Printed</option>
+                              </select>
+                              <Button type="submit" className="w-full">Update Product</Button>
+                            </form>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TabsContent>
+
+        <TabsContent value="orders">
+          <h2 className="text-xl font-bold mb-6">Manage Orders</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orders.map(order => (
+                <TableRow key={order.id}>
+                  <TableCell className="font-mono text-xs">{order.id}</TableCell>
+                  <TableCell>{order.address.fullName}</TableCell>
+                  <TableCell>₹{order.total_amount.toLocaleString('en-IN')}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">{order.paymentMethod || 'cod'}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
+                  </TableCell>
+                  <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>View</Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Order Details</DialogTitle>
+                          </DialogHeader>
+                          {selectedOrder && (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-2 text-sm">
+                                <span className="text-muted-foreground">Order ID:</span>
+                                <span className="font-mono">{selectedOrder.id}</span>
+                                <span className="text-muted-foreground">Customer:</span>
+                                <span>{selectedOrder.address.fullName}</span>
+                                <span className="text-muted-foreground">Email:</span>
+                                <span>{selectedOrder.address.email}</span>
+                                <span className="text-muted-foreground">Address:</span>
+                                <span>{selectedOrder.address.street}, {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.zipCode}</span>
+                                <span className="text-muted-foreground">Payment:</span>
+                                <span className="capitalize font-medium">{selectedOrder.paymentMethod || 'cod'}</span>
+                                {selectedOrder.paymentDetails?.upiId && (
+                                  <>
+                                    <span className="text-muted-foreground">UPI ID:</span>
+                                    <span className="text-primary font-mono">{selectedOrder.paymentDetails.upiId}</span>
+                                  </>
+                                )}
+                              </div>
+                              <div className="border-t pt-4">
+                                <h4 className="font-semibold mb-2">Items</h4>
+                                <div className="space-y-2">
+                                  {selectedOrder.items.map((item, idx) => (
+                                    <div key={idx} className="flex justify-between text-sm">
+                                      <span>{item.name} (x{item.quantity})</span>
+                                      <span>₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                                    </div>
+                                  ))}
+                                  <div className="flex justify-between font-bold border-t pt-2 mt-2">
+                                    <span>Total</span>
+                                    <span>₹{selectedOrder.total_amount.toLocaleString('en-IN')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <Select onValueChange={(val: string) => updateOrderStatus(order.id, val)}>
+                        <SelectTrigger className="w-[130px]">
+                          <SelectValue placeholder="Update Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="processing">Processing</SelectItem>
+                          <SelectItem value="shipped">Shipped</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TabsContent>
+
+        <TabsContent value="users">
+          <h2 className="text-xl font-bold mb-6">User Management</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Joined</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map(user => (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={user.role === 'admin' ? 'destructive' : 'outline'}
+                      className="cursor-pointer hover:opacity-80"
+                      onClick={() => toggleUserRole(user.id, user.role)}
+                    >
+                      {user.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
