@@ -44,27 +44,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </Badge>
           </div>
         </Link>
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-1">
-            <Link to={`/product/${product.id}`} className="hover:underline">
-              <h3 className="font-semibold text-lg truncate">{product.name}</h3>
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <Link to={`/product/${product.id}`} className="hover:underline flex-1 min-w-0">
+              <h3 className="font-semibold text-sm sm:text-lg truncate">{product.name}</h3>
             </Link>
-            <div className="flex items-center gap-1 text-sm font-medium">
+            <div className="flex items-center gap-1 text-[10px] sm:text-sm font-medium whitespace-nowrap">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
               <span>{product.rating || 4.5}</span>
             </div>
           </div>
-          <p className="text-xl font-bold text-primary">₹{product.price.toLocaleString('en-IN')}</p>
+          <p className="text-lg sm:text-xl font-bold text-primary">₹{product.price.toLocaleString('en-IN')}</p>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex gap-2">
+        <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
           <Button 
-            className="flex-1" 
+            className="flex-1 h-9 sm:h-10 text-xs sm:text-sm" 
             onClick={() => addItem(product)}
             disabled={product.stock === 0}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+            <ShoppingCart className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Add to Cart
           </Button>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 shrink-0">
             <Heart className="h-4 w-4" />
           </Button>
         </CardFooter>

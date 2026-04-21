@@ -145,56 +145,59 @@ export const AdminPanel = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
         <LayoutDashboard className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Manage your store products, orders, and users.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-4 mb-8">
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Products</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground hidden sm:block" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{products.length}</div>
+          <CardContent className="px-4 sm:px-6">
+            <div className="text-xl sm:text-2xl font-bold">{products.length}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Orders</CardTitle>
+            <ShoppingBag className="h-4 w-4 text-muted-foreground hidden sm:block" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{orders.length}</div>
+          <CardContent className="px-4 sm:px-6">
+            <div className="text-xl sm:text-2xl font-bold">{orders.length}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <div className="text-primary font-bold">₹</div>
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Revenue</CardTitle>
+            <div className="text-primary font-bold hidden sm:block">₹</div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{totalRevenue.toLocaleString('en-IN')}</div>
+          <CardContent className="px-4 sm:px-6">
+            <div className="text-lg sm:text-2xl font-bold truncate">₹{totalRevenue.toLocaleString('en-IN')}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Order</CardTitle>
-            <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Avg Value</CardTitle>
+            <LayoutDashboard className="h-4 w-4 text-muted-foreground hidden sm:block" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          <CardContent className="px-4 sm:px-6">
+            <div className="text-lg sm:text-2xl font-bold truncate">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="products" onValueChange={() => fetchData()}>
-        <TabsList className="mb-8">
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
+      <Tabs defaultValue="products" className="w-full">
+        <TabsList className="mb-6 w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50 rounded-lg">
+          <TabsTrigger value="products" className="flex-1 sm:flex-none py-2 px-4">Products</TabsTrigger>
+          <TabsTrigger value="orders" className="flex-1 sm:flex-none py-2 px-4">Orders</TabsTrigger>
+          <TabsTrigger value="users" className="flex-1 sm:flex-none py-2 px-4">Users</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -303,7 +306,8 @@ export const AdminPanel = () => {
 
         <TabsContent value="orders">
           <h2 className="text-xl font-bold mb-6">Manage Orders</h2>
-          <Table>
+          <div className="border rounded-lg overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Order ID</TableHead>
@@ -399,7 +403,8 @@ export const AdminPanel = () => {
 
         <TabsContent value="users">
           <h2 className="text-xl font-bold mb-6">User Management</h2>
-          <Table>
+          <div className="border rounded-lg overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>

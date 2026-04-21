@@ -14,6 +14,15 @@ import { SlidersHorizontal } from 'lucide-react';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
 
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
 export const ProductListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
@@ -63,22 +72,58 @@ export const ProductListing = () => {
     fetchProducts();
   }, [category, sortBy, searchQuery]);
 
+  const FilterContent = () => (
+    <div className="space-y-8">
+      <div>
+        <h3 className="mb-4 font-semibold">Categories</h3>
+        <div className="flex flex-col gap-2">
+          {['All', 'Men', 'Women', 'Oversized', 'Printed'].map((cat) => (
+            <Button
+              key={cat}
+              variant={category === cat || (!category && cat === 'All') ? 'secondary' : 'ghost'}
+              className="justify-start"
+              onClick={() => {
+                if (cat === 'All') {
+                  searchParams.delete('category');
+                } else {
+                  searchParams.set('category', cat);
+                }
+                setSearchParams(searchParams);
+              }}
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
+      </div>
+      
+      <div>
+        <h3 className="mb-4 font-semibold">Price Range</h3>
+        <div className="flex flex-col gap-2">
+          <Button variant="ghost" className="justify-start">Under ₹1000</Button>
+          <Button variant="ghost" className="justify-start">₹1000 - ₹2500</Button>
+          <Button variant="ghost" className="justify-start">Over ₹2500</Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-balance">
               {searchQuery ? `Search results for "${searchQuery}"` : category ? `${category} Collection` : 'All T-shirts'}
             </h1>
-            <p className="text-muted-foreground">Showing {products.length} products</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Showing {products.length} products</p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Sort by:</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 flex-1 sm:flex-none">
+              <span className="hidden sm:inline text-sm font-medium whitespace-nowrap">Sort by:</span>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px] h-10">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
@@ -88,50 +133,34 @@ export const ProductListing = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="outline" size="icon" className="md:hidden">
-              <SlidersHorizontal className="h-4 w-4" />
-            </Button>
+            
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="md:hidden h-10 w-10">
+                  <SlidersHorizontal className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[300px]">
+                <SheetHeader className="text-left">
+                  <SheetTitle>Filters</SheetTitle>
+                  <SheetDescription>Narrow down your search.</SheetDescription>
+                </SheetHeader>
+                <div className="mt-8">
+                  <FilterContent />
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_1fr]">
-          {/* Sidebar Filters */}
-          <aside className="hidden md:block space-y-8">
-            <div>
-              <h3 className="mb-4 font-semibold">Categories</h3>
-              <div className="flex flex-col gap-2">
-                {['All', 'Men', 'Women', 'Oversized', 'Printed'].map((cat) => (
-                  <Button
-                    key={cat}
-                    variant={category === cat || (!category && cat === 'All') ? 'secondary' : 'ghost'}
-                    className="justify-start"
-                    onClick={() => {
-                      if (cat === 'All') {
-                        searchParams.delete('category');
-                      } else {
-                        searchParams.set('category', cat);
-                      }
-                      setSearchParams(searchParams);
-                    }}
-                  >
-                    {cat}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="mb-4 font-semibold">Price Range</h3>
-              <div className="flex flex-col gap-2">
-                <Button variant="ghost" className="justify-start">Under ₹1000</Button>
-                <Button variant="ghost" className="justify-start">₹1000 - ₹2500</Button>
-                <Button variant="ghost" className="justify-start">Over ₹2500</Button>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr]">
+          {/* Sidebar Filters (Desktop) */}
+          <aside className="hidden md:block">
+            <FilterContent />
           </aside>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

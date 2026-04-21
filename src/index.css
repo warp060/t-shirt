@@ -246,6 +246,27 @@
     @apply bg-background text-foreground;
     }
   html {
-    @apply font-sans;
+    @apply font-sans scroll-smooth;
     }
+}
+
+/* Custom Responsive Utilities */
+@layer utilities {
+  .responsive-container {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Fix for mobile Safari height issues */
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
 }

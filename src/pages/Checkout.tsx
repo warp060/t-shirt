@@ -117,24 +117,24 @@ export const Checkout = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 relative">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
       {paymentProcessing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4 p-8 bg-card rounded-xl border shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-lg font-semibold">Processing Secure Payment...</p>
-            <p className="text-sm text-muted-foreground">Please do not refresh or close the window</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
+          <div className="flex flex-col items-center gap-4 p-6 sm:p-8 bg-card rounded-xl border shadow-2xl animate-in fade-in zoom-in duration-300 text-center">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-base sm:text-lg font-semibold">Processing Secure Payment...</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Please do not refresh or close the window</p>
           </div>
         </div>
       )}
-      <h1 className="mb-8 text-3xl font-bold tracking-tight">Checkout</h1>
+      <h1 className="mb-8 text-2xl sm:text-3xl font-bold tracking-tight">Checkout</h1>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Shipping Form */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 order-2 lg:order-1">
           <Card className="border-none shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
                 <Truck className="h-5 w-5 text-primary" />
                 Shipping Information
               </CardTitle>
@@ -144,34 +144,34 @@ export const Checkout = () => {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Full Name</label>
-                    <Input name="fullName" placeholder="John Doe" value={formData.fullName} onChange={handleInputChange} required />
+                    <Input name="fullName" placeholder="John Doe" value={formData.fullName} onChange={handleInputChange} className="h-11" required />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email Address</label>
-                    <Input name="email" type="email" placeholder="john@example.com" value={formData.email} onChange={handleInputChange} required />
+                    <Input name="email" type="email" placeholder="john@example.com" value={formData.email} onChange={handleInputChange} className="h-11" required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Street Address</label>
-                  <Input name="street" placeholder="123 Main St, Apartment 4B" value={formData.street} onChange={handleInputChange} required />
+                  <Input name="street" placeholder="123 Main St, Apartment 4B" value={formData.street} onChange={handleInputChange} className="h-11" required />
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">City</label>
-                    <Input name="city" placeholder="Mumbai" value={formData.city} onChange={handleInputChange} required />
+                    <Input name="city" placeholder="Mumbai" value={formData.city} onChange={handleInputChange} className="h-11" required />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">State</label>
-                    <Input name="state" placeholder="Maharashtra" value={formData.state} onChange={handleInputChange} required />
+                    <Input name="state" placeholder="Maharashtra" value={formData.state} onChange={handleInputChange} className="h-11" required />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 col-span-2 sm:col-span-1">
                     <label className="text-sm font-medium">Zip Code</label>
-                    <Input name="zipCode" placeholder="400001" value={formData.zipCode} onChange={handleInputChange} required />
+                    <Input name="zipCode" placeholder="400001" value={formData.zipCode} onChange={handleInputChange} className="h-11" required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Phone Number</label>
-                  <Input name="phone" placeholder="+91 98765 43210" value={formData.phone} onChange={handleInputChange} required />
+                  <Input name="phone" placeholder="+91 98765 43210" value={formData.phone} onChange={handleInputChange} className="h-11" required />
                 </div>
 
                 <div className="pt-6 border-t">
@@ -275,10 +275,10 @@ export const Checkout = () => {
                               placeholder="username@bank" 
                               value={upiId} 
                               onChange={(e) => setUpiId(e.target.value)}
-                              className="bg-background"
+                              className="bg-background h-11"
                               required={paymentMethod === 'upi'}
                             />
-                            <p className="text-[10px] text-muted-foreground">A payment request will be sent to your UPI app</p>
+                            <p className="text-[10px] text-muted-foreground text-balance">A payment request will be sent to your UPI app</p>
                           </div>
                           <div className="hidden sm:flex flex-col items-center gap-1 p-2 bg-white rounded-lg border shadow-sm">
                             <div className="h-20 w-20 bg-muted flex items-center justify-center rounded">
@@ -294,7 +294,7 @@ export const Checkout = () => {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98]" 
+                  className="w-full h-14 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98] mt-8" 
                   disabled={loading}
                 >
                   {loading ? (
@@ -312,50 +312,54 @@ export const Checkout = () => {
         </div>
 
         {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+        <div className="lg:col-span-1 order-1 lg:order-2">
+          <Card className="sticky top-24 border-none shadow-md">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="max-h-60 overflow-y-auto space-y-4 pr-2">
+              <div className="max-h-60 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-muted">
                 {checkoutItems.map((item) => (
-                  <div key={item.productId} className="flex gap-3">
-                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-muted">
+                  <div key={item.productId} className="flex gap-4">
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted shadow-sm">
                       <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                     </div>
                     <div className="flex flex-1 flex-col justify-center">
-                      <p className="text-sm font-medium line-clamp-1">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
-                      <p className="text-sm font-bold">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                      <p className="text-sm font-semibold line-clamp-1">{item.name}</p>
+                      <p className="text-xs text-muted-foreground mb-1">Qty: {item.quantity}</p>
+                      <p className="text-sm font-bold text-primary">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <hr />
-              <div className="space-y-2">
+              <hr className="opacity-50" />
+              <div className="space-y-3 pt-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>₹{checkoutTotal.toLocaleString('en-IN')}</span>
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="font-medium">₹{checkoutTotal.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Shipping</span>
-                  <span className="text-green-600">Free</span>
+                  <span className="text-muted-foreground">Shipping</span>
+                  <span className="text-green-600 font-bold">FREE</span>
                 </div>
-                <div className="flex justify-between text-lg font-bold pt-2">
+                <div className="flex justify-between text-xl font-extrabold pt-2 border-t mt-2">
                   <span>Total</span>
-                  <span>₹{checkoutTotal.toLocaleString('en-IN')}</span>
+                  <span className="text-primary">₹{checkoutTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>
               
-              <div className="rounded-lg bg-muted/50 p-4 space-y-3 mt-4">
-                <div className="flex items-center gap-2 text-xs">
-                  <Truck className="h-4 w-4 text-primary" />
-                  <span>Estimated delivery: 3-5 business days</span>
+              <div className="rounded-xl bg-muted/40 p-4 space-y-3 mt-6 border border-muted-foreground/10">
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="p-1.5 rounded-full bg-primary/10 text-primary">
+                    <Truck className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="font-medium">Delivery: 3-5 business days</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <ShieldCheck className="h-4 w-4 text-primary" />
-                  <span>Secure transaction guaranteed</span>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="p-1.5 rounded-full bg-primary/10 text-primary">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="font-medium">Secure transaction guaranteed</span>
                 </div>
               </div>
             </CardContent>
