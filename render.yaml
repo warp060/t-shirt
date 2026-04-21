@@ -28,7 +28,6 @@ services:
   - type: web
     name: abbas-threads-client
     runtime: static
-    plan: free
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:
