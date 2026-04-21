@@ -1,0 +1,44 @@
+services:
+  # Backend API (Node.js)
+  - type: web
+    name: abbas-threads-api
+    env: node
+    plan: free
+    region: singapore # Adjust if needed
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: DB_PORT
+        value: 3306
+      - key: DB_SSL
+        value: true
+      - key: JWT_SECRET
+        generateValue: true
+      # The following must be set in the Render Dashboard after creation:
+      # DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+      # GOOGLE_CLIENT_ID
+      # EMAIL_USER, EMAIL_PASS, ADMIN_EMAIL
+
+  # Frontend (Static Site)
+  - type: web
+    name: abbas-threads-client
+    env: static
+    plan: free
+    region: singapore # Adjust if needed
+    buildCommand: npm install && npm run build
+    staticPublishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: abbas-threads-api
+          property: host
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
