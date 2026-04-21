@@ -29,7 +29,6 @@ services:
     name: abbas-threads-client
     runtime: static
     plan: free
-    region: singapore # Adjust if needed
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:
