@@ -1,14 +1,14 @@
 const pool = require('./db');
 
-async function checkProducts() {
+async function check() {
     try {
-        const [rows] = await pool.execute('SELECT COUNT(*) as count FROM products');
-        console.log('Product count:', rows[0].count);
+        const [rows] = await pool.execute('DESCRIBE custom_designs');
+        console.log("TABLE STRUCTURE:");
+        console.table(rows);
         process.exit(0);
     } catch (error) {
-        console.error('Error:', error);
+        console.error("CHECK ERROR:", error.message);
         process.exit(1);
     }
 }
-
-checkProducts();
+check();

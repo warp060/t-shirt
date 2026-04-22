@@ -456,17 +456,26 @@ app.post('/api/cart/:userId', async (req, res) => {
 app.post('/api/custom-designs', async (req, res) => {
     try {
         const { userId, imageUrl, description } = req.body;
+        console.log("--- Custom Design Submission ---");
+        console.log("User ID:", userId);
+        console.log("Image present:", !!imageUrl);
+        console.log("Description:", description);
+        
         if (!userId || !imageUrl) {
+            console.log("Validation failed: Missing userId or imageUrl");
             return res.status(400).json({ message: 'User ID and Image are required' });
         }
-        await pool.execute(
+        
+        const [result] = await pool.execute(
             'INSERT INTO custom_designs (user_id, image_url, description) VALUES (?, ?, ?)',
             [userId, imageUrl, description || '']
         );
+        
+        console.log("Submission successful. ID:", result.insertId);
         res.status(201).json({ message: 'Custom design request submitted successfully!' });
     } catch (error) {
-        console.error("Custom design error:", error);
-        res.status(500).json({ error: error.message });
+        console.error("Custom design error details:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
     }
 });
 

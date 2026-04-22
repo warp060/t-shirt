@@ -10,11 +10,26 @@ export const api = {
           'Content-Type': 'application/json',
         },
       });
+      
+      const contentType = response.headers.get('content-type');
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'API request failed');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || errorData.error || 'API request failed');
+        } else {
+          const text = await response.text();
+          console.error("Non-JSON Error Response:", text);
+          if (response.status === 404) {
+            throw new Error(`Endpoint ${endpoint} not found. Did you restart the server?`);
+          }
+          throw new Error(`Server error (${response.status}). Please check console for details.`);
+        }
       }
-      return response.json();
+      
+      if (contentType && contentType.includes('application/json')) {
+        return response.json();
+      }
+      return response.text();
     } catch (error: any) {
       if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
         throw new Error('Backend server is not running. Please start it using "npm run dev".');
@@ -34,11 +49,26 @@ export const api = {
         },
         body: JSON.stringify(data),
       });
+      
+      const contentType = response.headers.get('content-type');
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'API request failed');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || errorData.error || 'API request failed');
+        } else {
+          const text = await response.text();
+          console.error("Non-JSON Error Response:", text);
+          if (response.status === 404) {
+            throw new Error(`Endpoint ${endpoint} not found. Did you restart the server?`);
+          }
+          throw new Error(`Server error (${response.status}). Please check console for details.`);
+        }
       }
-      return response.json();
+      
+      if (contentType && contentType.includes('application/json')) {
+        return response.json();
+      }
+      return response.text();
     } catch (error: any) {
       if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
         throw new Error('Backend server is not running. Please start it using "npm run dev".');
@@ -58,11 +88,23 @@ export const api = {
         },
         body: JSON.stringify(data),
       });
+      
+      const contentType = response.headers.get('content-type');
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'API request failed');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || errorData.error || 'API request failed');
+        } else {
+          const text = await response.text();
+          console.error("Non-JSON Error Response:", text);
+          throw new Error(`Server error (${response.status}). Please check console for details.`);
+        }
       }
-      return response.json();
+      
+      if (contentType && contentType.includes('application/json')) {
+        return response.json();
+      }
+      return response.text();
     } catch (error: any) {
       if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
         throw new Error('Backend server is not running. Please start it using "npm run dev".');
@@ -81,11 +123,23 @@ export const api = {
           'Content-Type': 'application/json',
         },
       });
+      
+      const contentType = response.headers.get('content-type');
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'API request failed');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || errorData.error || 'API request failed');
+        } else {
+          const text = await response.text();
+          console.error("Non-JSON Error Response:", text);
+          throw new Error(`Server error (${response.status}). Please check console for details.`);
+        }
       }
-      return response.json();
+      
+      if (contentType && contentType.includes('application/json')) {
+        return response.json();
+      }
+      return response.text();
     } catch (error: any) {
       if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
         throw new Error('Backend server is not running. Please start it using "npm run dev".');

@@ -44,6 +44,12 @@ export const CustomPrinting = () => {
       return;
     }
 
+    console.log("Submitting custom design:", {
+      userId: user.id,
+      imageLength: image.length,
+      description
+    });
+
     setLoading(true);
     try {
       await api.post('/custom-designs', {
