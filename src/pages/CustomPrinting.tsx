@@ -123,36 +123,6 @@ export const CustomPrinting = () => {
             <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto mb-6">
               Bring your ideas to life! Upload your design, and we'll print it on our premium quality T-shirts with professional-grade precision.
             </p>
-            <div className="flex justify-center gap-4 text-sm font-medium">
-              {serverStatus === 'online' ? (
-                <div className="flex flex-col items-center gap-2">
-                  <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full border ${dbStatus === 'connected' ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'}`}>
-                    <div className={`w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
-                    {dbStatus === 'connected' ? `Service Online (v${serverVersion})` : 'Server Online, DB Offline'}
-                  </span>
-                  {dbError && (
-                    <p className="text-[10px] text-red-500 font-mono bg-red-50 p-2 rounded border border-red-100 max-w-xs break-all">
-                      DB Error: {dbError}
-                    </p>
-                  )}
-                </div>
-              ) : serverStatus === 'offline' ? (
-                <div className="flex flex-col items-center gap-2">
-                  <span className="flex items-center gap-1.5 text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                    <div className="w-2 h-2 rounded-full bg-red-500" />
-                    Service Offline (Network Error)
-                  </span>
-                  <p className="text-[10px] text-muted-foreground">
-                    Target: {import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api
-                  </p>
-                </div>
-              ) : (
-                <span className="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" />
-                  Checking Service...
-                </span>
-              )}
-            </div>
           </motion.div>
         </div>
 

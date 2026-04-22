@@ -124,9 +124,6 @@ export const Navbar = () => {
                     <span className="text-lg sm:text-xl font-black tracking-tighter leading-none">ABBAS <span className="text-primary">THREADS</span></span>
                     <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase leading-none mt-1 flex items-center gap-1.5">
                       Premium Store
-                      {isOnline !== null && (
-                        <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'}`} title={isOnline ? 'API Online' : 'API Offline'} />
-                      )}
                     </span>
                   </div>
                 </Link>
