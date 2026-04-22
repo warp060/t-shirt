@@ -5,7 +5,7 @@ import { useAuth } from '../lib/auth';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { useCart } from '../lib/cart';
-import { Star, ShoppingCart, Heart, Truck, RefreshCcw, ShieldCheck, ChevronLeft } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Truck, RefreshCcw, ShieldCheck, ChevronLeft, Zap } from 'lucide-react';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { api } from '../lib/api';
@@ -51,6 +51,11 @@ export const ProductDetails = () => {
   const handleAddToCart = () => {
     addItem(product, quantity, selectedSize);
     toast.success(`${product.name} (${selectedSize}) added to cart!`);
+  };
+
+  const handleBuyNow = () => {
+    addItem(product, quantity, selectedSize);
+    navigate('/checkout');
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
@@ -157,18 +162,26 @@ export const ProductDetails = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center rounded-md border">
-              <Button variant="ghost" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-              <span className="w-12 text-center font-medium">{quantity}</span>
-              <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)}>+</Button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="flex items-center justify-center rounded-lg border bg-muted/20 h-12 px-2">
+              <Button variant="ghost" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="h-8 w-8">-</Button>
+              <span className="w-10 text-center font-bold">{quantity}</span>
+              <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)} className="h-8 w-8">+</Button>
             </div>
-            <Button size="lg" className="flex-1 h-12" onClick={handleAddToCart}>
-              <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
-            </Button>
-            <Button variant="outline" size="icon" className="h-12 w-12">
-              <Heart className="h-5 w-5" />
-            </Button>
+            <div className="flex-1 flex gap-2">
+              <Button variant="outline" className="flex-1 h-12 gap-2 border-primary/20 hover:bg-primary/5" onClick={handleAddToCart}>
+                <ShoppingCart className="h-5 w-5" />
+                <span className="hidden xs:inline">Add to Cart</span>
+                <span className="xs:hidden">Add</span>
+              </Button>
+              <Button className="flex-[1.5] h-12 gap-2 font-bold shadow-xl bg-primary hover:bg-primary/90 transition-all active:scale-95" onClick={handleBuyNow}>
+                <Zap className="h-5 w-5 fill-current" />
+                Buy at ₹{(product.price * quantity).toLocaleString('en-IN')}
+              </Button>
+              <Button variant="outline" size="icon" className="h-12 w-12 shrink-0 border-primary/20 hover:bg-primary/5">
+                <Heart className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 border-t pt-8 sm:grid-cols-3">

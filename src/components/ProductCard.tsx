@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Star, ShoppingCart, Heart, Zap } from 'lucide-react';
 import { Product } from '../types';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter } from './ui/card';
@@ -14,6 +14,14 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
+  const navigate = useNavigate();
+
+  const handleBuyNow = () => {
+    if (product.stock > 0) {
+      addItem(product);
+      navigate('/checkout');
+    }
+  };
 
   return (
     <motion.div
@@ -58,13 +66,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </CardContent>
         <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
           <Button 
-            className="flex-1 h-9 sm:h-10 text-xs sm:text-sm" 
+            variant="outline"
+            className="flex-1 h-9 sm:h-10 text-[10px] sm:text-xs px-2 gap-1.5 border-primary/20 hover:bg-primary/5 transition-all active:scale-95" 
             onClick={() => addItem(product)}
             disabled={product.stock === 0}
           >
-            <ShoppingCart className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" /> Add to Cart
+            <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden xs:inline">Cart</span>
           </Button>
-          <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 shrink-0">
+          
+          <Button 
+            className="flex-[2.5] h-9 sm:h-10 text-[10px] sm:text-sm font-bold bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95 gap-1.5" 
+            onClick={handleBuyNow}
+            disabled={product.stock === 0}
+          >
+            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current" />
+            Buy at ₹{product.price.toLocaleString('en-IN')}
+          </Button>
+
+          <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 border-primary/20 hover:bg-primary/5 transition-all active:scale-95">
             <Heart className="h-4 w-4" />
           </Button>
         </CardFooter>
