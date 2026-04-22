@@ -7,28 +7,41 @@ const { sendOrderNotification, sendCancellationNotification } = require('./maile
 require('dotenv').config();
 
 const app = express();
-app.use(cors({
-    origin: '*',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+
+// Extremely permissive CORS for debugging
+app.use(cors()); 
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Log all requests for debugging online
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 // Health Check
 app.get('/api/health', async (req, res) => {
+    let dbStatus = 'checking';
+    let dbError = null;
+    
     try {
         await pool.query('SELECT 1');
-        res.json({ 
-            status: 'ok', 
-            database: 'connected', 
-            version: '1.0.2',
-            timestamp: new Date().toISOString() 
-        });
+        dbStatus = 'connected';
     } catch (error) {
-        res.status(500).json({ status: 'error', database: 'disconnected', error: error.message });
+        dbStatus = 'disconnected';
+        dbError = error.message;
+        console.error("Health Check DB Error:", error.message);
     }
+
+    res.json({ 
+        status: 'ok', 
+        server: 'online',
+        database: dbStatus,
+        dbError: dbError,
+        version: '1.0.3',
+        timestamp: new Date().toISOString() 
+    });
 });
 
 // Custom Design Routes (Moved to Top)
