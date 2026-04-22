@@ -17,12 +17,14 @@ export const CustomPrinting = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [serverVersion, setServerVersion] = useState<string | null>(null);
 
   React.useEffect(() => {
     const checkServer = async () => {
       try {
-        await api.get('/health');
+        const data = await api.get('/health');
         setServerStatus('online');
+        if (data && data.version) setServerVersion(data.version);
       } catch (err) {
         setServerStatus('offline');
         console.error("Server health check failed:", err);
@@ -119,7 +121,7 @@ export const CustomPrinting = () => {
               {serverStatus === 'online' ? (
                 <span className="flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  Service Online
+                  Service Online {serverVersion && `(v${serverVersion})`}
                 </span>
               ) : serverStatus === 'offline' ? (
                 <span className="flex items-center gap-1.5 text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">

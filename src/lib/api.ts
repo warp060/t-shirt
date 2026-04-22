@@ -1,10 +1,19 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api';
+const getBaseUrl = () => {
+  let url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  // Remove trailing slash if present
+  if (url.endsWith('/')) url = url.slice(0, -1);
+  return url + '/api';
+};
+
+const API_BASE_URL = getBaseUrl();
 
 export const api = {
   get: async (endpoint: string) => {
     const token = localStorage.getItem('token');
+    const fullUrl = `${API_BASE_URL}${endpoint}`;
+    console.log(`[API GET] ${fullUrl}`);
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetch(fullUrl, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
           'Content-Type': 'application/json',
@@ -40,8 +49,10 @@ export const api = {
 
   post: async (endpoint: string, data: any) => {
     const token = localStorage.getItem('token');
+    const fullUrl = `${API_BASE_URL}${endpoint}`;
+    console.log(`[API POST] ${fullUrl}`);
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',

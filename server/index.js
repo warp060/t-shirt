@@ -20,9 +20,37 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.get('/api/health', async (req, res) => {
     try {
         await pool.query('SELECT 1');
-        res.json({ status: 'ok', database: 'connected', timestamp: new Date() });
+        res.json({ 
+            status: 'ok', 
+            database: 'connected', 
+            version: '1.0.2',
+            timestamp: new Date().toISOString() 
+        });
     } catch (error) {
         res.status(500).json({ status: 'error', database: 'disconnected', error: error.message });
+    }
+});
+
+// Custom Design Routes (Moved to Top)
+app.post('/api/custom-designs', async (req, res) => {
+    try {
+        const { userId, imageUrl, description } = req.body;
+        console.log("--- Custom Design Submission ---");
+        console.log("User ID:", userId);
+        
+        if (!userId || !imageUrl) {
+            return res.status(400).json({ message: 'User ID and Image are required' });
+        }
+        
+        const [result] = await pool.execute(
+            'INSERT INTO custom_designs (user_id, image_url, description) VALUES (?, ?, ?)',
+            [userId, imageUrl, description || '']
+        );
+        
+        res.status(201).json({ message: 'Custom design request submitted successfully!' });
+    } catch (error) {
+        console.error("Custom design error:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
     }
 });
 
@@ -462,33 +490,7 @@ app.post('/api/cart/:userId', async (req, res) => {
     }
 });
 
-// Custom Design Routes
-app.post('/api/custom-designs', async (req, res) => {
-    try {
-        const { userId, imageUrl, description } = req.body;
-        console.log("--- Custom Design Submission ---");
-        console.log("User ID:", userId);
-        console.log("Image present:", !!imageUrl);
-        console.log("Description:", description);
-        
-        if (!userId || !imageUrl) {
-            console.log("Validation failed: Missing userId or imageUrl");
-            return res.status(400).json({ message: 'User ID and Image are required' });
-        }
-        
-        const [result] = await pool.execute(
-            'INSERT INTO custom_designs (user_id, image_url, description) VALUES (?, ?, ?)',
-            [userId, imageUrl, description || '']
-        );
-        
-        console.log("Submission successful. ID:", result.insertId);
-        res.status(201).json({ message: 'Custom design request submitted successfully!' });
-    } catch (error) {
-        console.error("Custom design error details:", error);
-        res.status(500).json({ message: error.message || 'Internal server error' });
-    }
-});
-
+// Custom Design Admin Routes
 app.get('/api/admin/custom-designs', authenticateToken, isAdmin, async (req, res) => {
     try {
         const [rows] = await pool.execute(`
