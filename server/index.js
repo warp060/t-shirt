@@ -21,7 +21,12 @@ app.use((req, res, next) => {
 });
 
 // Health Check
+app.get('/api/ping', (req, res) => {
+    res.json({ status: 'ok', message: 'pong', version: '1.0.4' });
+});
+
 app.get('/api/health', async (req, res) => {
+...
     let dbStatus = 'checking';
     let dbError = null;
     
@@ -535,6 +540,15 @@ app.delete('/api/admin/custom-designs/:id', authenticateToken, isAdmin, async (r
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+// 404 Handler for Debugging
+app.use((req, res) => {
+    console.log(`[404] ${req.method} ${req.url}`);
+    res.status(404).json({ 
+        message: `Route ${req.method} ${req.url} not found`,
+        hint: 'Check if you are missing /api prefix'
+    });
 });
 
 const PORT = process.env.PORT || 5000;
