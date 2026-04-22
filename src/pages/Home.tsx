@@ -131,6 +131,67 @@ export const Home = () => {
         </div>
       </section>
 
+      {/* Custom Printing CTA Section */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-3xl bg-neutral-900 px-6 py-12 sm:px-12 sm:py-20 text-white shadow-2xl">
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary rounded-full blur-[120px]" />
+            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/50 rounded-full blur-[120px]" />
+          </div>
+          
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <Badge variant="outline" className="text-primary border-primary">Custom Printing</Badge>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">Your Design, Our Quality.</h2>
+              <p className="text-gray-400 text-lg max-w-md">
+                Bring your creative vision to life. We offer high-quality custom T-shirt printing for individuals, brands, and events.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link to="/custom-printing">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold h-12 px-8">
+                    Start Designing <Zap className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <div className="flex items-center gap-3 text-sm text-gray-400">
+                  <div className="flex -space-x-2">
+                    {[1,2,3].map(i => (
+                      <div key={i} className="w-8 h-8 rounded-full border-2 border-neutral-900 bg-neutral-800 overflow-hidden">
+                        <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
+                      </div>
+                    ))}
+                  </div>
+                  <span>Join 500+ creators</span>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative aspect-square lg:aspect-video rounded-2xl overflow-hidden bg-neutral-800 border border-neutral-700 shadow-inner"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" 
+                alt="Custom Printing Preview" 
+                className="w-full h-full object-cover opacity-80"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 to-transparent flex flex-col justify-end p-6">
+                <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                  <p className="text-sm font-medium">"The print quality exceeded my expectations. Fast delivery too!"</p>
+                  <p className="text-xs text-primary mt-2 font-bold">— Rahul K., Graphic Designer</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter */}
       <section className="bg-primary py-12 sm:py-16 text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
