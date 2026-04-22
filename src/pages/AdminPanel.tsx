@@ -399,6 +399,7 @@ export const AdminPanel = () => {
               ))}
             </TableBody>
           </Table>
+          </div>
         </TabsContent>
 
         <TabsContent value="users">
@@ -432,6 +433,7 @@ export const AdminPanel = () => {
               ))}
             </TableBody>
           </Table>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
