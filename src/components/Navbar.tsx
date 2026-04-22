@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useCart } from '../lib/cart';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 
 export const Navbar = () => {
   const { user, profile, isAdmin, logout } = useAuth();
@@ -97,31 +97,101 @@ export const Navbar = () => {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
+              <SheetHeader className="p-6 border-b text-left">
+                <SheetTitle className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Menu className="h-4 w-4 text-primary" />
+                  </div>
+                  <span>Navigation</span>
+                </SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-4 mt-8">
-                <Link to="/products" className="text-lg font-medium">Shop All</Link>
-                <Link to="/products?category=Men" className="text-lg font-medium">Men</Link>
-                <Link to="/products?category=Women" className="text-lg font-medium">Women</Link>
-                <Link to="/products?category=Oversized" className="text-lg font-medium">Oversized</Link>
-                <Link to="/products?category=Printed" className="text-lg font-medium">Printed</Link>
-                <hr />
-                {user ? (
-                  <>
-                    <Link to="/profile" className="text-lg font-medium">Profile</Link>
-                    <Link to="/orders" className="text-lg font-medium">Orders</Link>
-                    {isAdmin && <Link to="/admin" className="text-lg font-medium text-primary">Admin Panel</Link>}
-                    <Button variant="outline" onClick={handleLogout} className="w-full justify-start">
-                      <LogOut className="mr-2 h-4 w-4" /> Logout
-                    </Button>
-                  </>
-                ) : (
-                  <Link to="/auth">
-                    <Button className="w-full">Login / Signup</Button>
-                  </Link>
+              
+              <div className="flex-1 overflow-y-auto py-6">
+                {user && (
+                  <div className="px-6 mb-8">
+                    <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
+                          {profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold truncate max-w-[150px]">
+                            {profile?.full_name || 'Welcome Back!'}
+                          </span>
+                          <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                            {user.email}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
+
+                <div className="space-y-6">
+                  <section className="px-6">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-2">Collections</h3>
+                    <div className="grid gap-1">
+                      <MobileNavLink to="/products" icon={<LayoutGrid className="h-4 w-4" />} label="Shop All" />
+                      <MobileNavLink to="/products?category=Men" icon={<Shirt className="h-4 w-4" />} label="Men" />
+                      <MobileNavLink to="/products?category=Women" icon={<Shirt className="h-4 w-4" />} label="Women" />
+                      <MobileNavLink to="/products?category=Oversized" icon={<Zap className="h-4 w-4" />} label="Oversized" />
+                      <MobileNavLink to="/products?category=Printed" icon={<Layers className="h-4 w-4" />} label="Printed" />
+                    </div>
+                  </section>
+
+                  <section className="px-6">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-2">Account</h3>
+                    <div className="grid gap-1">
+                      {user ? (
+                        <>
+                          <MobileNavLink to="/profile" icon={<User className="h-4 w-4" />} label="Profile" />
+                          <MobileNavLink to="/orders" icon={<Package className="h-4 w-4" />} label="Orders" />
+                          {isAdmin && (
+                            <MobileNavLink to="/admin" icon={<Settings className="h-4 w-4" />} label="Admin Panel" className="text-primary font-semibold" />
+                          )}
+                        </>
+                      ) : (
+                        <Link to="/auth">
+                          <Button className="w-full justify-start h-11 px-4 gap-3 rounded-lg">
+                            <User className="h-4 w-4" />
+                            Login / Signup
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              <div className="p-6 border-t bg-muted/20">
+                {user && (
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleLogout} 
+                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 h-11 px-4 gap-3 rounded-lg mb-6"
+                  >
+                    <LogOut className="h-4 w-4" /> 
+                    Logout
+                  </Button>
+                )}
+                
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-center gap-4">
+                    <a href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 transition-colors">
+                      <Instagram className="h-4 w-4" />
+                    </a>
+                    <a href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 transition-colors">
+                      <Twitter className="h-4 w-4" />
+                    </a>
+                    <a href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 transition-colors">
+                      <Facebook className="h-4 w-4" />
+                    </a>
+                  </div>
+                  <p className="text-[10px] text-center text-muted-foreground font-medium uppercase tracking-widest">
+                    Abbas Threads © 2026
+                  </p>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
@@ -130,6 +200,23 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+const MobileNavLink = ({ to, icon, label, className = "" }: { to: string, icon: React.ReactNode, label: string, className?: string }) => (
+  <SheetClose asChild>
+    <Link 
+      to={to} 
+      className={`flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-all duration-200 group ${className}`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="text-muted-foreground group-hover:text-primary transition-colors">
+          {icon}
+        </div>
+        <span className="text-sm font-medium">{label}</span>
+      </div>
+      <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+    </Link>
+  </SheetClose>
+);
 
 export const Footer = () => {
   return (
