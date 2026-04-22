@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette } from 'lucide-react';
 import { useAuth } from '../lib/auth';
@@ -6,12 +6,28 @@ import { useCart } from '../lib/cart';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
+import { api } from '../lib/api';
 
 export const Navbar = () => {
   const { user, profile, isAdmin, logout } = useAuth();
   const { totalItems } = useCart();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isOnline, setIsOnline] = React.useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkApi = async () => {
+      try {
+        await api.get('/health');
+        setIsOnline(true);
+      } catch {
+        setIsOnline(false);
+      }
+    };
+    checkApi();
+    const interval = setInterval(checkApi, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,12 +116,20 @@ export const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
               <SheetHeader className="p-6 border-b text-left">
-                <SheetTitle className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Menu className="h-4 w-4 text-primary" />
+                <Link to="/" className="flex items-center gap-2 group">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
+                    <Shirt className="text-white w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <span>Navigation</span>
-                </SheetTitle>
+                  <div className="flex flex-col">
+                    <span className="text-lg sm:text-xl font-black tracking-tighter leading-none">ABBAS <span className="text-primary">THREADS</span></span>
+                    <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase leading-none mt-1 flex items-center gap-1.5">
+                      Premium Store
+                      {isOnline !== null && (
+                        <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'}`} title={isOnline ? 'API Online' : 'API Offline'} />
+                      )}
+                    </span>
+                  </div>
+                </Link>
               </SheetHeader>
               
               <div className="flex-1 overflow-y-auto py-6">
