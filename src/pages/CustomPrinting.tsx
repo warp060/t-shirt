@@ -124,10 +124,15 @@ export const CustomPrinting = () => {
                   Service Online {serverVersion && `(v${serverVersion})`}
                 </span>
               ) : serverStatus === 'offline' ? (
-                <span className="flex items-center gap-1.5 text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                  <div className="w-2 h-2 rounded-full bg-red-500" />
-                  Service Offline (Check Backend)
-                </span>
+                <div className="flex flex-col items-center gap-2">
+                  <span className="flex items-center gap-1.5 text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                    <div className="w-2 h-2 rounded-full bg-red-500" />
+                    Service Offline (Check Backend)
+                  </span>
+                  <p className="text-[10px] text-muted-foreground">
+                    Trying: {import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api
+                  </p>
+                </div>
               ) : (
                 <span className="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
                   <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" />
