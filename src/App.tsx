@@ -15,6 +15,7 @@ const Auth = React.lazy(() => import('./pages/Auth').then(m => ({ default: m.Aut
 const AdminPanel = React.lazy(() => import('./pages/AdminPanel').then(m => ({ default: m.AdminPanel })));
 const OrderHistory = React.lazy(() => import('./pages/OrderHistory').then(m => ({ default: m.OrderHistory })));
 const Profile = React.lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })));
+const CustomPrinting = React.lazy(() => import('./pages/CustomPrinting').then(m => ({ default: m.CustomPrinting })));
 
 const PageLoader = () => (
   <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -46,6 +47,7 @@ function AppContent() {
             <Route path="/products" element={<ProductListing />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/custom-printing" element={<CustomPrinting />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/auth" element={<Auth />} />
             <Route 

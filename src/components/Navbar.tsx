@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useCart } from '../lib/cart';
 import { Button } from './ui/button';
@@ -38,6 +38,7 @@ export const Navbar = () => {
             <Link to="/products?category=Men" className="transition-colors hover:text-primary">Men</Link>
             <Link to="/products?category=Women" className="transition-colors hover:text-primary">Women</Link>
             <Link to="/products?category=Oversized" className="transition-colors hover:text-primary">Oversized</Link>
+            <Link to="/custom-printing" className="transition-colors hover:text-primary font-semibold text-primary/80">Our Service</Link>
           </div>
         </div>
 
@@ -137,6 +138,7 @@ export const Navbar = () => {
                       <MobileNavLink to="/products?category=Women" icon={<Shirt className="h-4 w-4" />} label="Women" />
                       <MobileNavLink to="/products?category=Oversized" icon={<Zap className="h-4 w-4" />} label="Oversized" />
                       <MobileNavLink to="/products?category=Printed" icon={<Layers className="h-4 w-4" />} label="Printed" />
+                      <MobileNavLink to="/custom-printing" icon={<Palette className="h-4 w-4" />} label="Our Service" className="text-primary bg-primary/5" />
                     </div>
                   </section>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { Product, Order, UserProfile } from '../types';
+import { Product, Order, UserProfile, CustomDesign } from '../types';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -15,13 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
 export const AdminPanel = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [customDesigns, setCustomDesigns] = useState<CustomDesign[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -42,10 +43,11 @@ export const AdminPanel = () => {
     setRefreshing(true);
     try {
       // Fetch everything in parallel so one failure doesn't block others
-      const [productsRes, ordersRes, usersRes] = await Promise.allSettled([
+      const [productsRes, ordersRes, usersRes, customRes] = await Promise.allSettled([
         api.get('/products'),
         api.get('/admin/orders'),
-        api.get('/admin/users')
+        api.get('/admin/users'),
+        api.get('/admin/custom-designs')
       ]);
 
       if (productsRes.status === 'fulfilled') {
@@ -67,6 +69,10 @@ export const AdminPanel = () => {
       } else {
         console.error("Users fetch failed:", usersRes.reason);
         toast.error("Users error: " + (usersRes.reason.message || "Access Denied"));
+      }
+
+      if (customRes.status === 'fulfilled') {
+        setCustomDesigns(customRes.value);
       }
 
     } catch (error) {
@@ -144,6 +150,27 @@ export const AdminPanel = () => {
     }
   };
 
+  const updateCustomDesignStatus = async (id: number, status: string) => {
+    try {
+      await api.put(`/admin/custom-designs/${id}/status`, { status });
+      fetchData();
+      toast.success('Custom design status updated!');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update status");
+    }
+  };
+
+  const handleDeleteCustomDesign = async (id: number) => {
+    if (!confirm("Delete this custom design request?")) return;
+    try {
+      await api.delete(`/admin/custom-designs/${id}`);
+      fetchData();
+      toast.success('Request deleted');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
@@ -198,6 +225,7 @@ export const AdminPanel = () => {
           <TabsTrigger value="products" className="flex-1 sm:flex-none py-2 px-4">Products</TabsTrigger>
           <TabsTrigger value="orders" className="flex-1 sm:flex-none py-2 px-4">Orders</TabsTrigger>
           <TabsTrigger value="users" className="flex-1 sm:flex-none py-2 px-4">Users</TabsTrigger>
+          <TabsTrigger value="custom" className="flex-1 sm:flex-none py-2 px-4">Custom Designs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -433,6 +461,58 @@ export const AdminPanel = () => {
               ))}
             </TableBody>
           </Table>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="custom">
+          <h2 className="text-xl font-bold mb-6">Custom Design Requests</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {customDesigns.map((design) => (
+              <Card key={design.id} className="overflow-hidden border-none shadow-md bg-card/50">
+                <div className="aspect-square relative group">
+                  <img src={design.image_url} alt="Custom Design" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
+                    <p className="text-white text-xs text-center">{design.description || "No description provided."}</p>
+                  </div>
+                  <Badge className="absolute top-2 right-2 capitalize" variant={design.status === 'pending' ? 'secondary' : design.status === 'completed' ? 'default' : 'outline'}>
+                    {design.status}
+                  </Badge>
+                </div>
+                <CardContent className="p-4">
+                  <div className="flex flex-col gap-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-semibold">{design.user_name}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate">{design.user_email}</div>
+                    <div className="text-[10px] text-muted-foreground mt-1">Submitted: {new Date(design.created_at).toLocaleString()}</div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Select onValueChange={(val: any) => updateCustomDesignStatus(design.id, val)} defaultValue={design.status}>
+                      <SelectTrigger className="flex-1 h-8 text-xs">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDeleteCustomDesign(design.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {customDesigns.length === 0 && (
+              <div className="col-span-full py-20 text-center text-muted-foreground">
+                <Palette className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                <p>No custom design requests found.</p>
+              </div>
+            )}
           </div>
         </TabsContent>
       </Tabs>

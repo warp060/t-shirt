@@ -452,6 +452,57 @@ app.post('/api/cart/:userId', async (req, res) => {
     }
 });
 
+// Custom Design Routes
+app.post('/api/custom-designs', async (req, res) => {
+    try {
+        const { userId, imageUrl, description } = req.body;
+        if (!userId || !imageUrl) {
+            return res.status(400).json({ message: 'User ID and Image are required' });
+        }
+        await pool.execute(
+            'INSERT INTO custom_designs (user_id, image_url, description) VALUES (?, ?, ?)',
+            [userId, imageUrl, description || '']
+        );
+        res.status(201).json({ message: 'Custom design request submitted successfully!' });
+    } catch (error) {
+        console.error("Custom design error:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/admin/custom-designs', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT cd.*, u.name as user_name, u.email as user_email 
+            FROM custom_designs cd 
+            JOIN users u ON cd.user_id = u.id 
+            ORDER BY cd.created_at DESC
+        `);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/admin/custom-designs/:id/status', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { status } = req.body;
+        await pool.execute('UPDATE custom_designs SET status = ? WHERE id = ?', [status, req.params.id]);
+        res.json({ message: 'Custom design status updated' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/admin/custom-designs/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await pool.execute('DELETE FROM custom_designs WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Custom design request deleted' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
     console.log(`Server running on http://localhost:${PORT}`);

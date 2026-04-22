@@ -57,3 +57,14 @@ export interface Review {
   comment: string;
   created_at: string;
 }
+
+export interface CustomDesign {
+  id: number;
+  user_id: number;
+  user_name: string;
+  user_email: string;
+  image_url: string;
+  description: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  created_at: string;
+}
