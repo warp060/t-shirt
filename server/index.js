@@ -26,7 +26,7 @@ app.get('/api/ping', (req, res) => {
 });
 
 app.get('/api/health', async (req, res) => {
-...
+
     let dbStatus = 'checking';
     let dbError = null;
     
