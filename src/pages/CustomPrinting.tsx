@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Send, Image as ImageIcon, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { Upload, Send, Image as ImageIcon, CheckCircle2, ShieldCheck, Zap, MessageCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -240,7 +240,10 @@ export const CustomPrinting = () => {
                 rel="noopener noreferrer"
                 className="w-full"
               >
-                <Button variant="outline" className="w-full">Chat with Designer</Button>
+                <Button className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white border-none font-bold shadow-lg shadow-green-500/20 gap-2">
+                  <MessageCircle className="w-5 h-5" />
+                  Chat with Designer on WhatsApp
+                </Button>
               </a>
             </div>
           </div>
