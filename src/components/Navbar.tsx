@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette, Linkedin, MessageCircle } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useCart } from '../lib/cart';
 import { Button } from './ui/button';
@@ -201,14 +201,14 @@ export const Navbar = () => {
                 
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-center gap-4">
-                    <a href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 transition-colors">
+                    <a href="https://instagram.com/its_me_web_developer" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary transition-all">
                       <Instagram className="h-4 w-4" />
                     </a>
-                    <a href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 transition-colors">
-                      <Twitter className="h-4 w-4" />
+                    <a href="https://wa.me/916369906810" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#25D366] transition-all">
+                      <MessageCircle className="h-4 w-4" />
                     </a>
-                    <a href="#" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 transition-colors">
-                      <Facebook className="h-4 w-4" />
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#0A66C2] transition-all">
+                      <Linkedin className="h-4 w-4" />
                     </a>
                   </div>
                   <p className="text-[10px] text-center text-muted-foreground font-medium uppercase tracking-widest">
@@ -272,9 +272,19 @@ export const Footer = () => {
           </div>
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Connect</h3>
-            <div className="flex gap-4">
-              {/* Social icons would go here */}
-              <span className="text-sm text-muted-foreground">Follow us on Instagram, Twitter, and Facebook for updates.</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-4">
+                <a href="https://instagram.com/its_me_web_developer" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary hover:-translate-y-1 transition-all">
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a href="https://wa.me/916369906810" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#25D366] hover:-translate-y-1 transition-all">
+                  <MessageCircle className="h-5 w-5" />
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#0A66C2] hover:-translate-y-1 transition-all">
+                  <Linkedin className="h-5 w-5" />
+                </a>
+              </div>
+              <p className="text-xs text-muted-foreground">Follow us for latest updates and drops.</p>
             </div>
           </div>
         </div>
