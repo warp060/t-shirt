@@ -234,7 +234,14 @@ export const CustomPrinting = () => {
             <div className="p-6 rounded-2xl border border-dashed flex flex-col gap-4 text-center">
               <h3 className="font-bold">Need help with your design?</h3>
               <p className="text-sm text-muted-foreground">Our design experts can help you refine your vision. Chat with us on WhatsApp for instant help.</p>
-              <Button variant="outline" className="w-full">Chat with Designer</Button>
+              <a 
+                href="https://wa.me/916369906810?text=Hi!%20I'm%20interested%20in%20a%20custom%20T-shirt%20design." 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full"
+              >
+                <Button variant="outline" className="w-full">Chat with Designer</Button>
+              </a>
             </div>
           </div>
         </div>
