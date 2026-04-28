@@ -22,7 +22,11 @@ app.use((req, res, next) => {
 
 // Health Check
 app.get('/api/ping', (req, res) => {
-    res.json({ status: 'ok', message: 'pong', version: '1.0.4' });
+    res.json({ status: 'ok', message: 'pong', version: '1.0.5' });
+});
+
+app.get('/api/test-route', (req, res) => {
+    res.json({ message: "Server is reachable!" });
 });
 
 app.get('/api/health', async (req, res) => {
