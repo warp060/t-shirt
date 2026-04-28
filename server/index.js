@@ -88,16 +88,24 @@ const authenticateToken = (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
     try {
-        // ULTIMATE FAIL-SAFE: Always allow the owner email directly from the token
         const userEmail = req.user?.email?.toLowerCase();
+        const userId = req.user?.id;
+
+        console.log(`[ADMIN CHECK] Attempt by: ${userEmail} (ID: ${userId})`);
+
+        // Check 1: Master Email from Token
         if (userEmail === 'abbas6618532@gmail.com') {
             return next();
         }
 
-        const [users] = await pool.execute('SELECT role FROM users WHERE id = ?', [req.user.id]);
-        if (users.length > 0 && users[0].role === 'admin') {
+        // Check 2: Database Role
+        const [users] = await pool.execute('SELECT role, email FROM users WHERE id = ?', [userId]);
+        const user = users[0];
+
+        if (user && (user.role === 'admin' || user.email?.toLowerCase() === 'abbas6618532@gmail.com')) {
             next();
         } else {
+            console.log(`[ADMIN DENIED] User ${userEmail} has role: ${user?.role}`);
             res.status(403).json({ message: 'Access denied. Admin rights required.' });
         }
     } catch (error) {
