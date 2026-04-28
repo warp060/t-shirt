@@ -88,8 +88,10 @@ const authenticateToken = (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
     try {
-        const [users] = await pool.execute('SELECT role FROM users WHERE id = ?', [req.user.id]);
-        if (users.length > 0 && users[0].role === 'admin') {
+        const [users] = await pool.execute('SELECT role, email FROM users WHERE id = ?', [req.user.id]);
+        const user = users[0];
+        
+        if (user && (user.role === 'admin' || user.email === process.env.ADMIN_EMAIL)) {
             next();
         } else {
             res.status(403).json({ message: 'Access denied. Admin rights required.' });
