@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express'); // v1.0.5
 const cors = require('cors');
 const pool = require('./db');
 const jwt = require('jsonwebtoken');
