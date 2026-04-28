@@ -82,7 +82,9 @@ export const Auth = () => {
         navigate('/');
       }
     } catch (error: any) {
-      toast.error(error.message || "Google login failed");
+      const errorMsg = error.response?.data?.error || error.message || "Google login failed";
+      toast.error(errorMsg);
+      console.error("Google Auth Error:", error);
     } finally {
       setLoading(false);
     }

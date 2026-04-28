@@ -4,8 +4,6 @@ const { OAuth2Client } = require('google-auth-library');
 const pool = require('./db');
 require('dotenv').config();
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
 const register = async (req, res) => {
     try {
         const { name, email, password, role = 'customer' } = req.body;
@@ -69,6 +67,12 @@ const googleLogin = async (req, res) => {
     try {
         const { idToken } = req.body;
         
+        if (!process.env.GOOGLE_CLIENT_ID) {
+            throw new Error("GOOGLE_CLIENT_ID is missing in server .env file");
+        }
+
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        
         // Verify Google token
         const ticket = await client.verifyIdToken({
             idToken,
@@ -114,7 +118,9 @@ const googleLogin = async (req, res) => {
         });
     } catch (error) {
         console.error('Google login error:', error);
-        res.status(400).json({ message: 'Google authentication failed' });
+        res.status(400).json({ 
+            message: 'Google login error: ' + error.message
+        });
     }
 };
 

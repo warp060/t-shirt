@@ -551,6 +551,15 @@ app.use((req, res) => {
     });
 });
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error("!!! SERVER ERROR !!!", err);
+    res.status(500).json({ 
+        message: "Internal Server Error", 
+        error: err.message 
+    });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
     console.log(`Server running on http://localhost:${PORT}`);
