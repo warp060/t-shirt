@@ -358,7 +358,7 @@ app.put('/api/users/:id', async (req, res) => {
 // Admin - User Management
 app.get('/api/admin/users', authenticateToken, isAdmin, async (req, res) => {
     try {
-        const [users] = await pool.execute('SELECT id, name, email, role, created_at FROM users');
+        const [users] = await pool.execute('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC');
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -370,6 +370,31 @@ app.put('/api/admin/users/:id/role', authenticateToken, isAdmin, async (req, res
         const { role } = req.body;
         await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, req.params.id]);
         res.json({ message: 'User role updated' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Admin - Review Management
+app.get('/api/admin/reviews', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT r.*, u.name as user_name, p.name as product_name 
+            FROM reviews r 
+            JOIN users u ON r.user_id = u.id 
+            JOIN products p ON r.product_id = p.id 
+            ORDER BY r.created_at DESC
+        `);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/admin/reviews/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await pool.execute('DELETE FROM reviews WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Review deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -478,26 +503,6 @@ app.get('/api/admin/orders', authenticateToken, isAdmin, async (req, res) => {
     }
 });
 
-// Admin - User Management
-app.get('/api/admin/users', authenticateToken, isAdmin, async (req, res) => {
-    try {
-        const [users] = await pool.execute('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC');
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.put('/api/admin/users/:id/role', authenticateToken, isAdmin, async (req, res) => {
-    try {
-        const { role } = req.body;
-        await pool.execute('UPDATE users SET role = ? WHERE id = ?', [role, req.params.id]);
-        res.json({ message: 'User role updated' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // Cart Routes
 app.get('/api/cart/:userId', async (req, res) => {
     try {
@@ -551,31 +556,6 @@ app.delete('/api/admin/custom-designs/:id', authenticateToken, isAdmin, async (r
     try {
         await pool.execute('DELETE FROM custom_designs WHERE id = ?', [req.params.id]);
         res.json({ message: 'Custom design request deleted' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Admin - Review Management
-app.get('/api/admin/reviews', authenticateToken, isAdmin, async (req, res) => {
-    try {
-        const [rows] = await pool.execute(`
-            SELECT r.*, u.name as user_name, p.name as product_name 
-            FROM reviews r 
-            JOIN users u ON r.user_id = u.id 
-            JOIN products p ON r.product_id = p.id 
-            ORDER BY r.created_at DESC
-        `);
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.delete('/api/admin/reviews/:id', authenticateToken, isAdmin, async (req, res) => {
-    try {
-        await pool.execute('DELETE FROM reviews WHERE id = ?', [req.params.id]);
-        res.json({ message: 'Review deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
