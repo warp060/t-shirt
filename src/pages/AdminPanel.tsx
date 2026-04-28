@@ -79,6 +79,9 @@ export const AdminPanel = () => {
 
       if (reviewsRes.status === 'fulfilled') {
         setReviews(reviewsRes.value);
+      } else {
+        console.error("Reviews fetch failed:", reviewsRes.reason);
+        toast.error("Reviews error: " + (reviewsRes.reason.message || "Access Denied"));
       }
 
     } catch (error) {
