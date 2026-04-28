@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth';
 import { Order } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight } from 'lucide-react';
+import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star } from 'lucide-react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -23,6 +23,33 @@ export const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
+  const [reviewingItem, setReviewingItem] = useState<{productId: number, name: string} | null>(null);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !reviewingItem) return;
+
+    setSubmitting(true);
+    try {
+      await api.post('/reviews', {
+        userId: user.id,
+        productId: reviewingItem.productId,
+        rating,
+        comment
+      });
+      toast.success("Thank you for your review!");
+      setReviewingItem(null);
+      setComment('');
+      setRating(5);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -183,7 +210,14 @@ export const OrderHistory = () => {
                         </div>
                         <div className="mt-4 flex gap-3">
                           <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => navigate(`/product/${item.productId}`)}>Buy Again</Button>
-                          <Button variant="ghost" size="sm" className="h-8 text-xs">Write Review</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 text-xs"
+                            onClick={() => setReviewingItem({ productId: item.productId, name: item.name })}
+                          >
+                            Write Review
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -217,6 +251,52 @@ export const OrderHistory = () => {
             </DialogDescription>
           </DialogHeader>
           {trackingOrder && <OrderTracker order={trackingOrder} />}
+        </DialogContent>
+      </Dialog>
+
+      {/* Review Modal */}
+      <Dialog open={!!reviewingItem} onOpenChange={(open) => !open && setReviewingItem(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Write a Review</DialogTitle>
+            <DialogDescription>
+              Share your experience with {reviewingItem?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleReviewSubmit} className="space-y-6 pt-4">
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Rate your product</span>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="transition-transform active:scale-90"
+                  >
+                    <Star className={`h-8 w-8 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/30'}`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Your Thoughts</label>
+              <textarea
+                rows={4}
+                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                placeholder="How was the quality and fit?..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setReviewingItem(null)}>Cancel</Button>
+              <Button type="submit" className="flex-1 font-bold" disabled={submitting}>
+                {submitting ? "Submitting..." : "Post Review"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
