@@ -556,6 +556,31 @@ app.delete('/api/admin/custom-designs/:id', authenticateToken, isAdmin, async (r
     }
 });
 
+// Admin - Review Management
+app.get('/api/admin/reviews', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT r.*, u.name as user_name, p.name as product_name 
+            FROM reviews r 
+            JOIN users u ON r.user_id = u.id 
+            JOIN products p ON r.product_id = p.id 
+            ORDER BY r.created_at DESC
+        `);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/admin/reviews/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await pool.execute('DELETE FROM reviews WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Review deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // 404 Handler for Debugging
 app.use((req, res) => {
     console.log(`[404] ${req.method} ${req.url}`);

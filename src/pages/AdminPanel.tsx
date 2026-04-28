@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
 export const AdminPanel = () => {
@@ -23,6 +23,7 @@ export const AdminPanel = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [customDesigns, setCustomDesigns] = useState<CustomDesign[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -43,11 +44,12 @@ export const AdminPanel = () => {
     setRefreshing(true);
     try {
       // Fetch everything in parallel so one failure doesn't block others
-      const [productsRes, ordersRes, usersRes, customRes] = await Promise.allSettled([
+      const [productsRes, ordersRes, usersRes, customRes, reviewsRes] = await Promise.allSettled([
         api.get('/products'),
         api.get('/admin/orders'),
         api.get('/admin/users'),
-        api.get('/admin/custom-designs')
+        api.get('/admin/custom-designs'),
+        api.get('/admin/reviews')
       ]);
 
       if (productsRes.status === 'fulfilled') {
@@ -73,6 +75,10 @@ export const AdminPanel = () => {
 
       if (customRes.status === 'fulfilled') {
         setCustomDesigns(customRes.value);
+      }
+
+      if (reviewsRes.status === 'fulfilled') {
+        setReviews(reviewsRes.value);
       }
 
     } catch (error) {
@@ -171,6 +177,17 @@ export const AdminPanel = () => {
     }
   };
 
+  const handleDeleteReview = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+    try {
+      await api.delete(`/admin/reviews/${id}`);
+      fetchData();
+      toast.success('Review deleted');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete review");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
@@ -226,6 +243,7 @@ export const AdminPanel = () => {
           <TabsTrigger value="orders" className="flex-1 sm:flex-none py-2 px-4">Orders</TabsTrigger>
           <TabsTrigger value="users" className="flex-1 sm:flex-none py-2 px-4">Users</TabsTrigger>
           <TabsTrigger value="custom" className="flex-1 sm:flex-none py-2 px-4">Custom Designs</TabsTrigger>
+          <TabsTrigger value="reviews" className="flex-1 sm:flex-none py-2 px-4">Reviews</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -513,6 +531,60 @@ export const AdminPanel = () => {
                 <p>No custom design requests found.</p>
               </div>
             )}
+          </div>
+        </TabsContent>
+        <TabsContent value="reviews">
+          <h2 className="text-xl font-bold mb-6">Manage Reviews</h2>
+          <div className="border rounded-lg overflow-hidden bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead>Product</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead className="w-[40%]">Comment</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {reviews.map((review: any) => (
+                  <TableRow key={review.id} className="hover:bg-muted/30">
+                    <TableCell className="font-medium text-primary">{review.product_name}</TableCell>
+                    <TableCell>{review.user_name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <span className="font-bold mr-1">{review.rating}</span>
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm text-muted-foreground line-clamp-2 italic">"{review.comment}"</p>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {new Date(review.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-destructive hover:bg-destructive/10" 
+                        onClick={() => handleDeleteReview(review.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {reviews.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-20 text-muted-foreground">
+                      No reviews found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
         </TabsContent>
       </Tabs>
