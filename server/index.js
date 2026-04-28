@@ -91,7 +91,9 @@ const isAdmin = async (req, res, next) => {
         const [users] = await pool.execute('SELECT role, email FROM users WHERE id = ?', [req.user.id]);
         const user = users[0];
         
-        if (user && (user.role === 'admin' || user.email === process.env.ADMIN_EMAIL)) {
+        console.log(`[ADMIN CHECK] Email: ${user?.email}, Role: ${user?.role}, Target: ${process.env.ADMIN_EMAIL}`);
+
+        if (user && (user.role === 'admin' || user.email?.toLowerCase() === process.env.ADMIN_EMAIL?.toLowerCase())) {
             next();
         } else {
             res.status(403).json({ message: 'Access denied. Admin rights required.' });
