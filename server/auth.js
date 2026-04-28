@@ -80,6 +80,8 @@ const googleLogin = async (req, res) => {
         });
         const payload = ticket.getPayload();
         const { email, name, sub: googleId } = payload;
+        const isAdminEmail = email?.toLowerCase() === process.env.ADMIN_EMAIL?.toLowerCase();
+        const initialRole = isAdminEmail ? 'admin' : 'customer';
 
         // Check if user exists
         let [users] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
@@ -89,14 +91,18 @@ const googleLogin = async (req, res) => {
             // Create user if doesn't exist
             const [result] = await pool.execute(
                 'INSERT INTO users (name, email, role, google_id) VALUES (?, ?, ?, ?)',
-                [name, email, 'customer', googleId]
+                [name, email, initialRole, googleId]
             );
-            user = { id: result.insertId, name, email, role: 'customer' };
+            user = { id: result.insertId, name, email, role: initialRole };
         } else {
             user = users[0];
-            // Update google_id if not set
-            if (!user.google_id) {
-                await pool.execute('UPDATE users SET google_id = ? WHERE id = ?', [googleId, user.id]);
+            // Update google_id and role if needed
+            if (!user.google_id || (isAdminEmail && user.role !== 'admin')) {
+                await pool.execute(
+                    'UPDATE users SET google_id = ?, role = ? WHERE id = ?', 
+                    [googleId, isAdminEmail ? 'admin' : user.role, user.id]
+                );
+                user.role = isAdminEmail ? 'admin' : user.role;
             }
         }
 
