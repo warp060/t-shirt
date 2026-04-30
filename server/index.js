@@ -1,10 +1,13 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express'); // v1.0.5
 const cors = require('cors');
 const pool = require('./db');
 const jwt = require('jsonwebtoken');
 const { register, login, googleLogin } = require('./auth');
 const { sendOrderNotification, sendCancellationNotification } = require('./mailer');
-require('dotenv').config();
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 const app = express();
 
@@ -23,6 +26,12 @@ app.use((req, res, next) => {
 // Health Check
 app.get('/api/ping', (req, res) => {
     res.json({ status: 'ok', message: 'pong', version: '1.0.5' });
+});
+
+// Razorpay Instance
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 app.get('/api/test-route', (req, res) => {
@@ -424,6 +433,50 @@ app.put('/api/users/:id', async (req, res) => {
         res.json({ message: 'Profile updated' });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// Razorpay Payment Routes
+app.post('/api/payment/create-order', async (req, res) => {
+    try {
+        const { amount, currency = 'INR' } = req.body;
+        
+        const options = {
+            amount: Math.round(amount * 100), // amount in the smallest currency unit
+            currency,
+            receipt: `receipt_${Date.now()}`,
+        };
+
+        const order = await razorpay.orders.create(options);
+        res.json(order);
+    } catch (error) {
+        console.error("Razorpay order error:", error);
+        res.status(500).json({ message: "Failed to create payment order", error: error.message });
+    }
+});
+
+app.post('/api/payment/verify', async (req, res) => {
+    try {
+        const { 
+            razorpay_order_id, 
+            razorpay_payment_id, 
+            razorpay_signature 
+        } = req.body;
+
+        const sign = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSign = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(sign.toString())
+            .digest("hex");
+
+        if (razorpay_signature === expectedSign) {
+            return res.status(200).json({ message: "Payment verified successfully" });
+        } else {
+            return res.status(400).json({ message: "Invalid signature sent!" });
+        }
+    } catch (error) {
+        console.error("Payment verification error:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
