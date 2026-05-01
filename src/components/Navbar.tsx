@@ -297,7 +297,7 @@ export const Footer = () => {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 flex flex-col items-center justify-center gap-2 text-center text-sm text-muted-foreground">
-          <p>Developed by Mohammed Abbas R.Y | All rights reserved</p>
+          <p>© 2026 Developed by Mohammed Abbas R.Y | All rights reserved</p>
           <a 
             href="https://wa.me/916369906810" 
             target="_blank" 
