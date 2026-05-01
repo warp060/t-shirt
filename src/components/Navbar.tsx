@@ -33,8 +33,10 @@ export const Navbar = () => {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
-      setSearchTerm('');
+    } else {
+      navigate('/products');
     }
+    setSearchTerm('');
   };
 
   const handleLogout = async () => {
@@ -66,6 +68,12 @@ export const Navbar = () => {
               placeholder="Search T-shirts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSearch(e as any);
+                }
+              }}
               className="h-9 w-64 rounded-md border border-input bg-background pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </form>
