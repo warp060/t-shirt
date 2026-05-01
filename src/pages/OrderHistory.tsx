@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth';
-import { Order } from '../types';
+import { Order, CustomDesign } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star } from 'lucide-react';
+import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette } from 'lucide-react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -23,6 +24,7 @@ export const OrderHistory = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [customDesigns, setCustomDesigns] = useState<CustomDesign[]>([]);
   const [loading, setLoading] = useState(true);
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
   const [reviewingItem, setReviewingItem] = useState<{productId: number, name: string} | null>(null);
@@ -115,19 +117,23 @@ export const OrderHistory = () => {
   };
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       if (!user) return;
       setLoading(true);
       try {
-        const data = await api.get(`/orders/${user.id}`);
-        setOrders(data);
+        const [ordersData, customDesignsData] = await Promise.all([
+          api.get(`/orders/${user.id}`),
+          api.get(`/custom-designs/user/${user.id}`)
+        ]);
+        setOrders(ordersData);
+        setCustomDesigns(customDesignsData);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching history data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchOrders();
+    fetchData();
   }, [user]);
 
   const getStatusBadge = (status: string) => {
@@ -180,11 +186,20 @@ export const OrderHistory = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Order History</h1>
-        <Badge variant="outline" className="px-3 py-1">
-          {orders.length} {orders.length === 1 ? 'Order' : 'Orders'}
-        </Badge>
+        <h1 className="text-3xl font-bold tracking-tight">Your History</h1>
       </div>
+
+      <Tabs defaultValue="orders" className="w-full">
+        <TabsList className="mb-8 bg-muted/50 w-full justify-start overflow-x-auto p-1 rounded-xl h-auto">
+          <TabsTrigger value="orders" className="flex-1 sm:flex-none py-2.5 px-6 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <Package className="h-4 w-4 mr-2" /> Orders ({orders.length})
+          </TabsTrigger>
+          <TabsTrigger value="custom" className="flex-1 sm:flex-none py-2.5 px-6 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <Palette className="h-4 w-4 mr-2" /> Custom Designs ({customDesigns.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="orders" className="space-y-8 mt-0">
 
       {orders.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed rounded-3xl bg-muted/20">
@@ -303,6 +318,46 @@ export const OrderHistory = () => {
           ))}
         </div>
       )}
+      </TabsContent>
+
+      <TabsContent value="custom" className="mt-0">
+        {customDesigns.length === 0 ? (
+          <div className="text-center py-20 border-2 border-dashed rounded-3xl bg-muted/20">
+            <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Palette className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">No custom designs</h2>
+            <p className="text-muted-foreground max-w-xs mx-auto mb-8">
+              You haven't submitted any custom designs yet. Let your creativity run wild!
+            </p>
+            <Button onClick={() => navigate('/service')} className="gap-2">
+              Create Design <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {customDesigns.map((design) => (
+              <Card key={design.id} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all">
+                <div className="aspect-square relative group bg-muted">
+                  <img src={design.image_url} alt="Custom Design" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <Badge className="absolute top-3 right-3 capitalize shadow-md" variant={design.status === 'pending' ? 'secondary' : design.status === 'completed' ? 'default' : 'outline'}>
+                    {design.status}
+                  </Badge>
+                </div>
+                <CardContent className="p-5">
+                  <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-2">Description</p>
+                  <p className="text-sm mb-4 line-clamp-3">{design.description || "No description provided."}</p>
+                  <div className="flex justify-between items-center text-xs text-muted-foreground border-t pt-4">
+                    <span>Submitted on</span>
+                    <span className="font-medium text-foreground">{new Date(design.created_at).toLocaleDateString('en-IN')}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </TabsContent>
+      </Tabs>
 
       {/* Order Tracker Modal */}
       <Dialog open={!!trackingOrder} onOpenChange={(open) => !open && setTrackingOrder(null)}>

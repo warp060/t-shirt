@@ -85,6 +85,19 @@ app.post('/api/custom-designs', async (req, res) => {
     }
 });
 
+app.get('/api/custom-designs/user/:userId', async (req, res) => {
+    try {
+        const [designs] = await pool.execute(
+            'SELECT * FROM custom_designs WHERE user_id = ? ORDER BY created_at DESC',
+            [req.params.userId]
+        );
+        res.json(designs);
+    } catch (error) {
+        console.error("Fetch custom designs error:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+});
+
 // Security Middleware
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
