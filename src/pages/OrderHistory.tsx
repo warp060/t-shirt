@@ -136,6 +136,7 @@ export const OrderHistory = () => {
           setCustomDesigns(customDesignsRes.value);
         } else {
           console.error("Custom designs fetch failed:", customDesignsRes.reason);
+          toast.error("Could not load custom designs. Has the backend updated?");
         }
       } catch (error) {
         console.error("Error fetching history data:", error);
