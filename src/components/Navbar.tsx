@@ -296,8 +296,16 @@ export const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Abbas Threads. All rights reserved.</p>
+        <div className="mt-12 border-t pt-8 flex flex-col items-center justify-center gap-2 text-center text-sm text-muted-foreground">
+          <p>Developed by Mohammed Abbas R.Y | All rights reserved</p>
+          <a 
+            href="https://wa.me/916369906810" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-primary hover:underline inline-flex items-center gap-1 font-medium transition-all hover:translate-x-1"
+          >
+            Need a business website? Let's build it <ChevronRight className="h-4 w-4" />
+          </a>
         </div>
       </div>
     </footer>
