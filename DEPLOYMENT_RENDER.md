@@ -26,6 +26,8 @@ I've set up a **Blueprint configuration** (`render.yaml`) that will automaticall
    - `EMAIL_USER`: Your Gmail address
    - `EMAIL_PASS`: Your App-specific password (not your main password)
    - `ADMIN_EMAIL`: Where you want to receive order alerts
+   - `RAZORPAY_KEY_ID`: Your Razorpay Key ID
+   - `RAZORPAY_KEY_SECRET`: Your Razorpay Key Secret
 
    ### 💻 Frontend (abbas-threads-client)
    The `VITE_API_URL` is automatically configured to point to your backend. However, if you see connection issues, ensure it looks like `https://abbas-threads-api.onrender.com`.
