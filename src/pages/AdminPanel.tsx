@@ -500,7 +500,11 @@ export const AdminPanel = () => {
                   </Badge>
                 </div>
                 <CardContent className="p-4">
-                  <div className="flex flex-col gap-2 mb-4">
+                  <div className="mb-4">
+                    <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-1">Description</p>
+                    <p className="text-sm line-clamp-3">{design.description || "No description provided."}</p>
+                  </div>
+                  <div className="flex flex-col gap-2 mb-4 border-t pt-4">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-semibold">{design.user_name}</span>
