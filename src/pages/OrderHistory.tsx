@@ -16,6 +16,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../components/ui/dialog';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export const OrderHistory = () => {
   const { user } = useAuth();
@@ -27,6 +29,67 @@ export const OrderHistory = () => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const handleDownloadInvoice = (order: Order) => {
+    const doc = new jsPDF();
+    
+    // Add company logo/header
+    doc.setFontSize(22);
+    doc.setTextColor(40);
+    doc.text('Abbas Threads', 14, 22);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('21/4a nusrath street, pernambut', 14, 30);
+    doc.text('Tamil Nadu - 635810', 14, 35);
+    
+    // Invoice Title
+    doc.setFontSize(20);
+    doc.setTextColor(0);
+    doc.text('INVOICE', 140, 22);
+    
+    // Order Details
+    doc.setFontSize(10);
+    doc.text(`Order ID: #ORD-${order.id.toString().padStart(6, '0')}`, 140, 30);
+    doc.text(`Date: ${new Date(order.created_at).toLocaleDateString('en-IN')}`, 140, 35);
+    doc.text(`Payment Method: ${order.payment_method.toUpperCase()}`, 140, 40);
+    
+    // Bill To
+    doc.setFontSize(12);
+    doc.setTextColor(40);
+    doc.text('Bill To:', 14, 50);
+    doc.setFontSize(10);
+    doc.setTextColor(80);
+    doc.text(order.address.fullName, 14, 57);
+    doc.text(order.address.street, 14, 62);
+    doc.text(`${order.address.city}, ${order.address.state} - ${order.address.zipCode}`, 14, 67);
+    
+    // Items Table
+    const tableColumn = ["Item", "Size", "Quantity", "Price", "Total"];
+    const tableRows = order.items.map(item => [
+      item.name,
+      item.size || '-',
+      item.quantity.toString(),
+      `Rs. ${item.price}`,
+      `Rs. ${item.price * item.quantity}`
+    ]);
+    
+    autoTable(doc, {
+      startY: 80,
+      head: [tableColumn],
+      body: tableRows,
+      theme: 'grid',
+      headStyles: { fillColor: [66, 66, 66] },
+    });
+    
+    // Total Amount
+    const finalY = (doc as any).lastAutoTable.finalY || 80;
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text(`Total Amount: Rs. ${order.total_amount.toLocaleString('en-IN')}`, 140, finalY + 15);
+    
+    doc.save(`Invoice_ORD-${order.id.toString().padStart(6, '0')}.pdf`);
+  };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,7 +294,7 @@ export const OrderHistory = () => {
                     <p className="text-xs text-muted-foreground">{order.address.street}, {order.address.city}, {order.address.state} - {order.address.zipCode}</p>
                   </div>
                   <div className="flex gap-3">
-                    <Button variant="outline" className="flex-1 sm:flex-none">Download Invoice</Button>
+                    <Button variant="outline" className="flex-1 sm:flex-none" onClick={() => handleDownloadInvoice(order)}>Download Invoice</Button>
                     <Button className="flex-1 sm:flex-none" onClick={() => setTrackingOrder(order)}>Track Order</Button>
                   </div>
                 </div>
