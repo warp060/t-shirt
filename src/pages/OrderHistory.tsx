@@ -121,12 +121,22 @@ export const OrderHistory = () => {
       if (!user) return;
       setLoading(true);
       try {
-        const [ordersData, customDesignsData] = await Promise.all([
+        const [ordersRes, customDesignsRes] = await Promise.allSettled([
           api.get(`/orders/${user.id}`),
           api.get(`/custom-designs/user/${user.id}`)
         ]);
-        setOrders(ordersData);
-        setCustomDesigns(customDesignsData);
+        
+        if (ordersRes.status === 'fulfilled') {
+          setOrders(ordersRes.value);
+        } else {
+          console.error("Orders fetch failed:", ordersRes.reason);
+        }
+
+        if (customDesignsRes.status === 'fulfilled') {
+          setCustomDesigns(customDesignsRes.value);
+        } else {
+          console.error("Custom designs fetch failed:", customDesignsRes.reason);
+        }
       } catch (error) {
         console.error("Error fetching history data:", error);
       } finally {
