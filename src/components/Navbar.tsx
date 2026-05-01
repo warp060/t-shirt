@@ -49,7 +49,7 @@ export const Navbar = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
+            <img src="https://i.ibb.co/LzLtMLzs/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
             <span className="text-2xl font-bold tracking-tighter text-primary">ABBAS THREADS</span>
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -126,7 +126,7 @@ export const Navbar = () => {
             <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
               <SheetHeader className="p-6 border-b text-left">
                 <Link to="/" className="flex items-center gap-2 group">
-                  <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain group-hover:rotate-6 transition-transform" />
+                  <img src="https://i.ibb.co/LzLtMLzs/logo.png" alt="Logo" className="w-10 h-10 object-contain group-hover:rotate-6 transition-transform" />
                   <div className="flex flex-col">
                     <span className="text-lg sm:text-xl font-black tracking-tighter leading-none">ABBAS <span className="text-primary">THREADS</span></span>
                     <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase leading-none mt-1 flex items-center gap-1.5">
@@ -255,7 +255,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
+              <img src="https://i.ibb.co/LzLtMLzs/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
               <span className="text-xl font-bold tracking-tighter">ABBAS THREADS</span>
             </div>
             <p className="text-sm text-muted-foreground">
