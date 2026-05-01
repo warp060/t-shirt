@@ -22,6 +22,13 @@ export const api = {
       
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          throw new Error('Session expired. Please log in again.');
+        }
+
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
           throw new Error(errorData.message || errorData.error || 'API request failed');
@@ -63,6 +70,13 @@ export const api = {
       
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          throw new Error('Session expired. Please log in again.');
+        }
+
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
           throw new Error(errorData.message || errorData.error || 'API request failed');
@@ -102,6 +116,13 @@ export const api = {
       
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          throw new Error('Session expired. Please log in again.');
+        }
+
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
           throw new Error(errorData.message || errorData.error || 'API request failed');
@@ -137,6 +158,13 @@ export const api = {
       
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          throw new Error('Session expired. Please log in again.');
+        }
+
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
           throw new Error(errorData.message || errorData.error || 'API request failed');
