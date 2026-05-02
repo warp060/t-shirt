@@ -78,6 +78,9 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-4">
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => navigate('/products')} title="Search">
+            <Search className="h-5 w-5" />
+          </Button>
           <form onSubmit={handleSearch} className="hidden md:flex relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground cursor-pointer hover:text-primary" onClick={handleSearch} />
             <input
@@ -151,6 +154,21 @@ export const Navbar = () => {
                   </div>
                 </Link>
               </SheetHeader>
+
+              <div className="px-6 py-4 border-b bg-muted/30">
+                <form onSubmit={(e) => {
+                  handleSearch(e);
+                }} className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="search"
+                    placeholder="Search T-shirts..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-10 w-full rounded-full border border-input bg-background pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  />
+                </form>
+              </div>
 
               <div className="flex-1 overflow-y-auto py-6">
                 {user && (
