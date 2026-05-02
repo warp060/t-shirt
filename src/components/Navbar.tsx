@@ -24,7 +24,9 @@ export const Navbar = () => {
   const { totalItems } = useCart();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
   const [isOnline, setIsOnline] = React.useState<boolean | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
 
   useEffect(() => {
     const checkApi = async () => {
@@ -48,6 +50,8 @@ export const Navbar = () => {
       navigate('/products');
     }
     setSearchTerm('');
+    setIsMobileSearchOpen(false);
+    setIsSheetOpen(false);
   };
 
   const handleLogout = async () => {
@@ -58,7 +62,26 @@ export const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-4 md:gap-8">
+        {isMobileSearchOpen ? (
+          <div className="flex-1 flex items-center gap-2 md:hidden animate-in slide-in-from-right duration-200">
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(false)}>
+              <ChevronRight className="h-5 w-5 rotate-180" />
+            </Button>
+            <form onSubmit={handleSearch} className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                autoFocus
+                type="search"
+                placeholder="Search T-shirts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="h-10 w-full rounded-full border border-input bg-background pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </form>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-4 md:gap-8">
           <Link to="/" className="flex items-center gap-2 md:gap-4 group">
             <Logo className="w-9 h-9 md:w-10 md:h-10" />
             <div className="hidden md:flex flex-col">
@@ -78,7 +101,13 @@ export const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-4">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => navigate('/products')} title="Search">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden" 
+            onClick={() => setIsMobileSearchOpen(true)} 
+            title="Search"
+          >
             <Search className="h-5 w-5" />
           </Button>
           <form onSubmit={handleSearch} className="hidden md:flex relative">
@@ -112,12 +141,12 @@ export const Navbar = () => {
           {user ? (
             <div className="flex items-center gap-2">
               <Link to="/orders">
-                <Button variant="ghost" size="icon" title="My Orders">
+                <Button variant="ghost" size="icon" title="My Orders" className="hidden xs:flex">
                   <Package className="h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/profile">
-                <Button variant="ghost" size="icon" title="My Profile">
+                <Button variant="ghost" size="icon" title="My Profile" className="hidden xs:flex">
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
@@ -136,7 +165,7 @@ export const Navbar = () => {
             </Link>
           )}
 
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
@@ -260,8 +289,10 @@ export const Navbar = () => {
             </SheetContent>
           </Sheet>
         </div>
-      </div>
-    </nav>
+      </>
+    )}
+  </div>
+</nav>
   );
 };
 

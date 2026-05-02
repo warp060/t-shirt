@@ -304,8 +304,8 @@ app.get('/api/products', async (req, res) => {
         let params = [];
 
         if (search) {
-            query += ' WHERE name LIKE ? OR description LIKE ?';
-            params = [`%${search}%`, `%${search}%`];
+            query += ' WHERE name LIKE ? OR description LIKE ? OR category LIKE ?';
+            params = [`%${search}%`, `%${search}%`, `%${search}%`];
         }
 
         const [products] = await pool.execute(query, params);
