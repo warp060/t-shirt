@@ -8,6 +8,17 @@ import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 import { api } from '../lib/api';
 
+const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={`${className} transition-all duration-300 group-hover:scale-110 drop-shadow-sm`}>
+    <circle cx="50" cy="50" r="48" fill="#E8E9EB" />
+    <path id="brandCurve" d="M 22,42 A 28,28 0 0,1 78,42" fill="none" />
+    <text className="text-[6px] font-black uppercase tracking-[0.1em] fill-black/80">
+      <textPath href="#brandCurve" startOffset="50%" textAnchor="middle">ABBAS THREADS</textPath>
+    </text>
+    <text x="50" y="72" textAnchor="middle" style={{ fontFamily: "'Times New Roman', Times, serif" }} className="text-[46px] font-bold fill-black">AT</text>
+  </svg>
+);
+
 export const Navbar = () => {
   const { user, profile, isAdmin, logout } = useAuth();
   const { totalItems } = useCart();
@@ -47,9 +58,15 @@ export const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold tracking-tighter text-primary">ABBAS THREADS</span>
+        <div className="flex items-center gap-4 md:gap-8">
+          <Link to="/" className="flex items-center gap-2 md:gap-4 group">
+            <Logo className="w-9 h-9 md:w-10 md:h-10" />
+            <div className="hidden md:flex flex-col">
+              <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">ABBAS THREADS</span>
+              <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
+                PREMIUM STORE
+              </span>
+            </div>
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link to="/products" className="transition-colors hover:text-primary">Shop All</Link>
@@ -60,7 +77,7 @@ export const Navbar = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-4">
           <form onSubmit={handleSearch} className="hidden md:flex relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground cursor-pointer hover:text-primary" onClick={handleSearch} />
             <input
@@ -124,19 +141,17 @@ export const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
               <SheetHeader className="p-6 border-b text-left">
-                <Link to="/" className="flex items-center gap-2 group">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
-                    <Shirt className="text-white w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
+                <Link to="/" className="flex items-center gap-4 group">
+                  <Logo className="w-12 h-12" />
                   <div className="flex flex-col">
-                    <span className="text-lg sm:text-xl font-black tracking-tighter leading-none">ABBAS <span className="text-primary">THREADS</span></span>
-                    <span className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase leading-none mt-1 flex items-center gap-1.5">
-                      Premium Store
+                    <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">ABBAS THREADS</span>
+                    <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
+                      PREMIUM STORE
                     </span>
                   </div>
                 </Link>
               </SheetHeader>
-              
+
               <div className="flex-1 overflow-y-auto py-6">
                 {user && (
                   <div className="px-6 mb-8">
@@ -197,16 +212,16 @@ export const Navbar = () => {
 
               <div className="p-6 border-t bg-muted/20">
                 {user && (
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleLogout} 
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
                     className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 h-11 px-4 gap-3 rounded-lg mb-6"
                   >
-                    <LogOut className="h-4 w-4" /> 
+                    <LogOut className="h-4 w-4" />
                     Logout
                   </Button>
                 )}
-                
+
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-center gap-4">
                     <a href="https://instagram.com/its_me_web_developer" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary transition-all">
@@ -234,8 +249,8 @@ export const Navbar = () => {
 
 const MobileNavLink = ({ to, icon, label, className = "" }: { to: string, icon: React.ReactNode, label: string, className?: string }) => (
   <SheetClose asChild>
-    <Link 
-      to={to} 
+    <Link
+      to={to}
       className={`flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-all duration-200 group ${className}`}
     >
       <div className="flex items-center gap-3">
@@ -255,7 +270,15 @@ export const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="flex flex-col gap-4">
-            <span className="text-xl font-bold tracking-tighter">ABBAS THREADS</span>
+            <Link to="/" className="flex items-center gap-4 group">
+              <Logo className="w-12 h-12" />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">ABBAS THREADS</span>
+                <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
+                  PREMIUM STORE
+                </span>
+              </div>
+            </Link>
             <p className="text-sm text-muted-foreground">
               Premium quality T-shirts designed for comfort and style. Express yourself with our unique prints and fits.
             </p>
@@ -298,10 +321,10 @@ export const Footer = () => {
         </div>
         <div className="mt-12 border-t pt-8 flex flex-col items-center justify-center gap-2 text-center text-sm text-muted-foreground">
           <p>© 2026 Developed by Mohammed Abbas R.Y | All rights reserved</p>
-          <a 
-            href="https://wa.me/916369906810" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://wa.me/916369906810"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-primary hover:underline inline-flex items-center gap-1 font-medium transition-all hover:translate-x-1"
           >
             Need a business website? Let's build it <ChevronRight className="h-4 w-4" />
