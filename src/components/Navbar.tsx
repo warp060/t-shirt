@@ -129,14 +129,6 @@ export const Navbar = () => {
           </form>
 
           <Link 
-            to="/wishlist" 
-            className={buttonVariants({ variant: "ghost", size: "icon" })}
-            title="Wishlist"
-          >
-            <Heart className="h-5 w-5" />
-          </Link>
-
-          <Link 
             to="/cart" 
             className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "relative")}
             title="Cart"
