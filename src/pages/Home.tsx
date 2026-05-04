@@ -27,12 +27,13 @@ export const Home = () => {
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
       <section className="relative h-[70vh] sm:h-[80vh] w-full overflow-hidden bg-black text-white">
-        <div className="absolute inset-0 opacity-70">
+        <div className="absolute inset-0">
           <img
             src="/hero-bg-premium.png"
             alt="Hero Background"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover opacity-80"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
         </div>
         <div className="container relative mx-auto flex h-full flex-col justify-center px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -41,11 +42,11 @@ export const Home = () => {
             transition={{ duration: 0.6 }}
             className="max-w-2xl"
           >
-            <Badge className="mb-4 bg-primary text-primary-foreground">New Collection 2026</Badge>
+            <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">New Collection 2026</Badge>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance">
-              WEAR THE <span className="text-white drop-shadow-md">VIBE</span>.
+              WEAR THE <span className="text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">VIBE</span>.
             </h1>
-            <p className="mb-8 text-base text-gray-300 sm:text-lg md:text-xl max-w-lg">
+            <p className="mb-8 text-base text-white/95 font-medium drop-shadow-md sm:text-lg md:text-xl max-w-lg leading-relaxed">
               Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
