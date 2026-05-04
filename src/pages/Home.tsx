@@ -46,7 +46,7 @@ export const Home = () => {
               WEAR THE <span className="text-white drop-shadow-md">VIBE</span>.
             </h1>
             <p className="mb-8 text-base text-gray-300 sm:text-lg md:text-xl max-w-lg">
-              Premium quality T-shirts designed for those who value comfort and style. Discover our latest oversized and graphic collections.
+              Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/products">
