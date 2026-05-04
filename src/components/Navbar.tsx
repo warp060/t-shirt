@@ -105,7 +105,7 @@ export const Navbar = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden" 
+            className="hidden md:flex" 
             onClick={() => setIsMobileSearchOpen(true)} 
             title="Search"
           >
@@ -145,14 +145,14 @@ export const Navbar = () => {
             <div className="flex items-center gap-1 sm:gap-2">
               <Link 
                 to="/orders" 
-                className={buttonVariants({ variant: "ghost", size: "icon" })}
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:flex")}
                 title="My Orders"
               >
                 <Package className="h-5 w-5" />
               </Link>
               <Link 
                 to="/profile" 
-                className={buttonVariants({ variant: "ghost", size: "icon" })}
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:flex")}
                 title="My Profile"
               >
                 <User className="h-5 w-5" />
@@ -160,13 +160,13 @@ export const Navbar = () => {
               {isAdmin && (
                 <Link 
                   to="/admin" 
-                  className={buttonVariants({ variant: "ghost", size: "icon" })}
+                  className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:flex")}
                   title="Admin Panel"
                 >
                   <ShieldCheck className="h-5 w-5 text-primary" />
                 </Link>
               )}
-              <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+              <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout" className="hidden md:flex">
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>
