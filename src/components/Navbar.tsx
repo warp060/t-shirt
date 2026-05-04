@@ -105,7 +105,7 @@ export const Navbar = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="hidden md:flex" 
+            className="flex" 
             onClick={() => setIsMobileSearchOpen(true)} 
             title="Search"
           >
