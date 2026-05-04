@@ -27,12 +27,11 @@ export const Home = () => {
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
       <section className="relative h-[70vh] sm:h-[80vh] w-full overflow-hidden bg-black text-white">
-        <div className="absolute inset-0 opacity-60">
+        <div className="absolute inset-0 opacity-70">
           <img
-            src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=80"
+            src="/hero-bg-premium.png"
             alt="Hero Background"
             className="h-full w-full object-cover"
-            referrerPolicy="no-referrer"
           />
         </div>
         <div className="container relative mx-auto flex h-full flex-col justify-center px-4 sm:px-6 lg:px-8">
@@ -44,7 +43,7 @@ export const Home = () => {
           >
             <Badge className="mb-4 bg-primary text-primary-foreground">New Collection 2026</Badge>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance">
-              WEAR THE <span className="text-primary">VIBE</span>.
+              WEAR THE <span className="text-white drop-shadow-md">VIBE</span>.
             </h1>
             <p className="mb-8 text-base text-gray-300 sm:text-lg md:text-xl max-w-lg">
               Premium quality T-shirts designed for those who value comfort and style. Discover our latest oversized and graphic collections.
