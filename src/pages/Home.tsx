@@ -31,9 +31,8 @@ export const Home = () => {
           <img
             src="/hero-bg-premium.png"
             alt="Hero Background"
-            className="h-full w-full object-cover opacity-80"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
         </div>
         <div className="container relative mx-auto flex h-full flex-col justify-center px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -43,20 +42,20 @@ export const Home = () => {
             className="max-w-2xl"
           >
             <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">New Collection 2026</Badge>
-            <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance">
-              WEAR THE <span className="text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">VIBE</span>.
+            <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
+              WEAR THE <span className="text-white">VIBE</span>.
             </h1>
-            <p className="mb-8 text-base text-white/95 font-medium drop-shadow-md sm:text-lg md:text-xl max-w-lg leading-relaxed">
+            <p className="mb-8 text-base text-white font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-lg md:text-xl max-w-lg leading-relaxed">
               Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/products">
-                <Button size="lg" className="h-12 px-8 text-lg w-full sm:w-auto">
+                <Button size="lg" className="h-12 px-8 text-lg w-full sm:w-auto shadow-2xl">
                   Shop Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/products?category=Oversized">
-                <Button size="lg" variant="outline" className="h-12 px-8 text-lg bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="h-12 px-8 text-lg bg-black/20 backdrop-blur-md border-white/50 text-white hover:bg-black/40 w-full sm:w-auto shadow-xl transition-all">
                   Oversized Fit
                 </Button>
               </Link>
