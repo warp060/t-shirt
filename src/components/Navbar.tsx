@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette, Linkedin, MessageCircle } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette, Linkedin, MessageCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useCart } from '../lib/cart';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 import { api } from '../lib/api';
+import { cn } from '../lib/utils';
 
 const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={`${className} transition-all duration-300 group-hover:scale-110 drop-shadow-sm`}>
@@ -127,32 +128,50 @@ export const Navbar = () => {
             />
           </form>
 
-          <Link to="/cart">
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              {totalItems > 0 && (
-                <Badge className="absolute -right-1 -top-1 h-5 w-5 justify-center rounded-full p-0 text-[10px]">
-                  {totalItems}
-                </Badge>
-              )}
-            </Button>
+          <Link 
+            to="/wishlist" 
+            className={buttonVariants({ variant: "ghost", size: "icon" })}
+            title="Wishlist"
+          >
+            <Heart className="h-5 w-5" />
+          </Link>
+
+          <Link 
+            to="/cart" 
+            className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "relative")}
+            title="Cart"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {totalItems > 0 && (
+              <Badge className="absolute -right-1 -top-1 h-5 w-5 justify-center rounded-full p-0 text-[10px]">
+                {totalItems}
+              </Badge>
+            )}
           </Link>
 
           {user ? (
-            <div className="flex items-center gap-2">
-              <Link to="/orders">
-                <Button variant="ghost" size="icon" title="My Orders" className="hidden xs:flex">
-                  <Package className="h-5 w-5" />
-                </Button>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Link 
+                to="/orders" 
+                className={buttonVariants({ variant: "ghost", size: "icon" })}
+                title="My Orders"
+              >
+                <Package className="h-5 w-5" />
               </Link>
-              <Link to="/profile">
-                <Button variant="ghost" size="icon" title="My Profile" className="hidden xs:flex">
-                  <User className="h-5 w-5" />
-                </Button>
+              <Link 
+                to="/profile" 
+                className={buttonVariants({ variant: "ghost", size: "icon" })}
+                title="My Profile"
+              >
+                <User className="h-5 w-5" />
               </Link>
               {isAdmin && (
-                <Link to="/admin">
-                  <Button variant="outline" size="sm">Admin</Button>
+                <Link 
+                  to="/admin" 
+                  className={buttonVariants({ variant: "ghost", size: "icon" })}
+                  title="Admin Panel"
+                >
+                  <ShieldCheck className="h-5 w-5 text-primary" />
                 </Link>
               )}
               <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
@@ -160,17 +179,19 @@ export const Navbar = () => {
               </Button>
             </div>
           ) : (
-            <Link to="/auth">
-              <Button size="sm">Login</Button>
+            <Link to="/auth" className={buttonVariants({ size: "sm" })}>
+              Login
             </Link>
           )}
 
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
+            <SheetTrigger 
+              render={
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              }
+            />
             <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
               <SheetHeader className="p-6 border-b text-left">
                 <Link to="/" className="flex items-center gap-4 group">
@@ -297,20 +318,25 @@ export const Navbar = () => {
 };
 
 const MobileNavLink = ({ to, icon, label, className = "" }: { to: string, icon: React.ReactNode, label: string, className?: string }) => (
-  <SheetClose asChild>
-    <Link
-      to={to}
-      className={`flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-all duration-200 group ${className}`}
-    >
-      <div className="flex items-center gap-3">
-        <div className="text-muted-foreground group-hover:text-primary transition-colors">
-          {icon}
+  <SheetClose 
+    render={
+      <Link
+        to={to}
+        className={cn(
+          "flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-all duration-200 group",
+          className
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-muted-foreground group-hover:text-primary transition-colors">
+            {icon}
+          </div>
+          <span className="text-sm font-medium">{label}</span>
         </div>
-        <span className="text-sm font-medium">{label}</span>
-      </div>
-      <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-    </Link>
-  </SheetClose>
+        <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+      </Link>
+    }
+  />
 );
 
 export const Footer = () => {
