@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
     socketTimeout: 300000     // 5 minutes
 });
 
-const adminEmail = process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com';
+const adminEmail = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
 
 const sendOrderNotification = async (order) => {
     
