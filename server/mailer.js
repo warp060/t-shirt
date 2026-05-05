@@ -3,13 +3,16 @@ require('dotenv').config();
 
 const dns = require('dns');
 
-const dns = require('dns');
-
 const createTransporter = () => {
+    // Debug: Check if we can resolve the hostname
+    dns.lookup('smtp.gmail.com', { family: 4 }, (err, address) => {
+        console.log(`DNS Check: smtp.gmail.com resolved to ${address} (Error: ${err ? err.message : 'None'})`);
+    });
+
     return nodemailer.createTransport({
         host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, 
+        port: 465,
+        secure: true, // Use SSL on port 465
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -17,9 +20,9 @@ const createTransporter = () => {
         tls: {
             rejectUnauthorized: false
         },
-        connectionTimeout: 60000,
+        connectionTimeout: 30000,
         greetingTimeout: 30000,
-        socketTimeout: 300000,
+        socketTimeout: 60000,
         logger: true, 
         debug: true,
         lookup: (hostname, options, callback) => {
