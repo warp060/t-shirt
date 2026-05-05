@@ -8,6 +8,12 @@ const { register, login, googleLogin } = require('./auth');
 const { sendOrderNotification, sendCancellationNotification, sendCustomServiceNotification, sendCustomServiceStatusNotification } = require('./mailer');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const dns = require('dns');
+
+// Fix for Render IPv6 ENETUNREACH issues
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 const app = express();
 
