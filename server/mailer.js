@@ -146,4 +146,115 @@ const sendCancellationNotification = async (order) => {
     }
 };
 
-module.exports = { sendOrderNotification, sendCancellationNotification };
+const sendCustomServiceNotification = async (design) => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.log('--------------------------------------------------');
+        console.log('LOGGING CUSTOM DESIGN (SMTP Credentials Missing)');
+        console.log(`To: ${adminEmail}`);
+        console.log(`Subject: New Custom Design Request - User ID: ${design.userId}`);
+        console.log(`Content: Description: ${design.description}`);
+        console.log('--------------------------------------------------');
+        return;
+    }
+
+    const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
+            <div style="background-color: #000; color: #fff; padding: 20px; text-align: center;">
+                <h1 style="margin: 0;">ABBAS THREADS</h1>
+                <p style="margin: 5px 0 0 0; color: #aaa;">New Custom Service Request</p>
+            </div>
+            <div style="padding: 20px;">
+                <h2 style="color: #333;">Request Details</h2>
+                <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>User ID:</strong> ${design.userId}</p>
+                <p><strong>Description:</strong> ${design.description || 'No description provided'}</p>
+                
+                <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #000;">
+                    <p style="margin: 0;"><strong>Note:</strong> The submitted design image is attached to this email.</p>
+                </div>
+            </div>
+            <div style="background-color: #eee; padding: 15px; text-align: center; font-size: 0.8em; color: #888;">
+                This is an automated message from your store.
+            </div>
+        </div>
+    `;
+
+    let mailOptions = {
+        from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
+        to: adminEmail,
+        subject: `New Custom Design Request from User ${design.userId}`,
+        html: htmlContent
+    };
+
+    if (design.imageUrl && design.imageUrl.startsWith('data:image')) {
+        try {
+            const base64Data = design.imageUrl.split(';base64,').pop();
+            const mimeType = design.imageUrl.split(';')[0].split(':')[1];
+            const ext = mimeType.split('/')[1] || 'png';
+            
+            mailOptions.attachments = [{
+                filename: `design_${design.userId}_${Date.now()}.${ext}`,
+                content: base64Data,
+                encoding: 'base64'
+            }];
+        } catch (e) {
+            console.error('Error attaching image:', e);
+        }
+    }
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Custom design notification email sent successfully!');
+    } catch (error) {
+        console.error('Error sending custom design notification email:', error);
+    }
+};
+
+const sendCustomServiceStatusNotification = async (design, status) => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.log('--------------------------------------------------');
+        console.log('LOGGING CUSTOM DESIGN STATUS (SMTP Credentials Missing)');
+        console.log(`To: ${adminEmail}`);
+        console.log(`Subject: Custom Design Status Updated to ${status}`);
+        console.log('--------------------------------------------------');
+        return;
+    }
+
+    const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
+            <div style="background-color: #333; color: #fff; padding: 20px; text-align: center;">
+                <h1 style="margin: 0;">ABBAS THREADS</h1>
+                <p style="margin: 5px 0 0 0; color: #aaa;">Custom Service Request Updated</p>
+            </div>
+            <div style="padding: 20px;">
+                <h2 style="color: #333;">Status Update</h2>
+                <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>Design ID:</strong> ${design.id}</p>
+                <p><strong>New Status:</strong> <span style="text-transform: uppercase; font-weight: bold; color: ${status === 'approved' ? 'green' : (status === 'rejected' ? 'red' : 'orange')};">${status}</span></p>
+                <p><strong>Description:</strong> ${design.description || 'N/A'}</p>
+            </div>
+            <div style="background-color: #eee; padding: 15px; text-align: center; font-size: 0.8em; color: #888;">
+                This is an automated message from your store.
+            </div>
+        </div>
+    `;
+
+    try {
+        await transporter.sendMail({
+            from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
+            to: adminEmail,
+            subject: `Custom Design Request #${design.id} Status: ${status.toUpperCase()}`,
+            html: htmlContent
+        });
+        console.log('Custom design status email sent successfully!');
+    } catch (error) {
+        console.error('Error sending custom design status email:', error);
+    }
+};
+
+module.exports = { 
+    sendOrderNotification, 
+    sendCancellationNotification,
+    sendCustomServiceNotification,
+    sendCustomServiceStatusNotification
+};

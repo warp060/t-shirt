@@ -5,7 +5,7 @@ const cors = require('cors');
 const pool = require('./db');
 const jwt = require('jsonwebtoken');
 const { register, login, googleLogin } = require('./auth');
-const { sendOrderNotification, sendCancellationNotification } = require('./mailer');
+const { sendOrderNotification, sendCancellationNotification, sendCustomServiceNotification, sendCustomServiceStatusNotification } = require('./mailer');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
@@ -78,6 +78,8 @@ app.post('/api/custom-designs', async (req, res) => {
             [userId, imageUrl, description || '']
         );
         
+        sendCustomServiceNotification({ userId, imageUrl, description }).catch(console.error);
+
         res.status(201).json({ message: 'Custom design request submitted successfully!' });
     } catch (error) {
         console.error("Custom design error:", error);
@@ -276,7 +278,14 @@ app.get('/api/admin/custom-designs', authenticateToken, isAdmin, async (req, res
 app.put('/api/admin/custom-designs/:id/status', authenticateToken, isAdmin, async (req, res) => {
     try {
         const { status } = req.body;
-        await pool.execute('UPDATE custom_designs SET status = ? WHERE id = ?', [status, req.params.id]);
+        const designId = req.params.id;
+        await pool.execute('UPDATE custom_designs SET status = ? WHERE id = ?', [status, designId]);
+        
+        const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
+        if (designs.length > 0) {
+            sendCustomServiceStatusNotification(designs[0], status).catch(console.error);
+        }
+
         res.json({ message: 'Custom design status updated' });
     } catch (error) {
         res.status(500).json({ error: error.message });
