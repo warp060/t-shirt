@@ -1,11 +1,12 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+const dns = require('dns');
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false, // Use STARTTLS on port 587
-    family: 4, // Force IPv4
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -16,9 +17,14 @@ const transporter = nodemailer.createTransport({
     connectionTimeout: 60000,
     greetingTimeout: 30000,
     socketTimeout: 300000,
-    logger: true, // Log to console
-    debug: true   // Include debug info
+    logger: true, 
+    debug: true,
+    // Hard-force IPv4 by overriding the DNS lookup
+    lookup: (hostname, options, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
+    }
 });
+
 
 const adminEmail = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
 
