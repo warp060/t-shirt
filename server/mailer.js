@@ -4,41 +4,39 @@ require('dotenv').config();
 const dns = require('dns');
 
 const createTransporter = () => {
-    // Debug: Check if we can resolve the hostname
-    dns.lookup('smtp.gmail.com', { family: 4 }, (err, address) => {
-        console.log(`DNS Check: smtp.gmail.com resolved to ${address} (Error: ${err ? err.message : 'None'})`);
-    });
-
     return nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // Use SSL on port 465
+        service: 'gmail',
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         },
-        tls: {
-            rejectUnauthorized: false
-        },
-        connectionTimeout: 30000,
-        greetingTimeout: 30000,
-        socketTimeout: 60000,
-        logger: true, 
-        debug: true,
         lookup: (hostname, options, callback) => {
             dns.lookup(hostname, { family: 4 }, callback);
         }
     });
 };
 
+const adminEmails = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
 
-
-const adminEmail = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
+const sendMailToAllAdmins = async (mailOptions) => {
+    const transporter = createTransporter();
+    for (const email of adminEmails) {
+        try {
+            await transporter.sendMail({
+                ...mailOptions,
+                to: email
+            });
+            console.log(`Notification sent to: ${email}`);
+        } catch (error) {
+            console.error(`Failed to send to ${email}:`, error);
+        }
+    }
+};
 
 console.log('--- Mailer Debug Info ---');
-console.log('Admin Emails:', adminEmail);
+console.log('Admin Emails:', adminEmails);
 console.log('SMTP User detected:', process.env.EMAIL_USER ? 'YES' : 'NO');
-console.log('SMTP Config:', { host: 'smtp.gmail.com', port: 587, secure: false });
+console.log('SMTP Config: { service: "gmail" }');
 console.log('-------------------------');
 
 const sendOrderNotification = async (order) => {
@@ -47,7 +45,7 @@ const sendOrderNotification = async (order) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.log('--------------------------------------------------');
         console.log('LOGGING EMAIL (SMTP Credentials Missing)');
-        console.log(`To: ${adminEmail}`);
+        console.log(`To: ${adminEmails}`);
         console.log(`Subject: New Order Received - ID: ${order.id}`);
         console.log(`Content: Customer ${order.address.fullName} placed an order for ₹${order.totalAmount}`);
         console.log('--------------------------------------------------');
@@ -115,14 +113,11 @@ const sendOrderNotification = async (order) => {
     `;
 
     try {
-        const transporter = createTransporter();
-        await transporter.sendMail({
+        await sendMailToAllAdmins({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: adminEmail,
             subject: `New Order Received # ${order.id} - ₹${order.totalAmount}`,
             html: htmlContent
         });
-        console.log('Order notification email sent successfully!');
     } catch (error) {
         console.error('Error sending order notification email:', error);
     }
@@ -133,7 +128,7 @@ const sendCancellationNotification = async (order) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.log('--------------------------------------------------');
         console.log('LOGGING CANCELLATION (SMTP Credentials Missing)');
-        console.log(`To: ${adminEmail}`);
+        console.log(`To: ${adminEmails}`);
         console.log(`Subject: Order CANCELLED - ID: ${order.id}`);
         console.log(`Content: Customer ${order.address.fullName} cancelled their order of ₹${order.total_amount}`);
         console.log('--------------------------------------------------');
@@ -165,14 +160,11 @@ const sendCancellationNotification = async (order) => {
     `;
 
     try {
-        const transporter = createTransporter();
-        await transporter.sendMail({
+        await sendMailToAllAdmins({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: adminEmail,
             subject: `⚠️ Order CANCELLED # ${order.id} - ₹${order.total_amount}`,
             html: htmlContent
         });
-        console.log('Cancellation notification email sent successfully!');
     } catch (error) {
         console.error('Error sending cancellation notification email:', error);
     }
@@ -182,7 +174,7 @@ const sendCustomServiceNotification = async (design) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.log('--------------------------------------------------');
         console.log('LOGGING CUSTOM DESIGN (SMTP Credentials Missing)');
-        console.log(`To: ${adminEmail}`);
+        console.log(`To: ${adminEmails}`);
         console.log(`Subject: New Custom Design Request - User ID: ${design.userId}`);
         console.log(`Content: Description: ${design.description}`);
         console.log('--------------------------------------------------');
@@ -213,7 +205,7 @@ const sendCustomServiceNotification = async (design) => {
 
     let mailOptions = {
         from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-        to: adminEmail,
+        to: adminEmails,
         subject: `New Custom Design Request from User ${design.userId}`,
         html: htmlContent
     };
@@ -235,9 +227,7 @@ const sendCustomServiceNotification = async (design) => {
     }
 
     try {
-        const transporter = createTransporter();
-        await transporter.sendMail(mailOptions);
-        console.log('Custom design notification email sent successfully!');
+        await sendMailToAllAdmins(mailOptions);
     } catch (error) {
         console.error('Error sending custom design notification email:', error);
     }
@@ -247,7 +237,7 @@ const sendCustomServiceStatusNotification = async (design, status) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.log('--------------------------------------------------');
         console.log('LOGGING CUSTOM DESIGN STATUS (SMTP Credentials Missing)');
-        console.log(`To: ${adminEmail}`);
+        console.log(`To: ${adminEmails}`);
         console.log(`Subject: Custom Design Status Updated to ${status}`);
         console.log('--------------------------------------------------');
         return;
@@ -273,14 +263,11 @@ const sendCustomServiceStatusNotification = async (design, status) => {
     `;
 
     try {
-        const transporter = createTransporter();
-        await transporter.sendMail({
+        await sendMailToAllAdmins({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: adminEmail,
             subject: `Custom Design Request #${design.id} Status: ${status.toUpperCase()}`,
             html: htmlContent
         });
-        console.log('Custom design status email sent successfully!');
     } catch (error) {
         console.error('Error sending custom design status email:', error);
     }
