@@ -3,27 +3,31 @@ require('dotenv').config();
 
 const dns = require('dns');
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use STARTTLS on port 587
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    },
-    connectionTimeout: 60000,
-    greetingTimeout: 30000,
-    socketTimeout: 300000,
-    logger: true, 
-    debug: true,
-    // Hard-force IPv4 by overriding the DNS lookup
-    lookup: (hostname, options, callback) => {
-        dns.lookup(hostname, { family: 4 }, callback);
-    }
-});
+const dns = require('dns');
+
+const createTransporter = () => {
+    return nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, 
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+        tls: {
+            rejectUnauthorized: false
+        },
+        connectionTimeout: 60000,
+        greetingTimeout: 30000,
+        socketTimeout: 300000,
+        logger: true, 
+        debug: true,
+        lookup: (hostname, options, callback) => {
+            dns.lookup(hostname, { family: 4 }, callback);
+        }
+    });
+};
+
 
 
 const adminEmail = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
@@ -108,6 +112,7 @@ const sendOrderNotification = async (order) => {
     `;
 
     try {
+        const transporter = createTransporter();
         await transporter.sendMail({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
             to: adminEmail,
@@ -157,6 +162,7 @@ const sendCancellationNotification = async (order) => {
     `;
 
     try {
+        const transporter = createTransporter();
         await transporter.sendMail({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
             to: adminEmail,
@@ -226,6 +232,7 @@ const sendCustomServiceNotification = async (design) => {
     }
 
     try {
+        const transporter = createTransporter();
         await transporter.sendMail(mailOptions);
         console.log('Custom design notification email sent successfully!');
     } catch (error) {
@@ -263,6 +270,7 @@ const sendCustomServiceStatusNotification = async (design, status) => {
     `;
 
     try {
+        const transporter = createTransporter();
         await transporter.sendMail({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
             to: adminEmail,
