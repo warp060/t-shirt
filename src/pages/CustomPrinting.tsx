@@ -39,16 +39,57 @@ export const CustomPrinting = () => {
     checkServer();
   }, []);
 
+  const compressImage = (base64Str: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Compress to 0.7 quality to keep size small
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+    });
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("Image size should be less than 10MB");
+      // Still show error for extreme files, but we will compress anything else
+      if (file.size > 15 * 1024 * 1024) {
+        toast.error("Image size is too large (max 15MB)");
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        if (file.size > 1 * 1024 * 1024) { // Compress if larger than 1MB
+          const compressed = await compressImage(base64);
+          setImage(compressed);
+        } else {
+          setImage(base64);
+        }
       };
       reader.readAsDataURL(file);
     }
