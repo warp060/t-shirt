@@ -20,6 +20,12 @@ const transporter = nodemailer.createTransport({
 
 const adminEmail = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
 
+console.log('--- Mailer Debug Info ---');
+console.log('Admin Emails:', adminEmail);
+console.log('SMTP User detected:', process.env.EMAIL_USER ? 'YES' : 'NO');
+console.log('SMTP Config:', { host: 'smtp.gmail.com', port: 587, secure: false });
+console.log('-------------------------');
+
 const sendOrderNotification = async (order) => {
     
     // Fallback if no credentials provided
