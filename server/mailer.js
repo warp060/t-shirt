@@ -13,9 +13,11 @@ const transporter = nodemailer.createTransport({
     tls: {
         rejectUnauthorized: false
     },
-    connectionTimeout: 60000, // 60 seconds
-    greetingTimeout: 30000,   // 30 seconds
-    socketTimeout: 300000     // 5 minutes
+    connectionTimeout: 60000,
+    greetingTimeout: 30000,
+    socketTimeout: 300000,
+    logger: true, // Log to console
+    debug: true   // Include debug info
 });
 
 const adminEmail = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com').split(',').map(email => email.trim());
