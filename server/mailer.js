@@ -16,16 +16,13 @@ console.log('Environment Check:', {
 });
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use STARTTLS for 587
+    service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     debug: true,
     logger: true,
-    family: 4, 
     connectionTimeout: 30000,
     greetingTimeout: 30000,
     socketTimeout: 30000
