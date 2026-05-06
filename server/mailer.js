@@ -16,22 +16,16 @@ console.log('Environment Check:', {
 });
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    host: process.env.EMAIL_HOST || 'smtp-relay.brevo.com',
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: false, // Port 587 uses STARTTLS
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
-        servername: 'smtp.gmail.com',
         rejectUnauthorized: false
-    },
-    debug: true,
-    logger: true,
-    connectionTimeout: 60000, // 1 minute timeout
-    greetingTimeout: 60000,
-    socketTimeout: 60000
+    }
 });
 
 console.log('Attempting SMTP verification...');
