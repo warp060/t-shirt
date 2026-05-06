@@ -1,9 +1,15 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const { 
+    getOrderTemplate, 
+    getCancellationTemplate, 
+    getCustomDesignTemplate, 
+    getCustomStatusTemplate 
+} = require('./templates');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 console.log('Mailer module loading...');
 
-// Breakthrough configuration
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -12,9 +18,9 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    debug: true,
-    logger: true,
-    connectionTimeout: 10000, // 10 seconds only
+    debug: false,
+    logger: false,
+    connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 10000
 });
@@ -28,74 +34,83 @@ transporter.verify((error, success) => {
     }
 });
 
-const adminEmail = process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com';
+// Support multiple admin emails separated by comma
+const adminEmails = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com')
+    .split(',')
+    .map(e => e.trim())
+    .filter(e => e);
 
-const sendOrderNotification = async (order) => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
-    try {
-        await transporter.sendMail({
+/**
+ * Sends an email to all configured administrators individually
+ */
+const sendToAdmins = async (subject, html, attachments = []) => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.warn('⚠️ Mailer: EMAIL_USER or EMAIL_PASS not configured.');
+        return;
+    }
+
+    const sendPromises = adminEmails.map(adminEmail => {
+        return transporter.sendMail({
             from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
             to: adminEmail,
-            subject: `New Order #${order.id}`,
-            html: `<h2>New Order</h2><p>Customer: ${order.address.fullName}</p>`
+            subject: subject,
+            html: html,
+            attachments: attachments
+        }).then(info => {
+            console.log(`✅ Email sent to admin: ${adminEmail}`);
+            return info;
+        }).catch(err => {
+            console.error(`❌ Failed to send email to ${adminEmail}:`, err.message);
         });
-        console.log('Email sent!');
+    });
+
+    await Promise.all(sendPromises);
+};
+
+const sendOrderNotification = async (order) => {
+    try {
+        const html = getOrderTemplate(order);
+        await sendToAdmins(`New Order #${order.id} - ${order.address.fullName}`, html);
     } catch (err) {
-        console.error('Send Error:', err.message);
+        console.error('Order Notification Error:', err.message);
     }
 };
 
 const sendCancellationNotification = async (order) => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
     try {
-        await transporter.sendMail({
-            from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: adminEmail,
-            subject: `Order Cancelled #${order.id}`,
-            html: `<h3>Order Cancelled</h3>`
-        });
-        console.log('Cancel email sent!');
+        const html = getCancellationTemplate(order);
+        await sendToAdmins(`Order Cancelled #${order.id}`, html);
     } catch (err) {
-        console.error('Cancel Error:', err.message);
+        console.error('Cancellation Notification Error:', err.message);
     }
 };
 
 const sendCustomServiceNotification = async (design) => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
-    let mailOptions = {
-        from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-        to: adminEmail,
-        subject: `Custom Design User ${design.userId}`,
-        html: `<h3>New Design</h3><p>${design.description || ''}</p>`
-    };
-    if (design.imageUrl && design.imageUrl.startsWith('data:image')) {
-        const base64Data = design.imageUrl.split(';base64,').pop();
-        mailOptions.attachments = [{
-            filename: 'design.png',
-            content: base64Data,
-            encoding: 'base64'
-        }];
-    }
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Custom email sent!');
+        const html = getCustomDesignTemplate(design);
+        let attachments = [];
+        
+        if (design.imageUrl && design.imageUrl.startsWith('data:image')) {
+            const base64Data = design.imageUrl.split(';base64,').pop();
+            attachments = [{
+                filename: 'design.png',
+                content: base64Data,
+                encoding: 'base64'
+            }];
+        }
+        
+        await sendToAdmins(`Custom Design Request - User ${design.userId}`, html, attachments);
     } catch (err) {
-        console.error('Custom Error:', err.message);
+        console.error('Custom Service Notification Error:', err.message);
     }
 };
 
 const sendCustomServiceStatusNotification = async (design, status) => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
     try {
-        await transporter.sendMail({
-            from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: adminEmail,
-            subject: `Design Status: ${status}`,
-            html: `<p>Status: ${status}</p>`
-        });
-        console.log('Status email sent!');
+        const html = getCustomStatusTemplate(design, status);
+        await sendToAdmins(`Design Status Updated: ${status}`, html);
     } catch (err) {
-        console.error('Status Error:', err.message);
+        console.error('Status Notification Error:', err.message);
     }
 };
 
