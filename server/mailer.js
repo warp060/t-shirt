@@ -26,7 +26,6 @@ const transporter = nodemailer.createTransport({
     debug: true,
     logger: true,
     family: 4, 
-    localAddress: '0.0.0.0', // Force local IPv4 binding
     connectionTimeout: 30000,
     greetingTimeout: 30000,
     socketTimeout: 30000
