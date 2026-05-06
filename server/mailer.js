@@ -12,7 +12,9 @@ console.log('Mailer module loading...');
 console.log('Environment Check:', {
     EMAIL_USER: process.env.EMAIL_USER ? 'FOUND' : 'MISSING',
     EMAIL_PASS: process.env.EMAIL_PASS ? 'FOUND' : 'MISSING',
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL ? 'FOUND' : 'MISSING'
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL ? 'FOUND' : 'MISSING',
+    EMAIL_HOST: process.env.EMAIL_HOST || 'DEFAULT (Brevo)',
+    EMAIL_PORT: process.env.EMAIL_PORT || 'DEFAULT (587)'
 });
 
 const transporter = nodemailer.createTransport({
