@@ -1,129 +1,88 @@
-const nodemailer = require('nodemailer');
+const https = require('https');
+const path = require('path');
 const { 
     getOrderTemplate, 
     getCancellationTemplate, 
     getCustomDesignTemplate, 
     getCustomStatusTemplate 
 } = require('./templates');
-const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-console.log('Mailer module loading...');
-console.log('Environment Check:', {
-    EMAIL_USER: process.env.EMAIL_USER ? 'FOUND' : 'MISSING',
-    EMAIL_PASS: process.env.EMAIL_PASS ? 'FOUND' : 'MISSING',
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL ? 'FOUND' : 'MISSING',
-    EMAIL_HOST: process.env.EMAIL_HOST || 'DEFAULT (Brevo)',
-    EMAIL_PORT: process.env.EMAIL_PORT || 'DEFAULT (587)'
-});
+console.log('Mailer module loading (API Mode)...');
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp-relay.brevo.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    },
-    debug: true,
-    logger: true
-});
-
-console.log('Attempting SMTP verification...');
-transporter.verify((error, success) => {
-    if (error) {
-        console.log('❌ SMTP VERIFY FAILED:', error.message);
-    } else {
-        console.log('✅ SMTP VERIFY SUCCESS: Ready to send!');
-    }
-});
-
-// Support multiple admin emails separated by comma
-const adminEmails = (process.env.ADMIN_EMAIL || 'abbas6618532@gmail.com')
-    .split(',')
-    .map(e => e.trim())
-    .filter(e => e);
-
-/**
- * Sends an email to all configured administrators individually
- */
-const sendToAdmins = async (subject, html, attachments = []) => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.warn('⚠️ Mailer: EMAIL_USER or EMAIL_PASS not configured.');
+const sendToAdmins = async (subject, html) => {
+    const adminEmails = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.split(',').map(e => e.trim()) : [];
+    
+    if (adminEmails.length === 0) {
+        console.error('❌ No admin emails found in ADMIN_EMAIL environment variable');
         return;
     }
 
-    const sendPromises = adminEmails.map(adminEmail => {
-        return transporter.sendMail({
-            from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: adminEmail,
+    const apiKey = process.env.EMAIL_PASS;
+    const senderEmail = process.env.EMAIL_USER;
+
+    for (const adminEmail of adminEmails) {
+        const data = JSON.stringify({
+            sender: { email: senderEmail, name: 'Abbas Threads' },
+            to: [{ email: adminEmail }],
             subject: subject,
-            html: html,
-            attachments: attachments
-        }).then(info => {
-            console.log(`✅ Email sent to admin: ${adminEmail}`);
-            return info;
-        }).catch(err => {
-            console.error(`❌ Failed to send email to ${adminEmail}:`, err.message);
+            htmlContent: html
         });
-    });
 
-    await Promise.all(sendPromises);
-};
+        const options = {
+            hostname: 'api.brevo.com',
+            port: 443,
+            path: '/v3/smtp/email',
+            method: 'POST',
+            headers: {
+                'api-key': apiKey,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            }
+        };
 
-const sendOrderNotification = async (order) => {
-    try {
-        const html = getOrderTemplate(order);
-        await sendToAdmins(`New Order #${order.id} - ${order.address.fullName}`, html);
-    } catch (err) {
-        console.error('Order Notification Error:', err.message);
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => body += chunk);
+            res.on('end', () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    console.log(`✅ Email sent via API to ${adminEmail}`);
+                } else {
+                    console.error(`❌ API Error for ${adminEmail}:`, body);
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            console.error(`❌ Request Error for ${adminEmail}:`, error);
+        });
+
+        req.write(data);
+        req.end();
     }
 };
 
-const sendCancellationNotification = async (order) => {
-    try {
-        const html = getCancellationTemplate(order);
-        await sendToAdmins(`Order Cancelled #${order.id}`, html);
-    } catch (err) {
-        console.error('Cancellation Notification Error:', err.message);
-    }
+const sendOrderNotification = (orderData) => {
+    return sendToAdmins(`New Order: ${orderData.order_id}`, getOrderTemplate(orderData));
 };
 
-const sendCustomServiceNotification = async (design) => {
-    try {
-        const html = getCustomDesignTemplate(design);
-        let attachments = [];
-        
-        if (design.imageUrl && design.imageUrl.startsWith('data:image')) {
-            const base64Data = design.imageUrl.split(';base64,').pop();
-            attachments = [{
-                filename: 'design.png',
-                content: base64Data,
-                encoding: 'base64'
-            }];
-        }
-        
-        await sendToAdmins(`Custom Design Request - User ${design.userId}`, html, attachments);
-    } catch (err) {
-        console.error('Custom Service Notification Error:', err.message);
-    }
+const sendCancellationNotification = (orderData) => {
+    return sendToAdmins(`Order Cancelled: ${orderData.order_id}`, getCancellationTemplate(orderData));
 };
 
-const sendCustomServiceStatusNotification = async (design, status) => {
-    try {
-        const html = getCustomStatusTemplate(design, status);
-        await sendToAdmins(`Design Status Updated: ${status}`, html);
-    } catch (err) {
-        console.error('Status Notification Error:', err.message);
-    }
+const sendCustomDesignNotification = (designData) => {
+    return sendToAdmins('New Custom Design Request', getCustomDesignTemplate(designData));
 };
 
-module.exports = { 
-    sendOrderNotification, 
+const sendCustomStatusUpdate = (designData) => {
+    return sendToAdmins(`Design Request Update: ${designData.id}`, getCustomStatusTemplate(designData));
+};
+
+console.log('✅ Mailer initialized in API Mode');
+
+module.exports = {
+    sendOrderNotification,
     sendCancellationNotification,
-    sendCustomServiceNotification,
-    sendCustomServiceStatusNotification
+    sendCustomDesignNotification,
+    sendCustomStatusUpdate
 };
