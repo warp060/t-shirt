@@ -18,9 +18,9 @@ console.log('Environment Check:', {
 });
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp-relay.brevo.com',
-    port: parseInt(process.env.EMAIL_PORT) || 587,
-    secure: false, // Port 587 uses STARTTLS
+    host: 'smtp-relay.brevo.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
