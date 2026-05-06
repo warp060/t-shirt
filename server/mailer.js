@@ -18,18 +18,21 @@ console.log('Environment Check:', {
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // Use STARTTLS
+    secure: false,
+    requireTLS: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        minVersion: 'TLSv1.2'
     },
-    family: 4, // Force IPv4
-    connectionTimeout: 20000, // Increase timeout for cloud
-    greetingTimeout: 20000,
-    socketTimeout: 20000
+    family: 4, 
+    localAddress: '0.0.0.0', // Force local IPv4 binding
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
+    socketTimeout: 30000
 });
 
 console.log('Attempting SMTP verification...');
