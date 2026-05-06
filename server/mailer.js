@@ -9,6 +9,11 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 console.log('Mailer module loading...');
+console.log('Environment Check:', {
+    EMAIL_USER: process.env.EMAIL_USER ? 'FOUND' : 'MISSING',
+    EMAIL_PASS: process.env.EMAIL_PASS ? 'FOUND' : 'MISSING',
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL ? 'FOUND' : 'MISSING'
+});
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',

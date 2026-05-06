@@ -1,3 +1,9 @@
+const dns = require('dns');
+// Fix for Render IPv6 ENETUNREACH issues (Must be at the very top)
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
+
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express'); // v1.0.5
@@ -8,12 +14,6 @@ const { register, login, googleLogin } = require('./auth');
 const { sendOrderNotification, sendCancellationNotification, sendCustomServiceNotification, sendCustomServiceStatusNotification } = require('./mailer');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
-const dns = require('dns');
-
-// Fix for Render IPv6 ENETUNREACH issues
-if (dns.setDefaultResultOrder) {
-    dns.setDefaultResultOrder('ipv4first');
-}
 
 const app = express();
 
