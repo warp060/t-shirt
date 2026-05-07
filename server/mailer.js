@@ -1,37 +1,36 @@
-const nodemailer = require('nodemailer');
-const path = require('path');
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use STARTTLS
-    family: 4, // Force IPv4 to avoid ENETUNREACH errors on Render
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-        rejectUnauthorized: false // Helps with some cloud network restrictions
-    }
-});
-
-// Debug logs to verify settings on Render
-console.log(`[MAIL] Configured with user: ${process.env.EMAIL_USER ? '✅ LOADED' : '❌ MISSING'}`);
+// Resend HTTP API - Works on Render (no SMTP needed)
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-console.log(`[MAIL] Admin notifications will go to: ${ADMIN_EMAIL || '❌ NOT SET'}`);
 
 const sendEmail = async (subject, html) => {
     try {
-        const info = await transporter.sendMail({
-            from: `"Abbas Threads" <${process.env.EMAIL_USER}>`,
-            to: ADMIN_EMAIL,
-            subject: subject,
-            html: html,
+        console.log(`[MAIL] Sending email: "${subject}" to ${ADMIN_EMAIL}`);
+        
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: 'Abbas Threads <onboarding@resend.dev>',
+                to: [ADMIN_EMAIL],
+                subject: subject,
+                html: html,
+            }),
         });
-        console.log('Message sent: %s', info.messageId);
-        return true;
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log(`[MAIL] ✅ Email sent successfully! ID: ${data.id}`);
+            return true;
+        } else {
+            console.error(`[MAIL] ❌ Resend API error:`, data);
+            return false;
+        }
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('[MAIL] ❌ Error sending email:', error);
         return false;
     }
 };
