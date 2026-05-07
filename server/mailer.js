@@ -2,22 +2,29 @@
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
 
-const sendEmail = async (subject, html) => {
+const sendEmail = async (subject, html, attachments = []) => {
     try {
         console.log(`[MAIL] Sending email: "${subject}" to ${ADMIN_EMAIL}`);
         
+        const emailData = {
+            from: 'Abbas Threads <onboarding@resend.dev>',
+            to: [ADMIN_EMAIL],
+            subject: subject,
+            html: html,
+        };
+
+        if (attachments.length > 0) {
+            emailData.attachments = attachments;
+            console.log(`[MAIL] Including ${attachments.length} attachment(s)`);
+        }
+
         const response = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                from: 'Abbas Threads <onboarding@resend.dev>',
-                to: [ADMIN_EMAIL],
-                subject: subject,
-                html: html,
-            }),
+            body: JSON.stringify(emailData),
         });
 
         const data = await response.json();
@@ -39,6 +46,18 @@ const formatDate = () => {
     const now = new Date();
     const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
     return now.toLocaleString('en-IN', options);
+};
+
+// Extract base64 content from data URL
+const parseDataUrl = (dataUrl) => {
+    if (!dataUrl || !dataUrl.startsWith('data:')) return null;
+    const matches = dataUrl.match(/^data:(.+);base64,(.+)$/);
+    if (!matches) return null;
+    return {
+        mimeType: matches[1],
+        base64: matches[2],
+        extension: matches[1].split('/')[1] || 'png'
+    };
 };
 
 // ═══════════════════════════════════════════════════
@@ -69,7 +88,7 @@ const templates = {
 
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Order ID:</strong> ${order.id || 'N/A'}</p>
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
-                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${order.address?.fullName || 'N/A'} (${order.address?.email || ADMIN_EMAIL})</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${order.address?.fullName || 'N/A'}</p>
                         <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Phone:</strong> ${order.address?.phone || 'N/A'}</p>
 
                         <!-- Items -->
@@ -189,31 +208,24 @@ const templates = {
                     <!-- Header -->
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
                         <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
-                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">Custom Design Request</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">New Custom Service Request</div>
                     </td></tr>
 
                     <!-- Body -->
                     <tr><td style="padding: 25px 25px 10px;">
-                        <h2 style="margin: 0 0 20px; font-size: 18px; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px;">Design Request Details</h2>
+                        <h2 style="margin: 0 0 20px; font-size: 18px; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px;">Request Details</h2>
 
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${user?.name || 'N/A'}</p>
                         <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Email:</strong> <a href="mailto:${user?.email || ''}" style="color: #1a73e8; text-decoration: none;">${user?.email || 'N/A'}</a></p>
+
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Description:</strong> ${design.description || 'No description provided'}</p>
                     </td></tr>
 
-                    <!-- Description -->
-                    <tr><td style="padding: 0 25px 15px;">
-                        <p style="margin: 0 0 8px; font-size: 14px; font-weight: bold; color: #333;">Design Description:</p>
-                        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
-                            <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">${design.description || 'No description provided.'}</p>
-                        </div>
-                    </td></tr>
-
-                    <!-- Design Image -->
+                    <!-- Note -->
                     <tr><td style="padding: 0 25px 20px;">
-                        <p style="margin: 0 0 8px; font-size: 14px; font-weight: bold; color: #333;">Uploaded Design:</p>
-                        <div style="border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; text-align: center;">
-                            <img src="${design.imageUrl || design.image_url}" alt="Custom Design" style="max-width: 100%; display: block; margin: 0 auto;">
+                        <div style="background-color: #f5f5f5; border-left: 3px solid #1a1a1a; padding: 12px 15px;">
+                            <p style="margin: 0; font-size: 14px; color: #555;"><strong>Note:</strong> The submitted design image is attached to this email.</p>
                         </div>
                     </td></tr>
 
@@ -237,6 +249,25 @@ module.exports = {
     sendCancellationNotification: (order) => 
         sendEmail(`Order #${order.id} Cancelled - Abbas Threads`, templates.orderCancelled(order)),
     
-    sendCustomDesignNotification: (design, user) => 
-        sendEmail(`Custom Design Request from ${user?.name || 'User'} - Abbas Threads`, templates.customDesign(design, user)),
+    sendCustomDesignNotification: (design, user) => {
+        const html = templates.customDesign(design, user);
+        const imageUrl = design.imageUrl || design.image_url || '';
+        const attachments = [];
+
+        // If image is a base64 data URL, attach it as a file
+        const parsed = parseDataUrl(imageUrl);
+        if (parsed) {
+            attachments.push({
+                filename: `custom-design.${parsed.extension}`,
+                content: parsed.base64,
+            });
+            console.log(`[MAIL] Attaching design image (${parsed.mimeType})`);
+        }
+
+        return sendEmail(
+            `Custom Design Request from ${user?.name || 'User'} - Abbas Threads`,
+            html,
+            attachments
+        );
+    },
 };
