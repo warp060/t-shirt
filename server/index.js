@@ -88,7 +88,8 @@ app.post('/api/custom-designs', async (req, res) => {
         // Admin notification
         const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [userId]);
         if (users.length > 0) {
-            await sendCustomDesignNotification({ imageUrl, description }, users[0]);
+            sendCustomDesignNotification({ imageUrl, description }, users[0])
+                .catch(err => console.error("Custom design notification failed:", err));
         }
 
         res.status(201).json({ message: 'Custom design request submitted successfully!' });
@@ -263,7 +264,8 @@ app.put('/api/admin/orders/:id/status', authenticateToken, isAdmin, async (req, 
                 address: JSON.parse(order.shipping_address)
             };
             // Admin notification
-            await sendCancellationNotification(fullOrder);
+            sendCancellationNotification(fullOrder)
+                .catch(err => console.error("Cancellation notification failed:", err));
         }
 
         res.json({ message: 'Order status updated' });
@@ -545,19 +547,24 @@ app.post('/api/orders', async (req, res) => {
 
         await connection.commit();
         
-        // Admin notification - Improved to ensure items have names
-        try {
-            const enrichedItems = await Promise.all(items.map(async (item) => {
-                const [products] = await pool.execute('SELECT name FROM products WHERE id = ?', [item.productId || item.id]);
-                return {
-                    ...item,
-                    name: products.length > 0 ? products[0].name : (item.name || 'Product')
-                };
-            }));
-            await sendOrderNotification({ id: orderId, totalAmount, address, paymentMethod }, enrichedItems);
-        } catch (mailError) {
-            console.error("Order notification failed but order was created:", mailError);
-        }
+        // Admin notification - Backgrounded to prevent timeouts
+        const sendAdminEmail = async () => {
+            try {
+                const enrichedItems = await Promise.all(items.map(async (item) => {
+                    const [products] = await pool.execute('SELECT name FROM products WHERE id = ?', [item.productId || item.id]);
+                    return {
+                        ...item,
+                        name: products.length > 0 ? products[0].name : (item.name || 'Product')
+                    };
+                }));
+                await sendOrderNotification({ id: orderId, totalAmount, address, paymentMethod }, enrichedItems);
+                console.log(`✅ Admin email sent for Order #${orderId}`);
+            } catch (mailError) {
+                console.error("Order notification failed (background):", mailError);
+            }
+        };
+        
+        sendAdminEmail(); // Fire and forget
         
         res.status(201).json({ message: 'Order created', orderId });
     } catch (error) {
