@@ -11,9 +11,10 @@ const cors = require('cors');
 const pool = require('./db');
 const jwt = require('jsonwebtoken');
 const { register, login, googleLogin } = require('./auth');
-const { sendOrderNotification, sendCancellationNotification, sendCustomServiceNotification, sendCustomServiceStatusNotification } = require('./mailer');
+
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const { sendOrderNotification, sendCancellationNotification, sendCustomDesignNotification } = require('./mailer');
 
 const app = express();
 
@@ -84,7 +85,11 @@ app.post('/api/custom-designs', async (req, res) => {
             [userId, imageUrl, description || '']
         );
         
-        sendCustomServiceNotification({ userId, imageUrl, description }).catch(console.error);
+        // Admin notification
+        const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [userId]);
+        if (users.length > 0) {
+            await sendCustomDesignNotification({ imageUrl, description }, users[0]);
+        }
 
         res.status(201).json({ message: 'Custom design request submitted successfully!' });
     } catch (error) {
@@ -257,7 +262,8 @@ app.put('/api/admin/orders/:id/status', authenticateToken, isAdmin, async (req, 
                 ...order,
                 address: JSON.parse(order.shipping_address)
             };
-            sendCancellationNotification(fullOrder).catch(err => console.error("Cancel email failed:", err));
+            // Admin notification
+            await sendCancellationNotification(fullOrder);
         }
 
         res.json({ message: 'Order status updated' });
@@ -289,7 +295,12 @@ app.put('/api/admin/custom-designs/:id/status', authenticateToken, isAdmin, asyn
         
         const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
         if (designs.length > 0) {
-            sendCustomServiceStatusNotification(designs[0], status).catch(console.error);
+            // Admin notification
+            const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [designs[0].user_id]);
+            if (users.length > 0) {
+                // You could send a status update notification here if needed, 
+                // but usually notifications are for new requests.
+            }
         }
 
         res.json({ message: 'Custom design status updated' });
@@ -533,7 +544,21 @@ app.post('/api/orders', async (req, res) => {
         }
 
         await connection.commit();
-        sendOrderNotification({ id: orderId, userId, totalAmount, address, items, paymentMethod, paymentDetails }).catch(console.error);
+        
+        // Admin notification - Improved to ensure items have names
+        try {
+            const enrichedItems = await Promise.all(items.map(async (item) => {
+                const [products] = await pool.execute('SELECT name FROM products WHERE id = ?', [item.productId || item.id]);
+                return {
+                    ...item,
+                    name: products.length > 0 ? products[0].name : (item.name || 'Product')
+                };
+            }));
+            await sendOrderNotification({ id: orderId, totalAmount, address, paymentMethod }, enrichedItems);
+        } catch (mailError) {
+            console.error("Order notification failed but order was created:", mailError);
+        }
+        
         res.status(201).json({ message: 'Order created', orderId });
     } catch (error) {
         await connection.rollback();
@@ -560,7 +585,17 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
 
         await connection.execute('UPDATE orders SET status = "cancelled" WHERE id = ?', [orderId]);
         await connection.commit();
-        sendCancellationNotification({ ...order, address: JSON.parse(order.shipping_address) }).catch(console.error);
+        
+        // Admin notification
+        const [fullOrders] = await connection.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
+        if (fullOrders.length > 0) {
+            const fullOrder = {
+                ...fullOrders[0],
+                address: JSON.parse(fullOrders[0].shipping_address)
+            };
+            sendCancellationNotification(fullOrder);
+        }
+
         res.json({ message: 'Order cancelled' });
     } catch (error) {
         await connection.rollback();
