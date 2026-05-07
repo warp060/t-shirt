@@ -523,55 +523,68 @@ app.post('/api/payment/verify', async (req, res) => {
 
 // Order Creation
 app.post('/api/orders', async (req, res) => {
-    const connection = await pool.getConnection();
     try {
-        await connection.beginTransaction();
         const { userId, totalAmount, address, items, paymentMethod, paymentDetails } = req.body;
+        console.log(`[ORDER] Starting order creation for User: ${userId}`);
         
-        const [orderResult] = await connection.execute(
-            'INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, payment_details) VALUES (?, ?, ?, ?, ?)',
-            [userId, totalAmount, JSON.stringify(address), paymentMethod || 'cod', paymentDetails ? JSON.stringify(paymentDetails) : null]
-        );
-        const orderId = orderResult.insertId;
+        const connection = await pool.getConnection();
+        try {
+            console.log(`[ORDER] Got DB connection. Starting transaction...`);
+            await connection.beginTransaction();
+            
+            console.log(`[ORDER] Inserting into orders table...`);
+            const [orderResult] = await connection.execute(
+                'INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, payment_details) VALUES (?, ?, ?, ?, ?)',
+                [userId, totalAmount, JSON.stringify(address), paymentMethod || 'cod', paymentDetails ? JSON.stringify(paymentDetails) : null]
+            );
+            const orderId = orderResult.insertId;
+            console.log(`[ORDER] Created Order ID: ${orderId}. Processing items...`);
 
-        for (const item of items) {
-            const productId = item.productId || item.id;
-            const [products] = await connection.execute('SELECT stock, name FROM products WHERE id = ? FOR UPDATE', [productId]);
-            const product = products[0];
+            for (const item of items) {
+                const productId = item.productId || item.id;
+                console.log(`[ORDER] Processing item: ${productId}`);
+                const [products] = await connection.execute('SELECT stock, name FROM products WHERE id = ? FOR UPDATE', [productId]);
+                const product = products[0];
 
-            if (product.stock < item.quantity) throw new Error(`Insufficient stock for ${product.name}`);
+                if (!product) throw new Error(`Product ${productId} not found`);
+                if (product.stock < item.quantity) throw new Error(`Insufficient stock for ${product.name}`);
 
-            await connection.execute('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, productId]);
-            await connection.execute('INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase) VALUES (?, ?, ?, ?)', [orderId, productId, item.quantity, item.price]);
-        }
-
-        await connection.commit();
-        
-        // Admin notification - Backgrounded to prevent timeouts
-        const sendAdminEmail = async () => {
-            try {
-                const enrichedItems = await Promise.all(items.map(async (item) => {
-                    const [products] = await pool.execute('SELECT name FROM products WHERE id = ?', [item.productId || item.id]);
-                    return {
-                        ...item,
-                        name: products.length > 0 ? products[0].name : (item.name || 'Product')
-                    };
-                }));
-                await sendOrderNotification({ id: orderId, totalAmount, address, paymentMethod }, enrichedItems);
-                console.log(`✅ Admin email sent for Order #${orderId}`);
-            } catch (mailError) {
-                console.error("Order notification failed (background):", mailError);
+                await connection.execute('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, productId]);
+                await connection.execute('INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase) VALUES (?, ?, ?, ?)', [orderId, productId, item.quantity, item.price]);
             }
-        };
-        
-        sendAdminEmail(); // Fire and forget
-        
-        res.status(201).json({ message: 'Order created', orderId });
+
+            console.log(`[ORDER] Committing transaction...`);
+            await connection.commit();
+            console.log(`[ORDER] Transaction committed successfully!`);
+            
+            // Admin notification - Truly backgrounded using setImmediate
+            setImmediate(async () => {
+                console.log(`[MAIL] Starting background email process for Order #${orderId}`);
+                try {
+                    const enrichedItems = await Promise.all(items.map(async (item) => {
+                        try {
+                            const [products] = await pool.execute('SELECT name FROM products WHERE id = ?', [item.productId || item.id]);
+                            return { ...item, name: products.length > 0 ? products[0].name : (item.name || 'Product') };
+                        } catch (e) { return { ...item, name: item.name || 'Product' }; }
+                    }));
+                    await sendOrderNotification({ id: orderId, totalAmount, address, paymentMethod }, enrichedItems);
+                    console.log(`[MAIL] ✅ Admin email sent for Order #${orderId}`);
+                } catch (mailError) {
+                    console.error("[MAIL] ❌ Order notification failed:", mailError);
+                }
+            });
+            
+            res.status(201).json({ message: 'Order created', orderId });
+        } catch (error) {
+            console.error(`[ORDER ERROR] Inside transaction:`, error);
+            await connection.rollback();
+            res.status(400).json({ message: error.message });
+        } finally {
+            connection.release();
+        }
     } catch (error) {
-        await connection.rollback();
-        res.status(400).json({ message: error.message });
-    } finally {
-        connection.release();
+        console.error(`[ORDER ERROR] Outer level:`, error);
+        res.status(500).json({ message: error.message });
     }
 });
 
