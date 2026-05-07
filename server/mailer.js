@@ -115,8 +115,9 @@ const templates = {
                         <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
                             <p style="margin: 0 0 5px; font-size: 14px; font-weight: bold; color: #333;">Shipping Address:</p>
                             <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">
-                                ${order.address?.address || 'N/A'}<br>
-                                ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.pincode || ''}
+                                ${order.address?.fullName || ''}<br>
+                                ${order.address?.street || order.address?.address || 'N/A'}<br>
+                                ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.zipCode || order.address?.pincode || ''}
                             </p>
                         </div>
                     </td></tr>
@@ -170,8 +171,9 @@ const templates = {
                         <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
                             <p style="margin: 0 0 5px; font-size: 14px; font-weight: bold; color: #333;">Shipping Address:</p>
                             <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">
-                                ${order.address?.address || 'N/A'}<br>
-                                ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.pincode || ''}
+                                ${order.address?.fullName || ''}<br>
+                                ${order.address?.street || order.address?.address || 'N/A'}<br>
+                                ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.zipCode || order.address?.pincode || ''}
                             </p>
                         </div>
                     </td></tr>
