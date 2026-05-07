@@ -85,12 +85,18 @@ app.post('/api/custom-designs', async (req, res) => {
             [userId, imageUrl, description || '']
         );
         
-        // Admin notification
-        const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [userId]);
-        if (users.length > 0) {
-            sendCustomDesignNotification({ imageUrl, description }, users[0])
-                .catch(err => console.error("Custom design notification failed:", err));
-        }
+        // Admin notification - Backgrounded
+        setImmediate(async () => {
+            try {
+                const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [userId]);
+                if (users.length > 0) {
+                    await sendCustomDesignNotification({ imageUrl, description }, users[0]);
+                    console.log(`[MAIL] ✅ Custom design notification sent for user: ${users[0].email}`);
+                }
+            } catch (err) {
+                console.error("[MAIL] ❌ Custom design notification failed:", err);
+            }
+        });
 
         res.status(201).json({ message: 'Custom design request submitted successfully!' });
     } catch (error) {
@@ -606,15 +612,22 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
         await connection.execute('UPDATE orders SET status = "cancelled" WHERE id = ?', [orderId]);
         await connection.commit();
         
-        // Admin notification
-        const [fullOrders] = await connection.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
-        if (fullOrders.length > 0) {
-            const fullOrder = {
-                ...fullOrders[0],
-                address: JSON.parse(fullOrders[0].shipping_address)
-            };
-            sendCancellationNotification(fullOrder);
-        }
+        // Admin notification - Backgrounded
+        setImmediate(async () => {
+            try {
+                const [fullOrders] = await pool.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
+                if (fullOrders.length > 0) {
+                    const fullOrder = {
+                        ...fullOrders[0],
+                        address: JSON.parse(fullOrders[0].shipping_address)
+                    };
+                    await sendCancellationNotification(fullOrder);
+                    console.log(`[MAIL] ✅ Cancellation notification sent for Order #${orderId}`);
+                }
+            } catch (err) {
+                console.error("[MAIL] ❌ Cancellation notification failed:", err);
+            }
+        });
 
         res.json({ message: 'Order cancelled' });
     } catch (error) {
