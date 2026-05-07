@@ -15,7 +15,10 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Debug logs to verify settings on Render
+console.log(`[MAIL] Configured with user: ${process.env.EMAIL_USER ? '✅ LOADED' : '❌ MISSING'}`);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+console.log(`[MAIL] Admin notifications will go to: ${ADMIN_EMAIL || '❌ NOT SET'}`);
 
 const sendEmail = async (subject, html) => {
     try {
