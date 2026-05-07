@@ -1,6 +1,11 @@
-const nodemailer = require('nodemailer');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+import nodemailer from 'nodemailer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -141,13 +146,11 @@ const templates = {
     `
 };
 
-module.exports = {
-    sendOrderNotification: (order, items) => 
-        sendEmail(`New Order Alert: #${order.id || 'Pending'}`, templates.newOrder(order, items)),
-    
-    sendCancellationNotification: (order) => 
-        sendEmail(`Order Cancelled: #${order.id}`, templates.orderCancelled(order)),
-    
-    sendCustomDesignNotification: (design, user) => 
-        sendEmail(`New Custom Design Request from ${user?.name || 'User'}`, templates.customDesign(design, user)),
-};
+export const sendOrderNotification = (order, items) => 
+    sendEmail(`New Order Alert: #${order.id || 'Pending'}`, templates.newOrder(order, items));
+
+export const sendCancellationNotification = (order) => 
+    sendEmail(`Order Cancelled: #${order.id}`, templates.orderCancelled(order));
+
+export const sendCustomDesignNotification = (design, user) => 
+    sendEmail(`New Custom Design Request from ${user?.name || 'User'}`, templates.customDesign(design, user));
