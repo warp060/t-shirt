@@ -35,8 +35,14 @@ const sendEmail = async (subject, html) => {
     }
 };
 
+const formatDate = () => {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+    return now.toLocaleString('en-IN', options);
+};
+
 // ═══════════════════════════════════════════════════
-// CLEAN, PROFESSIONAL EMAIL TEMPLATES
+// CLEAN EMAIL TEMPLATES - Abbas Threads
 // ═══════════════════════════════════════════════════
 
 const templates = {
@@ -46,80 +52,64 @@ const templates = {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-    <body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f7; padding: 30px 15px;">
+    <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="580" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
                     
-                    <!-- Top Bar -->
-                    <tr><td style="background-color: #111111; padding: 20px 30px; text-align: center;">
-                        <span style="color: #ffffff; font-size: 18px; font-weight: 600; letter-spacing: 1.5px;">ABBAS THREADS</span>
-                    </td></tr>
-
-                    <!-- Status Banner -->
-                    <tr><td style="background-color: #e8f5e9; padding: 16px 30px; border-bottom: 1px solid #c8e6c9;">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td style="font-size: 15px; color: #2e7d32; font-weight: 600;">✓ New Order Placed</td>
-                                <td style="text-align: right; font-size: 13px; color: #555;">Order #${order.id || 'N/A'}</td>
-                            </tr>
-                        </table>
+                    <!-- Header -->
+                    <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">New Order Notification</div>
                     </td></tr>
 
                     <!-- Body -->
-                    <tr><td style="padding: 25px 30px;">
+                    <tr><td style="padding: 25px 25px 10px;">
+                        <h2 style="margin: 0 0 20px; font-size: 18px; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px;">Order Details</h2>
 
-                        <!-- Customer -->
-                        <p style="margin: 0 0 3px; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Customer</p>
-                        <p style="margin: 0 0 5px; font-size: 16px; color: #111; font-weight: 600;">${order.address?.fullName || 'Customer'}</p>
-                        <p style="margin: 0 0 20px; font-size: 14px; color: #555;">${order.address?.phone || ''}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Order ID:</strong> ${order.id || 'N/A'}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${order.address?.fullName || 'N/A'} (${order.address?.email || ADMIN_EMAIL})</p>
+                        <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Phone:</strong> ${order.address?.phone || 'N/A'}</p>
 
-                        <!-- Items Table -->
-                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
-                            <tr style="border-bottom: 2px solid #111;">
-                                <td style="padding: 8px 0; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #111;">Item</td>
-                                <td style="padding: 8px 0; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; border-bottom: 2px solid #111;">Qty</td>
-                                <td style="padding: 8px 0; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; border-bottom: 2px solid #111;">Price</td>
+                        <!-- Items -->
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 5px;">
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px 0; font-size: 13px; font-weight: bold; color: #333; border-bottom: 1px solid #ddd;">Item</td>
+                                <td style="padding: 10px 0; font-size: 13px; font-weight: bold; color: #333; text-align: right; border-bottom: 1px solid #ddd;">Price</td>
                             </tr>
                             ${items.map(item => `
                             <tr>
-                                <td style="padding: 12px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee;">${item.name || 'Product'}</td>
-                                <td style="padding: 12px 0; font-size: 14px; color: #333; text-align: center; border-bottom: 1px solid #eee;">${item.quantity}</td>
-                                <td style="padding: 12px 0; font-size: 14px; color: #333; text-align: right; border-bottom: 1px solid #eee; font-weight: 600;">₹${item.price}</td>
+                                <td style="padding: 10px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee;">${item.name || 'Product'} x ${item.quantity}</td>
+                                <td style="padding: 10px 0; font-size: 14px; color: #333; text-align: right; border-bottom: 1px solid #eee;">₹${item.price}</td>
                             </tr>
                             `).join('')}
                             <tr>
-                                <td colspan="2" style="padding: 14px 0; font-size: 15px; color: #111; font-weight: 700; text-align: right;">Total</td>
-                                <td style="padding: 14px 0; font-size: 18px; color: #111; text-align: right; font-weight: 700;">₹${order.totalAmount || order.total_amount}</td>
+                                <td style="padding: 12px 0; font-size: 15px; color: #1a1a1a; font-weight: bold;">Total Amount</td>
+                                <td style="padding: 12px 0; font-size: 16px; color: #1a1a1a; text-align: right; font-weight: bold;">₹${order.totalAmount || order.total_amount}</td>
                             </tr>
                         </table>
+                    </td></tr>
 
-                        <!-- Divider -->
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                    <!-- Shipping Address -->
+                    <tr><td style="padding: 10px 25px 15px;">
+                        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
+                            <p style="margin: 0 0 5px; font-size: 14px; font-weight: bold; color: #333;">Shipping Address:</p>
+                            <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">
+                                ${order.address?.address || 'N/A'}<br>
+                                ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.pincode || ''}
+                            </p>
+                        </div>
+                    </td></tr>
 
-                        <!-- Shipping & Payment -->
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td style="vertical-align: top; width: 60%;">
-                                    <p style="margin: 0 0 3px; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Shipping Address</p>
-                                    <p style="margin: 0; font-size: 14px; color: #333; line-height: 1.6;">
-                                        ${order.address?.fullName || ''}<br>
-                                        ${order.address?.address || ''}<br>
-                                        ${order.address?.city || ''}, ${order.address?.state || ''} ${order.address?.pincode || ''}
-                                    </p>
-                                </td>
-                                <td style="vertical-align: top; text-align: right;">
-                                    <p style="margin: 0 0 3px; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Payment</p>
-                                    <span style="display: inline-block; background: #f0f0f0; padding: 5px 14px; border-radius: 4px; font-size: 13px; color: #333; font-weight: 600; text-transform: uppercase;">${order.paymentMethod || order.payment_method}</span>
-                                </td>
-                            </tr>
-                        </table>
-
+                    <!-- Payment Method -->
+                    <tr><td style="padding: 0 25px 20px;">
+                        <p style="margin: 0; font-size: 14px; color: #333;">Payment Method: <strong style="text-transform: uppercase;">${order.paymentMethod || order.payment_method}</strong></p>
                     </td></tr>
 
                     <!-- Footer -->
-                    <tr><td style="background-color: #fafafa; padding: 18px 30px; border-top: 1px solid #eee; text-align: center;">
-                        <span style="font-size: 12px; color: #999;">This is an automated notification from Abbas Threads</span>
+                    <tr><td style="background-color: #fafafa; padding: 15px 25px; border-top: 1px solid #eee; text-align: center;">
+                        <p style="margin: 0; font-size: 11px; color: #999;">This is an automated email from Abbas Threads. Please do not reply.</p>
                     </td></tr>
 
                 </table>
@@ -134,60 +124,49 @@ const templates = {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-    <body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f7; padding: 30px 15px;">
+    <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="580" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
                     
-                    <!-- Top Bar -->
-                    <tr><td style="background-color: #111111; padding: 20px 30px; text-align: center;">
-                        <span style="color: #ffffff; font-size: 18px; font-weight: 600; letter-spacing: 1.5px;">ABBAS THREADS</span>
-                    </td></tr>
-
-                    <!-- Status Banner -->
-                    <tr><td style="background-color: #fce4ec; padding: 16px 30px; border-bottom: 1px solid #f8bbd0;">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td style="font-size: 15px; color: #c62828; font-weight: 600;">✕ Order Cancelled</td>
-                                <td style="text-align: right; font-size: 13px; color: #555;">Order #${order.id}</td>
-                            </tr>
-                        </table>
+                    <!-- Header -->
+                    <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">Order Cancellation Notice</div>
                     </td></tr>
 
                     <!-- Body -->
-                    <tr><td style="padding: 25px 30px;">
+                    <tr><td style="padding: 25px 25px 10px;">
+                        <h2 style="margin: 0 0 20px; font-size: 18px; color: #c62828; border-bottom: 2px solid #c62828; padding-bottom: 8px;">Order Cancelled</h2>
 
-                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
-                            <tr>
-                                <td style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                                    <span style="font-size: 13px; color: #888;">Customer</span><br>
-                                    <span style="font-size: 15px; color: #111; font-weight: 600;">${order.address?.fullName || 'N/A'}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                                    <span style="font-size: 13px; color: #888;">Order ID</span><br>
-                                    <span style="font-size: 15px; color: #111; font-weight: 600;">#${order.id}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                                    <span style="font-size: 13px; color: #888;">Amount</span><br>
-                                    <span style="font-size: 20px; color: #111; font-weight: 700;">₹${order.total_amount || order.totalAmount}</span>
-                                </td>
-                            </tr>
-                        </table>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Order ID:</strong> #${order.id}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${order.address?.fullName || 'N/A'}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Phone:</strong> ${order.address?.phone || 'N/A'}</p>
+                        <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Amount:</strong> <span style="font-size: 18px; font-weight: bold; color: #1a1a1a;">₹${order.total_amount || order.totalAmount}</span></p>
+                    </td></tr>
 
-                        <!-- Stock Notice -->
-                        <div style="background-color: #e8f5e9; border-left: 3px solid #4caf50; padding: 12px 16px; border-radius: 0 4px 4px 0; margin-top: 10px;">
-                            <span style="font-size: 14px; color: #2e7d32;">✓ Stock has been automatically restored for this order.</span>
+                    <!-- Shipping Address -->
+                    <tr><td style="padding: 0 25px 15px;">
+                        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
+                            <p style="margin: 0 0 5px; font-size: 14px; font-weight: bold; color: #333;">Shipping Address:</p>
+                            <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">
+                                ${order.address?.address || 'N/A'}<br>
+                                ${order.address?.city || ''}, ${order.address?.state || ''} - ${order.address?.pincode || ''}
+                            </p>
                         </div>
+                    </td></tr>
 
+                    <!-- Stock Notice -->
+                    <tr><td style="padding: 0 25px 20px;">
+                        <div style="background-color: #e8f5e9; border-left: 3px solid #4caf50; padding: 12px 15px;">
+                            <p style="margin: 0; font-size: 14px; color: #2e7d32;">✓ Stock has been automatically restored for this order.</p>
+                        </div>
                     </td></tr>
 
                     <!-- Footer -->
-                    <tr><td style="background-color: #fafafa; padding: 18px 30px; border-top: 1px solid #eee; text-align: center;">
-                        <span style="font-size: 12px; color: #999;">This is an automated notification from Abbas Threads</span>
+                    <tr><td style="background-color: #fafafa; padding: 15px 25px; border-top: 1px solid #eee; text-align: center;">
+                        <p style="margin: 0; font-size: 11px; color: #999;">This is an automated email from Abbas Threads. Please do not reply.</p>
                     </td></tr>
 
                 </table>
@@ -202,61 +181,45 @@ const templates = {
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-    <body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f7; padding: 30px 15px;">
+    <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="580" cellpadding="0" cellspacing="0" style="max-width: 580px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
                     
-                    <!-- Top Bar -->
-                    <tr><td style="background-color: #111111; padding: 20px 30px; text-align: center;">
-                        <span style="color: #ffffff; font-size: 18px; font-weight: 600; letter-spacing: 1.5px;">ABBAS THREADS</span>
-                    </td></tr>
-
-                    <!-- Status Banner -->
-                    <tr><td style="background-color: #ede7f6; padding: 16px 30px; border-bottom: 1px solid #d1c4e9;">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td style="font-size: 15px; color: #4527a0; font-weight: 600;">🎨 New Custom Design Request</td>
-                            </tr>
-                        </table>
+                    <!-- Header -->
+                    <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">Custom Design Request</div>
                     </td></tr>
 
                     <!-- Body -->
-                    <tr><td style="padding: 25px 30px;">
+                    <tr><td style="padding: 25px 25px 10px;">
+                        <h2 style="margin: 0 0 20px; font-size: 18px; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px;">Design Request Details</h2>
 
-                        <!-- Customer Info -->
-                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
-                            <tr>
-                                <td style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                                    <span style="font-size: 13px; color: #888;">Customer Name</span><br>
-                                    <span style="font-size: 15px; color: #111; font-weight: 600;">${user?.name || 'N/A'}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px 0; border-bottom: 1px solid #eee;">
-                                    <span style="font-size: 13px; color: #888;">Email</span><br>
-                                    <a href="mailto:${user?.email || ''}" style="font-size: 15px; color: #1a73e8; text-decoration: none;">${user?.email || 'N/A'}</a>
-                                </td>
-                            </tr>
-                        </table>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${user?.name || 'N/A'}</p>
+                        <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Email:</strong> <a href="mailto:${user?.email || ''}" style="color: #1a73e8; text-decoration: none;">${user?.email || 'N/A'}</a></p>
+                    </td></tr>
 
-                        <!-- Design Description -->
-                        <p style="margin: 0 0 6px; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Design Description</p>
-                        <div style="background-color: #f8f9fa; border: 1px solid #e8e8e8; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
-                            <p style="margin: 0; font-size: 14px; color: #333; line-height: 1.6;">${design.description || 'No description provided.'}</p>
+                    <!-- Description -->
+                    <tr><td style="padding: 0 25px 15px;">
+                        <p style="margin: 0 0 8px; font-size: 14px; font-weight: bold; color: #333;">Design Description:</p>
+                        <div style="background-color: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px;">
+                            <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">${design.description || 'No description provided.'}</p>
                         </div>
+                    </td></tr>
 
-                        <!-- Design Image -->
-                        <p style="margin: 0 0 6px; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Uploaded Design</p>
-                        <div style="border: 1px solid #e8e8e8; border-radius: 6px; overflow: hidden; text-align: center; background: #fafafa;">
+                    <!-- Design Image -->
+                    <tr><td style="padding: 0 25px 20px;">
+                        <p style="margin: 0 0 8px; font-size: 14px; font-weight: bold; color: #333;">Uploaded Design:</p>
+                        <div style="border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; text-align: center;">
                             <img src="${design.imageUrl || design.image_url}" alt="Custom Design" style="max-width: 100%; display: block; margin: 0 auto;">
                         </div>
-
                     </td></tr>
 
                     <!-- Footer -->
-                    <tr><td style="background-color: #fafafa; padding: 18px 30px; border-top: 1px solid #eee; text-align: center;">
-                        <span style="font-size: 12px; color: #999;">This is an automated notification from Abbas Threads</span>
+                    <tr><td style="background-color: #fafafa; padding: 15px 25px; border-top: 1px solid #eee; text-align: center;">
+                        <p style="margin: 0; font-size: 11px; color: #999;">This is an automated email from Abbas Threads. Please do not reply.</p>
                     </td></tr>
 
                 </table>
