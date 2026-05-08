@@ -353,19 +353,19 @@ export const Footer = () => {
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Shop</h3>
             <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <li><Link to="/products?category=Men">Men's Collection</Link></li>
-              <li><Link to="/products?category=Women">Women's Collection</Link></li>
-              <li><Link to="/products?category=Oversized">Oversized Fit</Link></li>
-              <li><Link to="/products?category=Printed">Graphic Tees</Link></li>
+              <li><Link to="/products?category=Men" className="hover:text-primary transition-colors">Men's Collection</Link></li>
+              <li><Link to="/products?category=Women" className="hover:text-primary transition-colors">Women's Collection</Link></li>
+              <li><Link to="/products?category=Oversized" className="hover:text-primary transition-colors">Oversized Fit</Link></li>
+              <li><Link to="/products?category=Printed" className="hover:text-primary transition-colors">Graphic Tees</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Support</h3>
             <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <li><Link to="/faq">FAQ</Link></li>
-              <li><Link to="/shipping">Shipping Policy</Link></li>
-              <li><Link to="/returns">Returns & Exchanges</Link></li>
-              <li><Link to="/contact">Contact Us</Link></li>
+              <li><Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to="/shipping" className="hover:text-primary transition-colors">Shipping Policy</Link></li>
+              <li><Link to="/returns" className="hover:text-primary transition-colors">Returns & Exchanges</Link></li>
+              <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
             </ul>
           </div>
           <div>

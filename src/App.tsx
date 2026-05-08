@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './lib/auth';
 import { CartProvider } from './lib/cart';
 import { Navbar, Footer } from './components/Navbar';
 import { Toaster } from './components/ui/sonner';
+import ScrollToTop from './components/ScrollToTop';
 
 // Lazy load pages for performance
 const Home = React.lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
@@ -88,6 +89,7 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
+          <ScrollToTop />
           <AppContent />
         </Router>
       </CartProvider>
