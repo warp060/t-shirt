@@ -24,6 +24,7 @@ export const AdminPanel = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [customDesigns, setCustomDesigns] = useState<CustomDesign[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -44,12 +45,13 @@ export const AdminPanel = () => {
     setRefreshing(true);
     try {
       // Fetch everything in parallel so one failure doesn't block others
-      const [productsRes, ordersRes, usersRes, customRes, reviewsRes] = await Promise.allSettled([
+      const [productsRes, ordersRes, usersRes, customRes, reviewsRes, subscribersRes] = await Promise.allSettled([
         api.get('/products'),
         api.get('/admin/orders'),
         api.get('/admin/users'),
         api.get('/admin/custom-designs'),
-        api.get('/admin/reviews')
+        api.get('/admin/reviews'),
+        api.get('/admin/subscribers')
       ]);
 
       if (productsRes.status === 'fulfilled') {
@@ -82,6 +84,10 @@ export const AdminPanel = () => {
       } else {
         console.error("Reviews fetch failed:", reviewsRes.reason);
         toast.error("Reviews error: " + (reviewsRes.reason.message || "Access Denied"));
+      }
+
+      if (subscribersRes.status === 'fulfilled') {
+        setSubscribers(subscribersRes.value);
       }
 
     } catch (error) {
@@ -191,6 +197,17 @@ export const AdminPanel = () => {
     }
   };
 
+  const handleDeleteSubscriber = async (id: number) => {
+    if (!confirm("Are you sure you want to remove this subscriber?")) return;
+    try {
+      await api.delete(`/admin/subscribers/${id}`);
+      fetchData();
+      toast.success('Subscriber removed');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to remove subscriber");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
@@ -247,6 +264,7 @@ export const AdminPanel = () => {
           <TabsTrigger value="users" className="flex-1 sm:flex-none py-2 px-4">Users</TabsTrigger>
           <TabsTrigger value="custom" className="flex-1 sm:flex-none py-2 px-4">Custom Designs</TabsTrigger>
           <TabsTrigger value="reviews" className="flex-1 sm:flex-none py-2 px-4">Reviews</TabsTrigger>
+          <TabsTrigger value="subscribers" className="flex-1 sm:flex-none py-2 px-4">Subscribers</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -587,6 +605,57 @@ export const AdminPanel = () => {
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-20 text-muted-foreground">
                       No reviews found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="subscribers">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Manage Subscribers</h2>
+            <Button variant="outline" onClick={() => {
+              const emails = subscribers.map(s => s.email).join(', ');
+              navigator.clipboard.writeText(emails);
+              toast.success("Copied all emails to clipboard!");
+            }}>
+              Copy All Emails
+            </Button>
+          </div>
+          <div className="border rounded-lg overflow-hidden bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead>Email</TableHead>
+                  <TableHead>Subscribed Date</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {subscribers.map((sub: any) => (
+                  <TableRow key={sub.id} className="hover:bg-muted/30">
+                    <TableCell className="font-medium">{sub.email}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {new Date(sub.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-destructive hover:bg-destructive/10" 
+                        onClick={() => handleDeleteSubscriber(sub.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {subscribers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-20 text-muted-foreground">
+                      No subscribers found.
                     </TableCell>
                   </TableRow>
                 )}

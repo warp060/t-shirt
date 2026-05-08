@@ -238,6 +238,25 @@ app.put('/api/admin/users/:id/role', authenticateToken, isAdmin, async (req, res
     }
 });
 
+// Admin - Subscribers Management
+app.get('/api/admin/subscribers', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const [subscribers] = await pool.execute('SELECT id, email, created_at FROM subscribers ORDER BY created_at DESC');
+        res.json(subscribers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/admin/subscribers/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await pool.execute('DELETE FROM subscribers WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Subscriber removed' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Admin - Order Management
 app.get('/api/admin/orders', authenticateToken, isAdmin, async (req, res) => {
     try {
