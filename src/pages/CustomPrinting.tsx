@@ -14,6 +14,7 @@ export const CustomPrinting = () => {
   const navigate = useNavigate();
   const [image, setImage] = useState<string | null>(null);
   const [description, setDescription] = useState('');
+  const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
@@ -110,7 +111,8 @@ export const CustomPrinting = () => {
     console.log("Submitting custom design:", {
       userId: user.id,
       imageLength: image.length,
-      description
+      description,
+      address
     });
 
     setLoading(true);
@@ -118,7 +120,8 @@ export const CustomPrinting = () => {
       await api.post('/custom-designs', {
         userId: user.id,
         imageUrl: image,
-        description
+        description,
+        address
       });
       setSubmitted(true);
       toast.success("Design submitted successfully!");
@@ -215,6 +218,17 @@ export const CustomPrinting = () => {
                         placeholder="Tell us about the placement, T-shirt color preference, or any special requests..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Shipping Address <span className="text-red-500">*</span></label>
+                      <textarea
+                        className="w-full min-h-[80px] rounded-xl border border-input bg-background/50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        placeholder="Please enter your full delivery address so we can quote shipping accurately..."
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        required
                       />
                     </div>
                   </div>

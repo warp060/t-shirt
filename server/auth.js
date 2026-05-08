@@ -6,7 +6,11 @@ require('dotenv').config();
 
 const register = async (req, res) => {
     try {
-        const { name, email, password, role = 'customer' } = req.body;
+        const { name, email, password } = req.body;
+        
+        // Auto-assign admin role if email matches ADMIN_EMAIL
+        const isAdminEmail = email?.toLowerCase() === process.env.ADMIN_EMAIL?.toLowerCase();
+        const role = isAdminEmail ? 'admin' : 'customer';
         
         // Check if user exists
         const [existing] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);

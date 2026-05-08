@@ -222,6 +222,7 @@ const templates = {
                         <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Email:</strong> <a href="mailto:${user?.email || ''}" style="color: #1a73e8; text-decoration: none;">${user?.email || 'N/A'}</a></p>
 
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Description:</strong> ${design.description || 'No description provided'}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Address:</strong> ${design.address || 'No address provided'}</p>
                     </td></tr>
 
                     <!-- Note -->

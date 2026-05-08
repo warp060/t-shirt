@@ -20,6 +20,15 @@ export const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
+
+  // Size-based pricing surcharges
+  const sizeSurcharges: Record<string, number> = {
+    'S': 0,
+    'M': 100,
+    'L': 200,
+    'XL': 300,
+    'XXL': 400,
+  };
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
@@ -48,13 +57,20 @@ export const ProductDetails = () => {
   if (loading) return <div className="container mx-auto px-4 py-20 text-center text-primary font-bold">Loading product details...</div>;
   if (!product) return <div className="container mx-auto px-4 py-20 text-center">Product not found.</div>;
 
+  // Compute the effective price based on selected size
+  const basePrice = product ? parseFloat(String(product.price)) : 0;
+  const sizePrice = basePrice + (sizeSurcharges[selectedSize] || 0);
+
   const handleAddToCart = () => {
-    addItem(product, quantity, selectedSize);
+    // Pass a product copy with the size-adjusted price
+    const productWithSizePrice = { ...product, price: sizePrice };
+    addItem(productWithSizePrice, quantity, selectedSize);
     toast.success(`${product.name} (${selectedSize}) added to cart!`);
   };
 
   const handleBuyNow = () => {
-    addItem(product, quantity, selectedSize);
+    const productWithSizePrice = { ...product, price: sizePrice };
+    addItem(productWithSizePrice, quantity, selectedSize);
     navigate('/checkout');
   };
 
@@ -137,7 +153,15 @@ export const ProductDetails = () => {
             </div>
           </div>
 
-          <div className="text-3xl font-bold text-primary">₹{product.price.toLocaleString('en-IN')}</div>
+          <div className="flex items-baseline gap-3">
+            <span className="text-3xl font-bold text-primary">₹{sizePrice.toLocaleString('en-IN')}</span>
+            {sizeSurcharges[selectedSize] > 0 && (
+              <span className="text-sm text-muted-foreground line-through">₹{basePrice.toLocaleString('en-IN')}</span>
+            )}
+            {sizeSurcharges[selectedSize] > 0 && (
+              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">+₹{sizeSurcharges[selectedSize]} for {selectedSize}</span>
+            )}
+          </div>
 
           <p className="text-muted-foreground leading-relaxed">
             {product.description}
@@ -176,7 +200,7 @@ export const ProductDetails = () => {
               </Button>
               <Button className="flex-[1.5] h-12 gap-2 font-bold shadow-xl bg-primary hover:bg-primary/90 transition-all active:scale-95" onClick={handleBuyNow}>
                 <Zap className="h-5 w-5 fill-current" />
-                Buy at ₹{(product.price * quantity).toLocaleString('en-IN')}
+                Buy at ₹{(sizePrice * quantity).toLocaleString('en-IN')}
               </Button>
               <Button variant="outline" size="icon" className="h-12 w-12 shrink-0 border-primary/20 hover:bg-primary/5">
                 <Heart className="h-5 w-5" />
