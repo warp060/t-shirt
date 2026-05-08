@@ -163,7 +163,14 @@ const templates = {
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${order.address?.fullName || 'N/A'}</p>
                         <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Phone:</strong> ${order.address?.phone || 'N/A'}</p>
-                        <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Amount:</strong> <span style="font-size: 18px; font-weight: bold; color: #1a1a1a;">₹${order.total_amount || order.totalAmount}</span></p>
+                        <p style="margin: 0 0 15px; font-size: 14px; color: #333;"><strong>Amount:</strong> <span style="font-size: 18px; font-weight: bold; color: #1a1a1a;">₹${order.total_amount || order.totalAmount}</span></p>
+                        
+                        ${order.cancel_reason ? `
+                        <div style="background-color: #fff3f3; border-left: 3px solid #c62828; padding: 12px 15px; margin-bottom: 20px;">
+                            <p style="margin: 0 0 5px; font-size: 13px; font-weight: bold; color: #c62828; text-transform: uppercase; letter-spacing: 0.5px;">Customer's Reason</p>
+                            <p style="margin: 0; font-size: 14px; color: #333; font-style: italic;">"${order.cancel_reason}"</p>
+                        </div>
+                        ` : ''}
                     </td></tr>
 
                     <!-- Shipping Address -->
