@@ -15,6 +15,7 @@ export const CustomPrinting = () => {
   const [image, setImage] = useState<string | null>(null);
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [serverStatus, setServerStatus] = useState<'checking' | 'online' | 'offline'>('checking');
@@ -112,7 +113,8 @@ export const CustomPrinting = () => {
       userId: user.id,
       imageLength: image.length,
       description,
-      address
+      address,
+      phone
     });
 
     setLoading(true);
@@ -121,7 +123,8 @@ export const CustomPrinting = () => {
         userId: user.id,
         imageUrl: image,
         description,
-        address
+        address,
+        phone
       });
       setSubmitted(true);
       toast.success("Design submitted successfully!");
@@ -211,6 +214,18 @@ export const CustomPrinting = () => {
                       </div>
                     </label>
 
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Phone Number <span className="text-red-500">*</span></label>
+                      <Input
+                        type="tel"
+                        className="bg-background/50 focus:ring-primary/20 transition-all"
+                        placeholder="Enter your phone number..."
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+                    
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Design Details (Optional)</label>
                       <textarea

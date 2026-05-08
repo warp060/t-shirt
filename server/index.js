@@ -72,7 +72,7 @@ app.get('/api/health', async (req, res) => {
 // Custom Design Routes (Moved to Top)
 app.post('/api/custom-designs', async (req, res) => {
     try {
-        const { userId, imageUrl, description, address } = req.body;
+        const { userId, imageUrl, description, address, phone } = req.body;
         console.log("--- Custom Design Submission ---");
         console.log("User ID:", userId);
         
@@ -81,8 +81,8 @@ app.post('/api/custom-designs', async (req, res) => {
         }
         
         const [result] = await pool.execute(
-            'INSERT INTO custom_designs (user_id, image_url, description, address) VALUES (?, ?, ?, ?)',
-            [userId, imageUrl, description || '', address || '']
+            'INSERT INTO custom_designs (user_id, image_url, description, address, phone) VALUES (?, ?, ?, ?, ?)',
+            [userId, imageUrl, description || '', address || '', phone || '']
         );
         
         // Admin notification - Backgrounded
@@ -90,7 +90,7 @@ app.post('/api/custom-designs', async (req, res) => {
             try {
                 const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [userId]);
                 if (users.length > 0) {
-                    await sendCustomDesignNotification({ imageUrl, description, address }, users[0]);
+                    await sendCustomDesignNotification({ imageUrl, description, address, phone }, users[0]);
                     console.log(`[MAIL] ✅ Custom design notification sent for user: ${users[0].email}`);
                 }
             } catch (err) {
