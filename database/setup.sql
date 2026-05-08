@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS orders (
     shipping_address TEXT NOT NULL,
     payment_method VARCHAR(50) DEFAULT 'cod',
     payment_details TEXT,
+    cancel_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

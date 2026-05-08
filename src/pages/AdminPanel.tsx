@@ -428,6 +428,12 @@ export const AdminPanel = () => {
                                     <span className="text-primary font-mono">{selectedOrder.paymentDetails.upiId}</span>
                                   </>
                                 )}
+                                {selectedOrder.cancel_reason && (
+                                  <>
+                                    <span className="text-destructive font-semibold">Cancel Reason:</span>
+                                    <span className="text-destructive italic col-span-2">{selectedOrder.cancel_reason}</span>
+                                  </>
+                                )}
                               </div>
                               <div className="border-t pt-4">
                                 <h4 className="font-semibold mb-2">Items</h4>

@@ -45,6 +45,7 @@ export interface Order {
   };
   payment_method: string;
   payment_details?: any;
+  cancel_reason?: string;
   created_at: string;
 }
 

@@ -28,6 +28,8 @@ export const OrderHistory = () => {
   const [loading, setLoading] = useState(true);
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
   const [reviewingItem, setReviewingItem] = useState<{productId: number, name: string} | null>(null);
+  const [cancelingOrder, setCancelingOrder] = useState<Order | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -111,6 +113,29 @@ export const OrderHistory = () => {
       setRating(5);
     } catch (error: any) {
       toast.error(error.message || "Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCancelOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cancelingOrder) return;
+    
+    if (!cancelReason.trim()) {
+      toast.error("Please provide a reason for cancellation");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.post(`/orders/${cancelingOrder.id}/cancel`, { cancel_reason: cancelReason });
+      toast.success("Order cancelled successfully");
+      setOrders(orders.map(o => o.id === cancelingOrder.id ? { ...o, status: 'cancelled' } : o));
+      setCancelingOrder(null);
+      setCancelReason('');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to cancel order");
     } finally {
       setSubmitting(false);
     }
@@ -264,18 +289,7 @@ export const OrderHistory = () => {
                       variant="ghost" 
                       size="sm" 
                       className="text-destructive hover:bg-destructive/10 h-8 px-3"
-                      onClick={async () => {
-                        if (confirm("Are you sure you want to cancel this order? This action cannot be undone.")) {
-                          try {
-                            await api.post(`/orders/${order.id}/cancel`, {});
-                            toast.success("Order cancelled successfully");
-                            // Refresh list locally
-                            setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'cancelled' } : o));
-                          } catch (error: any) {
-                            toast.error(error.message || "Failed to cancel order");
-                          }
-                        }
-                      }}
+                      onClick={() => setCancelingOrder(order)}
                     >
                       Cancel Order
                     </Button>
@@ -423,6 +437,37 @@ export const OrderHistory = () => {
               <Button type="button" variant="outline" className="flex-1" onClick={() => setReviewingItem(null)}>Cancel</Button>
               <Button type="submit" className="flex-1 font-bold" disabled={submitting}>
                 {submitting ? "Submitting..." : "Post Review"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Order Modal */}
+      <Dialog open={!!cancelingOrder} onOpenChange={(open) => !open && setCancelingOrder(null)}>
+        <DialogContent className="sm:max-w-md border-destructive/20">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Cancel Order</DialogTitle>
+            <DialogDescription>
+              We're sorry to see you cancel. Please let us know why so we can improve.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCancelOrder} className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Reason for Cancellation</label>
+              <textarea
+                rows={3}
+                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/20 transition-all"
+                placeholder="E.g., I changed my mind, found a better price, ordered by mistake..."
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setCancelingOrder(null)}>Keep Order</Button>
+              <Button type="submit" variant="destructive" className="flex-1 font-bold" disabled={submitting}>
+                {submitting ? "Canceling..." : "Confirm Cancellation"}
               </Button>
             </div>
           </form>

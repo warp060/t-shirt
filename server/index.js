@@ -643,6 +643,7 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
     try {
         await connection.beginTransaction();
         const orderId = req.params.id;
+        const { cancel_reason } = req.body;
         const [orders] = await connection.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
         const order = orders[0];
 
@@ -653,7 +654,7 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
             await connection.execute('UPDATE products SET stock = stock + ? WHERE id = ?', [item.quantity, item.product_id]);
         }
 
-        await connection.execute('UPDATE orders SET status = "cancelled" WHERE id = ?', [orderId]);
+        await connection.execute('UPDATE orders SET status = "cancelled", cancel_reason = ? WHERE id = ?', [cancel_reason || null, orderId]);
         await connection.commit();
         
         // Admin notification - Backgrounded
