@@ -7,9 +7,12 @@ import { Product } from '../types';
 import { motion } from 'motion/react';
 import { api } from '../lib/api';
 import { Badge } from "@/components/ui/badge";
+import { toast } from 'sonner';
 
 export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,6 +25,25 @@ export const Home = () => {
     };
     fetchProducts();
   }, []);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Please enter an email address");
+      return;
+    }
+    
+    setIsSubscribing(true);
+    try {
+      const response = await api.post('/subscribe', { email });
+      toast.success(response.message || "Subscribed successfully!");
+      setEmail(''); // Clear input
+    } catch (error: any) {
+      toast.error(error.message || "Failed to subscribe. Please try again.");
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-16 pb-16">
@@ -135,14 +157,20 @@ export const Home = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 text-2xl sm:text-3xl font-bold">Join the Thread Club</h2>
           <p className="mb-8 text-sm sm:text-base text-primary-foreground/80 max-w-md mx-auto">Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
-          <div className="mx-auto flex flex-col sm:flex-row max-w-md gap-3">
+          <form onSubmit={handleSubscribe} className="mx-auto flex flex-col sm:flex-row max-w-md gap-3">
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 rounded-md border-none bg-white px-4 py-2 text-black focus:outline-none h-11"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isSubscribing}
+              className="flex-1 rounded-md border-none bg-white px-4 py-2 text-black focus:outline-none h-11 disabled:opacity-50"
             />
-            <Button variant="secondary" className="h-11 font-bold">Subscribe</Button>
-          </div>
+            <Button type="submit" variant="secondary" className="h-11 font-bold" disabled={isSubscribing}>
+              {isSubscribing ? 'Subscribing...' : 'Subscribe'}
+            </Button>
+          </form>
         </div>
       </section>
     </div>

@@ -118,6 +118,31 @@ app.get('/api/custom-designs/user/:userId', async (req, res) => {
     }
 });
 
+// Newsletter Subscription
+app.post('/api/subscribe', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+        
+        // Use INSERT IGNORE or handle duplicate error gracefully
+        try {
+            await pool.execute('INSERT INTO subscribers (email) VALUES (?)', [email]);
+            res.status(201).json({ message: 'Successfully subscribed to the newsletter!' });
+        } catch (dbError) {
+            // Check for duplicate entry error code (MySQL: ER_DUP_ENTRY)
+            if (dbError.code === 'ER_DUP_ENTRY') {
+                return res.status(200).json({ message: 'You are already subscribed!' });
+            }
+            throw dbError;
+        }
+    } catch (error) {
+        console.error("Subscription error:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+});
+
 // Security Middleware
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
