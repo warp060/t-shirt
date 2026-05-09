@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Star, ShoppingCart, Heart, Zap } from 'lucide-react';
 import { Product } from '../types';
@@ -15,6 +15,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleBuyNow = () => {
     if (product.stock > 0) {
@@ -67,7 +68,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
           <Button 
             variant="outline"
-            className="flex-1 h-9 sm:h-10 text-[10px] sm:text-xs px-2 gap-1.5 border-primary/20 hover:bg-primary/5 transition-all active:scale-95" 
+            className="flex-1 h-9 sm:h-10 text-[10px] sm:text-xs px-2 gap-1.5 border-primary/20 hover:bg-primary/5 hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95" 
             onClick={() => addItem(product)}
             disabled={product.stock === 0}
           >
@@ -76,16 +77,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </Button>
           
           <Button 
-            className="flex-[2.5] h-9 sm:h-10 text-[10px] sm:text-sm font-bold bg-primary hover:bg-primary/90 shadow-md transition-all active:scale-95 gap-1.5" 
+            className="flex-[2.5] h-9 sm:h-10 text-[10px] sm:text-sm font-bold bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95 gap-1.5 overflow-hidden relative group" 
             onClick={handleBuyNow}
             disabled={product.stock === 0}
           >
-            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current" />
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current group-hover:scale-110 transition-transform duration-300" />
             Buy at ₹{product.price.toLocaleString('en-IN')}
           </Button>
 
-          <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 border-primary/20 hover:bg-primary/5 transition-all active:scale-95">
-            <Heart className="h-4 w-4" />
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className={`h-9 w-9 sm:h-10 sm:w-10 shrink-0 border-primary/20 hover:bg-red-50 hover:border-red-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 ${isLiked ? 'bg-red-50 border-red-200' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsLiked(!isLiked);
+            }}
+          >
+            <Heart className={`h-4 w-4 transition-all duration-300 ${isLiked ? 'fill-red-500 text-red-500 scale-110' : 'text-primary group-hover:text-red-500'}`} />
           </Button>
         </CardFooter>
       </Card>
