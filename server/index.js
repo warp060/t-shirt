@@ -673,6 +673,33 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
     }
 });
 
+app.post('/api/orders/:id/return', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const { return_reason } = req.body;
+        
+        const [orders] = await pool.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
+        if (orders.length === 0) return res.status(404).json({ message: 'Order not found' });
+        
+        const order = orders[0];
+        if (order.status !== 'delivered') {
+            return res.status(400).json({ message: 'Only delivered orders can be returned.' });
+        }
+
+        const deliveryDate = new Date(order.updated_at || order.created_at);
+        const daysSinceDelivery = (new Date() - deliveryDate) / (1000 * 60 * 60 * 24);
+
+        if (daysSinceDelivery > 5) {
+            return res.status(400).json({ message: 'The 5-day return window has expired.' });
+        }
+
+        await pool.execute('UPDATE orders SET status = "return_requested", return_reason = ? WHERE id = ?', [return_reason || null, orderId]);
+        res.json({ message: 'Return requested successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Cart Routes
 app.get('/api/cart/:userId', async (req, res) => {
     try {

@@ -92,7 +92,7 @@ export const Home = () => {
           {[
             { icon: Truck, title: "Free Shipping", desc: "On orders over ₹4000", link: "/products" },
             { icon: ShieldCheck, title: "Secure Payment", desc: "100% secure checkout", link: "/" },
-            { icon: RefreshCcw, title: "Easy Returns", desc: "30-day return policy", link: "/" },
+            { icon: RefreshCcw, title: "Easy Returns", desc: "5-day return policy", link: "/" },
             { icon: Zap, title: "Fast Delivery", desc: "Ships within 24 hours", link: "/products" }
           ].map((feature, i) => (
             <Link 

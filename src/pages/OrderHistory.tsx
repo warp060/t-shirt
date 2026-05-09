@@ -30,6 +30,8 @@ export const OrderHistory = () => {
   const [reviewingItem, setReviewingItem] = useState<{productId: number, name: string} | null>(null);
   const [cancelingOrder, setCancelingOrder] = useState<Order | null>(null);
   const [cancelReason, setCancelReason] = useState('');
+  const [returningOrder, setReturningOrder] = useState<Order | null>(null);
+  const [returnReason, setReturnReason] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -141,6 +143,29 @@ export const OrderHistory = () => {
     }
   };
 
+  const handleReturnOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!returningOrder) return;
+    
+    if (!returnReason.trim()) {
+      toast.error("Please provide a reason for return");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.post(`/orders/${returningOrder.id}/return`, { return_reason: returnReason });
+      toast.success("Return requested successfully");
+      setOrders(orders.map(o => o.id === returningOrder.id ? { ...o, status: 'return_requested' } : o));
+      setReturningOrder(null);
+      setReturnReason('');
+    } catch (error: any) {
+      toast.error(error.message || "Failed to request return");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -179,6 +204,8 @@ export const OrderHistory = () => {
       case 'shipped': return <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">Shipped</Badge>;
       case 'delivered': return <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">Delivered</Badge>;
       case 'cancelled': return <Badge variant="destructive">Cancelled</Badge>;
+      case 'return_requested': return <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-200">Return Requested</Badge>;
+      case 'returned': return <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-200">Returned</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
   };
@@ -293,6 +320,25 @@ export const OrderHistory = () => {
                     >
                       Cancel Order
                     </Button>
+                  )}
+                  {order.status === 'delivered' && (
+                    (() => {
+                      const deliveryDate = new Date(order.updated_at || order.created_at);
+                      const daysSinceDelivery = (new Date().getTime() - deliveryDate.getTime()) / (1000 * 60 * 60 * 24);
+                      if (daysSinceDelivery <= 5) {
+                        return (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 px-3 border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                            onClick={() => setReturningOrder(order)}
+                          >
+                            Return Order
+                          </Button>
+                        );
+                      }
+                      return null;
+                    })()
                   )}
                 </div>
                 
@@ -493,6 +539,62 @@ export const OrderHistory = () => {
               <Button type="button" variant="outline" className="flex-1" onClick={() => setCancelingOrder(null)}>Keep Order</Button>
               <Button type="submit" variant="destructive" className="flex-1 font-bold" disabled={submitting}>
                 {submitting ? "Canceling..." : "Confirm Cancellation"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Return Order Modal */}
+      <Dialog open={!!returningOrder} onOpenChange={(open) => !open && setReturningOrder(null)}>
+        <DialogContent className="sm:max-w-md border-orange-200">
+          <DialogHeader>
+            <DialogTitle className="text-orange-600">Return Order</DialogTitle>
+            <DialogDescription>
+              You can return this item within 5 days of delivery. Please let us know why you are returning it.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleReturnOrder} className="space-y-4 pt-4">
+            <div className="space-y-3">
+              <label className="text-sm font-medium">Why are you returning this?</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Defective or damaged",
+                  "Wrong item sent",
+                  "Doesn't fit properly",
+                  "Not as described",
+                  "Quality isn't great"
+                ].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setReturnReason(option)}
+                    className={`px-3 py-1.5 text-xs rounded-full border transition-all ${
+                      returnReason === option 
+                        ? 'bg-orange-100 border-orange-500 text-orange-700 font-medium'
+                        : 'bg-background border-input hover:border-orange-300 hover:bg-orange-50 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Additional Details (Required)</label>
+              <textarea
+                rows={3}
+                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all"
+                placeholder="Please describe the issue in detail..."
+                value={returnReason}
+                onChange={(e) => setReturnReason(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setReturningOrder(null)}>Keep Item</Button>
+              <Button type="submit" className="flex-1 font-bold bg-orange-600 hover:bg-orange-700 text-white" disabled={submitting}>
+                {submitting ? "Processing..." : "Request Return"}
               </Button>
             </div>
           </form>
