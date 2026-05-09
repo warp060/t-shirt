@@ -308,7 +308,7 @@ export const OrderHistory = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                   <div className="flex items-center gap-3">
                     {getStatusBadge(order.status)}
-                    <span className="text-xs text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground">Last updated: {new Date(order.updated_at || order.created_at).toLocaleDateString()}</span>
                   </div>
                   
                   {(order.status === 'pending' || order.status === 'processing') && (
@@ -328,9 +328,9 @@ export const OrderHistory = () => {
                       if (daysSinceDelivery <= 5) {
                         return (
                           <Button 
-                            variant="outline" 
+                            variant="secondary" 
                             size="sm" 
-                            className="h-8 px-3 border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                            className="h-8 px-4 bg-orange-600 text-white hover:bg-orange-700 shadow-sm transition-all"
                             onClick={() => setReturningOrder(order)}
                           >
                             Return Order
