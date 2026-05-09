@@ -284,10 +284,10 @@ export const Navbar = () => {
 
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center justify-center gap-4">
-                        <a href="https://instagram.com/its_me_web_developer" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary transition-all">
+                        <a href="https://instagram.com/_.abu._0" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary transition-all">
                           <Instagram className="h-4 w-4" />
                         </a>
-                        <a href="https://wa.me/916369906810" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#25D366] transition-all">
+                        <a href="https://wa.me/919036122083" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#25D366] transition-all">
                           <MessageCircle className="h-4 w-4" />
                         </a>
                         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#0A66C2] transition-all">
@@ -372,10 +372,10 @@ export const Footer = () => {
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Connect</h3>
             <div className="flex flex-col gap-4">
               <div className="flex gap-4">
-                <a href="https://instagram.com/its_me_web_developer" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary hover:-translate-y-1 transition-all">
+                <a href="https://instagram.com/_.abu._0" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-primary hover:-translate-y-1 transition-all">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="https://wa.me/916369906810" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#25D366] hover:-translate-y-1 transition-all">
+                <a href="https://wa.me/919036122083" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#25D366] hover:-translate-y-1 transition-all">
                   <MessageCircle className="h-5 w-5" />
                 </a>
                 <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-background border border-border hover:border-primary/50 hover:text-[#0A66C2] hover:-translate-y-1 transition-all">
