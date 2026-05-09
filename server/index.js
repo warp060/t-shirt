@@ -165,7 +165,7 @@ const isAdmin = async (req, res, next) => {
         console.log(`[ADMIN CHECK] Attempt by: ${userEmail} (ID: ${userId})`);
 
         // Check 1: Master Email from Token
-        if (userEmail === 'abbas6618532@gmail.com') {
+        if (userEmail === 'ambroabu145@gmail.com') {
             return next();
         }
 
@@ -173,7 +173,7 @@ const isAdmin = async (req, res, next) => {
         const [users] = await pool.execute('SELECT role, email FROM users WHERE id = ?', [userId]);
         const user = users[0];
 
-        if (user && (user.role === 'admin' || user.email?.toLowerCase() === 'abbas6618532@gmail.com')) {
+        if (user && (user.role === 'admin' || user.email?.toLowerCase() === 'ambroabu145@gmail.com')) {
             next();
         } else {
             console.log(`[ADMIN DENIED] User ${userEmail} has role: ${user?.role}`);
