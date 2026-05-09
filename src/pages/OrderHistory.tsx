@@ -294,8 +294,7 @@ export const OrderHistory = () => {
                           Cancel Order
                         </Button>
                       )}
-                    )}
-                  </div>
+                    </div>
 
                     <div className="space-y-6">
                       {order.items.map((item) => (
