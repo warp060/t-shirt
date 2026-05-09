@@ -453,12 +453,37 @@ export const OrderHistory = () => {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCancelOrder} className="space-y-4 pt-4">
+            <div className="space-y-3">
+              <label className="text-sm font-medium">Quick Options</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "I changed my mind",
+                  "Found a better price elsewhere",
+                  "Ordered by mistake",
+                  "Delivery is taking too long",
+                  "Want to change item or size"
+                ].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setCancelReason(option)}
+                    className={`px-3 py-1.5 text-xs rounded-full border transition-all ${
+                      cancelReason === option 
+                        ? 'bg-destructive/10 border-destructive/50 text-destructive font-medium'
+                        : 'bg-background border-input hover:border-destructive/30 hover:bg-destructive/5 text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Reason for Cancellation</label>
+              <label className="text-sm font-medium">Additional Details (Optional)</label>
               <textarea
                 rows={3}
                 className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/20 transition-all"
-                placeholder="E.g., I changed my mind, found a better price, ordered by mistake..."
+                placeholder="Share any extra details about your cancellation..."
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 required
