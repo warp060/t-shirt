@@ -434,12 +434,6 @@ export const AdminPanel = () => {
                                     <span className="text-destructive italic col-span-2">{selectedOrder.cancel_reason}</span>
                                   </>
                                 )}
-                                {selectedOrder.return_reason && (
-                                  <>
-                                    <span className="text-orange-600 font-semibold">Return Reason:</span>
-                                    <span className="text-orange-600 italic col-span-2">{selectedOrder.return_reason}</span>
-                                  </>
-                                )}
                               </div>
                               <div className="border-t pt-4">
                                 <h4 className="font-semibold mb-2">Items</h4>
@@ -470,8 +464,6 @@ export const AdminPanel = () => {
                           <SelectItem value="shipped">Shipped</SelectItem>
                           <SelectItem value="delivered">Delivered</SelectItem>
                           <SelectItem value="cancelled">Cancelled</SelectItem>
-                          <SelectItem value="return_requested">Return Req</SelectItem>
-                          <SelectItem value="returned">Returned</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

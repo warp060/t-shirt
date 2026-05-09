@@ -33,7 +33,7 @@ export interface Order {
   user_id: number;
   items: CartItem[];
   total_amount: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'return_requested' | 'returned';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   address: {
     fullName: string;
     street: string;
@@ -46,7 +46,6 @@ export interface Order {
   payment_method: string;
   payment_details?: any;
   cancel_reason?: string;
-  return_reason?: string;
   created_at: string;
   updated_at?: string;
 }
