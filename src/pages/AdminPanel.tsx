@@ -279,21 +279,21 @@ export const AdminPanel = () => {
                   <DialogTitle>Add New Product</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleAddProduct} className="space-y-4">
-                  <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} required />
-                  <Input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value)})} required />
-                  <Input placeholder="Image URL" value={newProduct.image_url} onChange={e => setNewProduct({...newProduct, image_url: e.target.value})} required />
-                  <Input type="number" placeholder="Stock" value={newProduct.stock} onChange={e => setNewProduct({...newProduct, stock: parseInt(e.target.value)})} required />
-                  <textarea 
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring" 
+                  <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required />
+                  <Input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required />
+                  <Input placeholder="Image URL" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} required />
+                  <Input type="number" placeholder="Stock" value={newProduct.stock} onChange={e => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })} required />
+                  <textarea
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                     placeholder="Description"
                     value={newProduct.description}
-                    onChange={e => setNewProduct({...newProduct, description: e.target.value})}
+                    onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
                     required
                   />
-                  <select 
+                  <select
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={newProduct.category}
-                    onChange={e => setNewProduct({...newProduct, category: e.target.value as any})}
+                    onChange={e => setNewProduct({ ...newProduct, category: e.target.value as any })}
                   >
                     <option value="Men">Men</option>
                     <option value="Women">Women</option>
@@ -336,21 +336,21 @@ export const AdminPanel = () => {
                           </DialogHeader>
                           {editingProduct && (
                             <form onSubmit={handleUpdateProduct} className="space-y-4">
-                              <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} required />
-                              <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})} required />
-                              <Input placeholder="Image URL" value={editingProduct.image_url} onChange={e => setEditingProduct({...editingProduct, image_url: e.target.value})} required />
-                              <Input type="number" placeholder="Stock" value={editingProduct.stock} onChange={e => setEditingProduct({...editingProduct, stock: parseInt(e.target.value)})} required />
-                              <textarea 
-                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring" 
+                              <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
+                              <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required />
+                              <Input placeholder="Image URL" value={editingProduct.image_url} onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })} required />
+                              <Input type="number" placeholder="Stock" value={editingProduct.stock} onChange={e => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) })} required />
+                              <textarea
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                                 placeholder="Description"
                                 value={editingProduct.description}
-                                onChange={e => setEditingProduct({...editingProduct, description: e.target.value})}
+                                onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
                                 required
                               />
-                              <select 
+                              <select
                                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 value={editingProduct.category}
-                                onChange={e => setEditingProduct({...editingProduct, category: e.target.value as any})}
+                                onChange={e => setEditingProduct({ ...editingProduct, category: e.target.value as any })}
                               >
                                 <option value="Men">Men</option>
                                 <option value="Women">Women</option>
@@ -375,111 +375,103 @@ export const AdminPanel = () => {
           <h2 className="text-xl font-bold mb-6">Manage Orders</h2>
           <div className="border rounded-lg overflow-x-auto">
             <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Payment</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map(order => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-mono text-xs">{order.id}</TableCell>
-                  <TableCell>{order.address.fullName}</TableCell>
-                  <TableCell>₹{order.total_amount.toLocaleString('en-IN')}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="capitalize">{order.paymentMethod || 'cod'}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
-                  </TableCell>
-                  <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>View</Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Order Details</DialogTitle>
-                          </DialogHeader>
-                          {selectedOrder && (
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-2 text-sm">
-                                <span className="text-muted-foreground">Order ID:</span>
-                                <span className="font-mono">{selectedOrder.id}</span>
-                                <span className="text-muted-foreground">Customer:</span>
-                                <span>{selectedOrder.address.fullName}</span>
-                                <span className="text-muted-foreground">Email:</span>
-                                <span>{selectedOrder.address.email}</span>
-                                <span className="text-muted-foreground">Address:</span>
-                                <span>{selectedOrder.address.street}, {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.zipCode}</span>
-                                <span className="text-muted-foreground">Payment:</span>
-                                <span className="capitalize font-medium">{selectedOrder.paymentMethod || 'cod'}</span>
-                                {selectedOrder.paymentDetails?.upiId && (
-                                  <>
-                                    <span className="text-muted-foreground">UPI ID:</span>
-                                    <span className="text-primary font-mono">{selectedOrder.paymentDetails.upiId}</span>
-                                  </>
-                                )}
-                                {selectedOrder.cancel_reason && (
-                                  <>
-                                    <span className="text-destructive font-semibold">Cancel Reason:</span>
-                                    <span className="text-destructive italic col-span-2">{selectedOrder.cancel_reason}</span>
-                                  </>
-                                )}
-                                {selectedOrder.return_reason && (
-                                  <>
-                                    <span className="text-orange-600 font-semibold">Return Reason:</span>
-                                    <span className="text-orange-600 italic col-span-2">{selectedOrder.return_reason}</span>
-                                  </>
-                                )}
-                              </div>
-                              <div className="border-t pt-4">
-                                <h4 className="font-semibold mb-2">Items</h4>
-                                <div className="space-y-2">
-                                  {selectedOrder.items.map((item, idx) => (
-                                    <div key={idx} className="flex justify-between text-sm">
-                                      <span>{item.name} (x{item.quantity})</span>
-                                      <span>₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Payment</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {orders.map(order => (
+                  <TableRow key={order.id}>
+                    <TableCell className="font-mono text-xs">{order.id}</TableCell>
+                    <TableCell>{order.address.fullName}</TableCell>
+                    <TableCell>₹{order.total_amount.toLocaleString('en-IN')}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">{order.paymentMethod || 'cod'}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
+                    </TableCell>
+                    <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>View</Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Order Details</DialogTitle>
+                            </DialogHeader>
+                            {selectedOrder && (
+                              <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                  <span className="text-muted-foreground">Order ID:</span>
+                                  <span className="font-mono">{selectedOrder.id}</span>
+                                  <span className="text-muted-foreground">Customer:</span>
+                                  <span>{selectedOrder.address.fullName}</span>
+                                  <span className="text-muted-foreground">Email:</span>
+                                  <span>{selectedOrder.address.email}</span>
+                                  <span className="text-muted-foreground">Address:</span>
+                                  <span>{selectedOrder.address.street}, {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.zipCode}</span>
+                                  <span className="text-muted-foreground">Payment:</span>
+                                  <span className="capitalize font-medium">{selectedOrder.paymentMethod || 'cod'}</span>
+                                  {selectedOrder.paymentDetails?.upiId && (
+                                    <>
+                                      <span className="text-muted-foreground">UPI ID:</span>
+                                      <span className="text-primary font-mono">{selectedOrder.paymentDetails.upiId}</span>
+                                    </>
+                                  )}
+                                  {selectedOrder.cancel_reason && (
+                                    <>
+                                      <span className="text-destructive font-semibold">Cancel Reason:</span>
+                                      <span className="text-destructive italic col-span-2">{selectedOrder.cancel_reason}</span>
+                                    </>
+                                  )}
+                                </div>
+                                <div className="border-t pt-4">
+                                  <h4 className="font-semibold mb-2">Items</h4>
+                                  <div className="space-y-2">
+                                    {selectedOrder.items.map((item, idx) => (
+                                      <div key={idx} className="flex justify-between text-sm">
+                                        <span>{item.name} (x{item.quantity})</span>
+                                        <span>₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                                      </div>
+                                    ))}
+                                    <div className="flex justify-between font-bold border-t pt-2 mt-2">
+                                      <span>Total</span>
+                                      <span>₹{selectedOrder.total_amount.toLocaleString('en-IN')}</span>
                                     </div>
-                                  ))}
-                                  <div className="flex justify-between font-bold border-t pt-2 mt-2">
-                                    <span>Total</span>
-                                    <span>₹{selectedOrder.total_amount.toLocaleString('en-IN')}</span>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-                      <Select onValueChange={(val: string) => updateOrderStatus(order.id, val)}>
-                        <SelectTrigger className="w-[130px]">
-                          <SelectValue placeholder="Update Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="processing">Processing</SelectItem>
-                          <SelectItem value="shipped">Shipped</SelectItem>
-                          <SelectItem value="delivered">Delivered</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                          <SelectItem value="return_requested">Return Req</SelectItem>
-                          <SelectItem value="returned">Returned</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                        <Select onValueChange={(val: string) => updateOrderStatus(order.id, val)}>
+                          <SelectTrigger className="w-[130px]">
+                            <SelectValue placeholder="Update Status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="processing">Processing</SelectItem>
+                            <SelectItem value="shipped">Shipped</SelectItem>
+                            <SelectItem value="delivered">Delivered</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </TabsContent>
 
@@ -487,33 +479,33 @@ export const AdminPanel = () => {
           <h2 className="text-xl font-bold mb-6">User Management</h2>
           <div className="border rounded-lg overflow-x-auto">
             <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Joined</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map(user => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={user.role === 'admin' ? 'destructive' : 'outline'}
-                      className="cursor-pointer hover:opacity-80"
-                      onClick={() => toggleUserRole(user.id, user.role)}
-                    >
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map(user => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={user.role === 'admin' ? 'destructive' : 'outline'}
+                        className="cursor-pointer hover:opacity-80"
+                        onClick={() => toggleUserRole(user.id, user.role)}
+                      >
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </TabsContent>
 
@@ -544,7 +536,7 @@ export const AdminPanel = () => {
                     <div className="text-xs text-muted-foreground truncate">{design.user_email}</div>
                     <div className="text-[10px] text-muted-foreground mt-1">Submitted: {new Date(design.created_at).toLocaleString()}</div>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Select onValueChange={(val: any) => updateCustomDesignStatus(design.id, val)} defaultValue={design.status}>
                       <SelectTrigger className="flex-1 h-8 text-xs">
@@ -604,10 +596,10 @@ export const AdminPanel = () => {
                       {new Date(review.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-destructive hover:bg-destructive/10" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:bg-destructive/10"
                         onClick={() => handleDeleteReview(review.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -655,10 +647,10 @@ export const AdminPanel = () => {
                       {new Date(sub.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-destructive hover:bg-destructive/10" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:bg-destructive/10"
                         onClick={() => handleDeleteSubscriber(sub.id)}
                       >
                         <Trash2 className="h-4 w-4" />

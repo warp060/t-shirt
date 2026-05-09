@@ -32,7 +32,7 @@ export const Home = () => {
       toast.error("Please enter an email address");
       return;
     }
-    
+
     setIsSubscribing(true);
     try {
       const response = await api.post('/subscribe', { email });
@@ -92,11 +92,11 @@ export const Home = () => {
           {[
             { icon: Truck, title: "Free Shipping", desc: "On orders over ₹4000", link: "/products" },
             { icon: ShieldCheck, title: "Secure Payment", desc: "100% secure checkout", link: "/" },
-            { icon: RefreshCcw, title: "Easy Returns", desc: "5-day return policy", link: "/" },
+            { icon: Zap, title: "Premium Quality", desc: "Best-in-class fabrics", link: "/products" },
             { icon: Zap, title: "Fast Delivery", desc: "Ships within 24 hours", link: "/products" }
           ].map((feature, i) => (
-            <Link 
-              key={i} 
+            <Link
+              key={i}
               to={feature.link}
               className="group relative overflow-hidden flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 sm:gap-4 rounded-2xl border border-border p-4 sm:p-6 bg-card hover:bg-gradient-to-br hover:from-card hover:to-primary/5 shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-500"
             >

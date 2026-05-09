@@ -19,7 +19,7 @@ const { sendOrderNotification, sendCancellationNotification, sendCustomDesignNot
 const app = express();
 
 // Extremely permissive CORS for debugging
-app.use(cors()); 
+app.use(cors());
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -49,7 +49,7 @@ app.get('/api/health', async (req, res) => {
 
     let dbStatus = 'checking';
     let dbError = null;
-    
+
     try {
         await pool.query('SELECT 1');
         dbStatus = 'connected';
@@ -59,13 +59,13 @@ app.get('/api/health', async (req, res) => {
         console.error("Health Check DB Error:", error.message);
     }
 
-    res.json({ 
-        status: 'ok', 
+    res.json({
+        status: 'ok',
         server: 'online',
         database: dbStatus,
         dbError: dbError,
         version: '1.0.3',
-        timestamp: new Date().toISOString() 
+        timestamp: new Date().toISOString()
     });
 });
 
@@ -75,16 +75,16 @@ app.post('/api/custom-designs', async (req, res) => {
         const { userId, imageUrl, description, address, phone } = req.body;
         console.log("--- Custom Design Submission ---");
         console.log("User ID:", userId);
-        
+
         if (!userId || !imageUrl) {
             return res.status(400).json({ message: 'User ID and Image are required' });
         }
-        
+
         const [result] = await pool.execute(
             'INSERT INTO custom_designs (user_id, image_url, description, address, phone) VALUES (?, ?, ?, ?, ?)',
             [userId, imageUrl, description || '', address || '', phone || '']
         );
-        
+
         // Admin notification - Backgrounded
         setImmediate(async () => {
             try {
@@ -125,7 +125,7 @@ app.post('/api/subscribe', async (req, res) => {
         if (!email) {
             return res.status(400).json({ message: 'Email is required' });
         }
-        
+
         // Use INSERT IGNORE or handle duplicate error gracefully
         try {
             await pool.execute('INSERT INTO subscribers (email) VALUES (?)', [email]);
@@ -260,10 +260,10 @@ app.get('/api/admin/orders', authenticateToken, isAdmin, async (req, res) => {
             `, [order.id]);
 
             let address = {};
-            try { address = JSON.parse(order.shipping_address); } catch(e) { address = { fullName: 'Invalid Address' }; }
+            try { address = JSON.parse(order.shipping_address); } catch (e) { address = { fullName: 'Invalid Address' }; }
 
             let paymentDetails = null;
-            try { paymentDetails = order.payment_details ? JSON.parse(order.payment_details) : null; } catch(e) { paymentDetails = null; }
+            try { paymentDetails = order.payment_details ? JSON.parse(order.payment_details) : null; } catch (e) { paymentDetails = null; }
 
             return {
                 ...order,
@@ -334,7 +334,7 @@ app.put('/api/admin/custom-designs/:id/status', authenticateToken, isAdmin, asyn
         const { status } = req.body;
         const designId = req.params.id;
         await pool.execute('UPDATE custom_designs SET status = ? WHERE id = ?', [status, designId]);
-        
+
         const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
         if (designs.length > 0) {
             // Admin notification
@@ -387,7 +387,7 @@ app.get('/api/products/:id', async (req, res) => {
     try {
         const [products] = await pool.execute('SELECT * FROM products WHERE id = ?', [req.params.id]);
         if (products.length === 0) return res.status(404).json({ message: 'Product not found' });
-        
+
         const product = products[0];
         const [stats] = await pool.execute(
             'SELECT AVG(rating) as avgRating, COUNT(*) as reviewsCount FROM reviews WHERE product_id = ?',
@@ -521,7 +521,7 @@ app.put('/api/users/:id', async (req, res) => {
 app.post('/api/payment/create-order', async (req, res) => {
     try {
         const { amount, currency = 'INR' } = req.body;
-        
+
         const options = {
             amount: Math.round(amount * 100), // amount in the smallest currency unit
             currency,
@@ -538,10 +538,10 @@ app.post('/api/payment/create-order', async (req, res) => {
 
 app.post('/api/payment/verify', async (req, res) => {
     try {
-        const { 
-            razorpay_order_id, 
-            razorpay_payment_id, 
-            razorpay_signature 
+        const {
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature
         } = req.body;
 
         const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -566,12 +566,12 @@ app.post('/api/orders', async (req, res) => {
     try {
         const { userId, totalAmount, address, items, paymentMethod, paymentDetails } = req.body;
         console.log(`[ORDER] Starting order creation for User: ${userId}`);
-        
+
         const connection = await pool.getConnection();
         try {
             console.log(`[ORDER] Got DB connection. Starting transaction...`);
             await connection.beginTransaction();
-            
+
             console.log(`[ORDER] Inserting into orders table...`);
             const [orderResult] = await connection.execute(
                 'INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, payment_details) VALUES (?, ?, ?, ?, ?)',
@@ -596,7 +596,7 @@ app.post('/api/orders', async (req, res) => {
             console.log(`[ORDER] Committing transaction...`);
             await connection.commit();
             console.log(`[ORDER] Transaction committed successfully!`);
-            
+
             // Admin notification - Truly backgrounded using setImmediate
             setImmediate(async () => {
                 console.log(`[MAIL] Starting background email process for Order #${orderId}`);
@@ -613,7 +613,7 @@ app.post('/api/orders', async (req, res) => {
                     console.error("[MAIL] ❌ Order notification failed:", mailError);
                 }
             });
-            
+
             res.status(201).json({ message: 'Order created', orderId });
         } catch (error) {
             console.error(`[ORDER ERROR] Inside transaction:`, error);
@@ -646,7 +646,7 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
 
         await connection.execute('UPDATE orders SET status = "cancelled", cancel_reason = ? WHERE id = ?', [cancel_reason || null, orderId]);
         await connection.commit();
-        
+
         // Admin notification - Backgrounded
         setImmediate(async () => {
             try {
@@ -673,37 +673,6 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
     }
 });
 
-// Return Order (5-day window)
-app.post('/api/orders/:id/return', async (req, res) => {
-    try {
-        const orderId = req.params.id;
-        const { return_reason } = req.body;
-
-        const [orders] = await pool.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
-        if (orders.length === 0) return res.status(404).json({ message: 'Order not found' });
-
-        const order = orders[0];
-        if (order.status !== 'delivered') {
-            return res.status(400).json({ message: 'Only delivered orders can be returned.' });
-        }
-
-        const deliveryDate = new Date(order.updated_at || order.created_at);
-        const daysSinceDelivery = (new Date() - deliveryDate) / (1000 * 60 * 60 * 24);
-
-        if (daysSinceDelivery > 5) {
-            return res.status(400).json({ message: 'The 5-day return window has expired.' });
-        }
-
-        await pool.execute(
-            'UPDATE orders SET status = "return_requested", return_reason = ? WHERE id = ?',
-            [return_reason || null, orderId]
-        );
-        res.json({ message: 'Return requested successfully' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
 // Cart Routes
 app.get('/api/cart/:userId', async (req, res) => {
     try {
@@ -727,7 +696,7 @@ app.post('/api/cart/:userId', async (req, res) => {
 // 404 Handler for Debugging
 app.use((req, res) => {
     console.log(`[404] ${req.method} ${req.url}`);
-    res.status(404).json({ 
+    res.status(404).json({
         message: `Route ${req.method} ${req.url} not found`,
         hint: 'Check if you are missing /api prefix'
     });
