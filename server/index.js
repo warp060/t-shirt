@@ -160,24 +160,14 @@ const authenticateToken = (req, res, next) => {
 const isAdmin = async (req, res, next) => {
     try {
         const userEmail = req.user?.email?.toLowerCase();
-        const userId = req.user?.id;
 
-        console.log(`[ADMIN CHECK] Attempt by: ${userEmail} (ID: ${userId})`);
+        console.log(`[ADMIN CHECK] Attempt by: ${userEmail}`);
 
-        // Check 1: Master Email from Token
         if (userEmail === 'ambroabu145@gmail.com') {
             return next();
-        }
-
-        // Check 2: Database Role
-        const [users] = await pool.execute('SELECT role, email FROM users WHERE id = ?', [userId]);
-        const user = users[0];
-
-        if (user && (user.role === 'admin' || user.email?.toLowerCase() === 'ambroabu145@gmail.com')) {
-            next();
         } else {
-            console.log(`[ADMIN DENIED] User ${userEmail} has role: ${user?.role}`);
-            res.status(403).json({ message: 'Access denied. Admin rights required.' });
+            console.log(`[ADMIN DENIED] User ${userEmail} is not the master admin.`);
+            return res.status(403).json({ message: 'Access denied. Only ambroabu145@gmail.com is allowed.' });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
