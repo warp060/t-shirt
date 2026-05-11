@@ -57,7 +57,8 @@ app.get('/api/health', async (req, res) => {
         server: 'online',
         database: dbStatus,
         dbError: dbError,
-        version: '1.0.6',
+        version: '1.0.7',
+        deployedAt: '2026-05-11T08:28:00Z',
         timestamp: new Date().toISOString()
     });
 });
