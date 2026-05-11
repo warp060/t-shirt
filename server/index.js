@@ -114,6 +114,7 @@ app.get('/api/custom-designs/user/:userId', async (req, res) => {
 app.post('/api/custom-designs/:id/cancel', async (req, res) => {
     try {
         const designId = req.params.id;
+        const { cancel_reason } = req.body;
         const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
         
         if (designs.length === 0) {
@@ -124,7 +125,7 @@ app.post('/api/custom-designs/:id/cancel', async (req, res) => {
             return res.status(400).json({ message: 'Only pending designs can be cancelled' });
         }
 
-        await pool.execute('UPDATE custom_designs SET status = "cancelled" WHERE id = ?', [designId]);
+        await pool.execute('UPDATE custom_designs SET status = "cancelled", cancel_reason = ? WHERE id = ?', [cancel_reason || null, designId]);
         res.json({ message: 'Design request cancelled successfully' });
     } catch (error) {
         console.error("Cancel design error:", error);

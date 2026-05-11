@@ -142,15 +142,22 @@ export const OrderHistory = () => {
     }
   };
 
-  const handleCancelDesign = async () => {
+  const handleCancelDesign = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!cancelingDesign) return;
+
+    if (!cancelReason.trim()) {
+      toast.error("Please provide a reason for cancellation");
+      return;
+    }
 
     setSubmitting(true);
     try {
-      await api.post(`/custom-designs/${cancelingDesign.id}/cancel`);
+      await api.post(`/custom-designs/${cancelingDesign.id}/cancel`, { cancel_reason: cancelReason });
       toast.success("Design request cancelled successfully");
       setCustomDesigns(customDesigns.map(d => d.id === cancelingDesign.id ? { ...d, status: 'cancelled' } : d));
       setCancelingDesign(null);
+      setCancelReason('');
     } catch (error: any) {
       toast.error(error.message || "Failed to cancel design request");
     } finally {
@@ -411,27 +418,58 @@ export const OrderHistory = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Cancel Design Confirmation Modal */}
+      {/* Cancel Design Modal with Reason */}
       <Dialog open={!!cancelingDesign} onOpenChange={(open) => !open && setCancelingDesign(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md border-destructive/20">
           <DialogHeader>
-            <DialogTitle className="text-destructive">Cancel Design Request?</DialogTitle>
+            <DialogTitle className="text-destructive">Cancel Design Request</DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel this custom design request? This action cannot be undone.
+              We're sorry to see you cancel this design. Please let us know why.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" className="flex-1" onClick={() => setCancelingDesign(null)}>Keep it</Button>
-            <Button 
-              type="button" 
-              variant="destructive" 
-              className="flex-1 font-bold" 
-              disabled={submitting}
-              onClick={handleCancelDesign}
-            >
-              {submitting ? "Canceling..." : "Yes, Cancel"}
-            </Button>
-          </div>
+          <form onSubmit={handleCancelDesign} className="space-y-4 pt-4">
+            <div className="space-y-3">
+              <label className="text-sm font-medium">Quick Options</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "I changed my mind",
+                  "Design no longer needed",
+                  "Found another provider",
+                  "Price is too high",
+                  "Uploading mistake"
+                ].map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setCancelReason(option)}
+                    className={`px-3 py-1.5 text-xs rounded-full border transition-all ${cancelReason === option
+                      ? 'bg-destructive/10 border-destructive/50 text-destructive font-medium'
+                      : 'bg-background border-input hover:border-destructive/30 hover:bg-destructive/5 text-muted-foreground hover:text-foreground'
+                      }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Additional Details (Optional)</label>
+              <textarea
+                rows={3}
+                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/20 transition-all"
+                placeholder="Share any extra details..."
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setCancelingDesign(null)}>Keep Design</Button>
+              <Button type="submit" variant="destructive" className="flex-1 font-bold" disabled={submitting}>
+                {submitting ? "Canceling..." : "Confirm Cancellation"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
 
