@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
-import { CheckCircle2, Truck, ShieldCheck, IndianRupee, QrCode, Smartphone, Copy, CreditCard, ChevronRight } from 'lucide-react';
+import { CheckCircle2, Truck, ShieldCheck, IndianRupee } from 'lucide-react';
 
 export const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -68,7 +68,7 @@ export const Checkout = () => {
     }
 
     setLoading(true);
-
+    
     try {
       const orderData = {
         userId: user.id,
@@ -197,7 +197,7 @@ export const Checkout = () => {
                       >
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${paymentMethod === 'online' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary'}`}>
-                            <CreditCard className="h-5 w-5" />
+                            <QrCode className="h-5 w-5" />
                           </div>
                           <div>
                             <p className="text-sm font-bold">Online Payment</p>
@@ -207,7 +207,6 @@ export const Checkout = () => {
                       </div>
                     </div>
 
-                    {/* Online Sub-options */}
                     {paymentMethod === 'online' && (
                       <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
                         <div className="space-y-4">
@@ -258,7 +257,6 @@ export const Checkout = () => {
                                         <Smartphone className="h-4 w-4 text-primary" />
                                         Pay via {selectedApp?.toUpperCase()}
                                       </span>
-                                      <ChevronRight className="h-4 w-4 opacity-50" />
                                     </Button>
                                   </a>
                                 </div>
@@ -286,6 +284,7 @@ export const Checkout = () => {
                         </div>
                       </div>
                     )}
+                </div>
 
                 <Button
                   type="submit"
