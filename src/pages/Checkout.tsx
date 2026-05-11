@@ -209,76 +209,53 @@ export const Checkout = () => {
 
                     {paymentMethod === 'online' && (
                       <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
-                        <div className="space-y-4">
-                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Select Your Payment App</p>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            {[
-                              { id: 'phonepe', name: 'PhonePe', color: '#5F259F' },
-                              { id: 'gpay', name: 'GPay', color: '#4285F4' },
-                              { id: 'paytm', name: 'Paytm', color: '#00BAF2' },
-                              { id: 'other', name: 'Others', color: '#000000' }
-                            ].map((app) => (
-                              <div 
-                                key={app.id}
-                                className={`cursor-pointer rounded-xl border-2 p-3 flex flex-col items-center justify-center gap-2 transition-all h-20 ${selectedApp === app.id ? 'border-primary bg-primary/10 shadow-sm scale-105' : 'border-muted bg-card hover:border-primary/30'}`}
-                                onClick={() => setSelectedApp(app.id)}
-                              >
-                                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted/50">
-                                  <Smartphone className="h-4 w-4" style={{ color: app.color }} />
-                                </div>
-                                <span className="text-[10px] font-bold">{app.name}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* QR & Details Card */}
-                        <div className="bg-white p-6 rounded-2xl border-2 border-primary/10 shadow-sm space-y-6">
-                          <div className="flex flex-col md:flex-row gap-6 items-center">
-                            <div className="shrink-0 space-y-2 text-center">
-                              <div className="p-3 bg-white border-4 border-primary/5 rounded-2xl shadow-inner inline-block">
-                                <img src="/admin_qr.png" alt="Payment QR" className="w-40 h-40 object-contain" />
-                              </div>
-                              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Scan with any UPI app</p>
+                        <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-primary/10 shadow-sm space-y-8">
+                          <div className="flex flex-col items-center text-center space-y-6">
+                            <div className="space-y-2">
+                              <h4 className="text-lg font-bold">Scan & Pay with any App</h4>
+                              <p className="text-xs text-muted-foreground">PhonePe, GPay, Paytm, or any UPI app</p>
                             </div>
-                            
-                            <div className="flex-1 w-full space-y-4">
-                              <div className="bg-muted/30 p-4 rounded-xl space-y-1">
-                                <p className="text-xs text-muted-foreground">Amount to Pay</p>
-                                <p className="text-3xl font-black text-primary">₹{checkoutTotal.toLocaleString('en-IN')}</p>
-                              </div>
-                              
-                              <div className="space-y-3">
-                                <div className="space-y-1.5">
-                                  <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 1: Make Payment</label>
-                                  <a href={upiUrl} className="block">
-                                    <Button type="button" variant="outline" className="w-full justify-between h-12 rounded-xl border-primary/20 hover:bg-primary/5">
-                                      <span className="flex items-center gap-2">
-                                        <Smartphone className="h-4 w-4 text-primary" />
-                                        Pay via {selectedApp?.toUpperCase()}
-                                      </span>
-                                    </Button>
-                                  </a>
-                                </div>
 
-                                <div className="space-y-1.5">
-                                  <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 2: Enter Transaction ID</label>
-                                  <Input 
-                                    placeholder="Enter 12-digit UTR / Ref Number" 
-                                    className="h-12 rounded-xl border-2 focus:border-primary font-mono"
-                                    value={transactionId}
-                                    onChange={(e) => setTransactionId(e.target.value)}
-                                    required
-                                  />
-                                </div>
-                              </div>
+                            <div className="p-4 bg-white border-4 border-primary/5 rounded-3xl shadow-inner inline-block">
+                              <img src="/admin_qr.png" alt="Payment QR" className="w-56 h-56 sm:w-64 sm:h-64 object-contain mx-auto" />
+                            </div>
+
+                            <div className="bg-primary/5 p-5 rounded-2xl w-full max-w-xs space-y-1">
+                              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Amount to Pay</p>
+                              <p className="text-4xl font-black text-primary">₹{checkoutTotal.toLocaleString('en-IN')}</p>
                             </div>
                           </div>
+                          
+                          <div className="space-y-6">
+                            <div className="space-y-4">
+                              <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 1: Open UPI App & Pay</label>
+                                <a href={upiUrl} className="block">
+                                  <Button type="button" variant="outline" className="w-full h-12 rounded-xl border-primary/20 hover:bg-primary/5 gap-2">
+                                    <Smartphone className="h-4 w-4 text-primary" />
+                                    Click here to Pay via App (Mobile)
+                                  </Button>
+                                </a>
+                              </div>
 
-                          <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex gap-3">
-                            <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0" />
-                            <div className="text-[11px] text-blue-800 leading-relaxed">
-                              **Secure Manual Verification:** Once you submit, our team will verify the payment using your Transaction ID. Your order status will be updated within 2 hours.
+                              <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 2: Enter Transaction ID / UTR</label>
+                                <Input 
+                                  placeholder="Enter 12-digit UTR / Ref Number" 
+                                  className="h-14 rounded-xl border-2 focus:border-primary font-mono text-center text-lg"
+                                  value={transactionId}
+                                  onChange={(e) => setTransactionId(e.target.value)}
+                                  required
+                                />
+                                <p className="text-[10px] text-center text-muted-foreground">You can find this in your bank app payment history</p>
+                              </div>
+                            </div>
+
+                            <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex gap-3">
+                              <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0" />
+                              <div className="text-[11px] text-blue-800 leading-relaxed">
+                                **Important:** Please enter the correct Transaction ID. Our team will verify it manually before processing your order.
+                              </div>
                             </div>
                           </div>
                         </div>
