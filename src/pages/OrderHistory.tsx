@@ -29,6 +29,7 @@ export const OrderHistory = () => {
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
   const [reviewingItem, setReviewingItem] = useState<{ productId: number, name: string } | null>(null);
   const [cancelingOrder, setCancelingOrder] = useState<Order | null>(null);
+  const [cancelingDesign, setCancelingDesign] = useState<CustomDesign | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
@@ -141,6 +142,22 @@ export const OrderHistory = () => {
     }
   };
 
+  const handleCancelDesign = async () => {
+    if (!cancelingDesign) return;
+
+    setSubmitting(true);
+    try {
+      await api.post(`/custom-designs/${cancelingDesign.id}/cancel`);
+      toast.success("Design request cancelled successfully");
+      setCustomDesigns(customDesigns.map(d => d.id === cancelingDesign.id ? { ...d, status: 'cancelled' } : d));
+      setCancelingDesign(null);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to cancel design request");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -178,7 +195,7 @@ export const OrderHistory = () => {
       case 'processing': return <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">Processing</Badge>;
       case 'shipped': return <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">Shipped</Badge>;
       case 'delivered': return <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">Delivered</Badge>;
-      case 'cancelled': return <Badge variant="destructive">Cancelled</Badge>;
+      case 'cancelled': return <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-200">Cancelled</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
   };
@@ -371,11 +388,21 @@ export const OrderHistory = () => {
                   </div>
                   <CardContent className="p-5">
                     <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-2">Description</p>
-                    <p className="text-sm mb-4 line-clamp-3">{design.description || "No description provided."}</p>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground border-t pt-4">
+                    <p className="text-sm mb-4 line-clamp-2">{design.description || "No description provided."}</p>
+                    <div className="flex justify-between items-center text-xs text-muted-foreground border-t pt-4 mb-4">
                       <span>Submitted on</span>
                       <span className="font-medium text-foreground">{new Date(design.created_at).toLocaleDateString('en-IN')}</span>
                     </div>
+                    {design.status === 'pending' && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-destructive hover:bg-destructive/5 hover:text-destructive border-destructive/20"
+                        onClick={() => setCancelingDesign(design)}
+                      >
+                        Cancel Request
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -383,6 +410,30 @@ export const OrderHistory = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Cancel Design Confirmation Modal */}
+      <Dialog open={!!cancelingDesign} onOpenChange={(open) => !open && setCancelingDesign(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Cancel Design Request?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel this custom design request? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 pt-4">
+            <Button type="button" variant="outline" className="flex-1" onClick={() => setCancelingDesign(null)}>Keep it</Button>
+            <Button 
+              type="button" 
+              variant="destructive" 
+              className="flex-1 font-bold" 
+              disabled={submitting}
+              onClick={handleCancelDesign}
+            >
+              {submitting ? "Canceling..." : "Yes, Cancel"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Order Tracker Modal */}
       <Dialog open={!!trackingOrder} onOpenChange={(open) => !open && setTrackingOrder(null)}>

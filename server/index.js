@@ -111,6 +111,27 @@ app.get('/api/custom-designs/user/:userId', async (req, res) => {
     }
 });
 
+app.post('/api/custom-designs/:id/cancel', async (req, res) => {
+    try {
+        const designId = req.params.id;
+        const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
+        
+        if (designs.length === 0) {
+            return res.status(404).json({ message: 'Design not found' });
+        }
+
+        if (designs[0].status !== 'pending') {
+            return res.status(400).json({ message: 'Only pending designs can be cancelled' });
+        }
+
+        await pool.execute('UPDATE custom_designs SET status = "cancelled" WHERE id = ?', [designId]);
+        res.json({ message: 'Design request cancelled successfully' });
+    } catch (error) {
+        console.error("Cancel design error:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+});
+
 // Newsletter Subscription
 app.post('/api/subscribe', async (req, res) => {
     try {
