@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
-import { CheckCircle2, Truck, ShieldCheck, IndianRupee } from 'lucide-react';
+import { CheckCircle2, Truck, ShieldCheck, IndianRupee, QrCode, Smartphone, Copy, CreditCard, ChevronRight } from 'lucide-react';
 
 export const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -15,13 +15,19 @@ export const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const directItem = location.state?.directItem;
-  
+
   const checkoutItems = directItem ? [directItem] : items;
   const checkoutTotal = directItem ? (directItem.price * directItem.quantity) : totalPrice;
 
   const [loading, setLoading] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
-  const [paymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online'>('cod');
+  const [selectedApp, setSelectedApp] = useState<string | null>(null);
+  const [transactionId, setTransactionId] = useState('');
+  
+  const adminUpiId = "6369906810@ptyes";
+  const adminName = "Abbas Threads";
+  const upiUrl = `upi://pay?pa=${adminUpiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR`;
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -56,9 +62,13 @@ export const Checkout = () => {
       return;
     }
 
+    if (paymentMethod === 'online' && !transactionId) {
+      toast.error("Please enter your Transaction ID to confirm payment");
+      return;
+    }
 
     setLoading(true);
-    
+
     try {
       const orderData = {
         userId: user.id,
@@ -66,8 +76,12 @@ export const Checkout = () => {
         totalAmount: checkoutTotal,
         status: 'pending',
         address: formData,
-        paymentMethod: 'cod',
-        paymentDetails: { provider: 'cod' }
+        paymentMethod: paymentMethod === 'online' ? `upi_${selectedApp}` : 'cod',
+        paymentDetails: { 
+          provider: 'manual_upi',
+          app: selectedApp,
+          transactionId: paymentMethod === 'online' ? transactionId : null
+        }
       };
 
       await api.post('/orders', orderData);
@@ -153,14 +167,18 @@ export const Checkout = () => {
                     <IndianRupee className="h-5 w-5 text-primary" />
                     Payment Method
                   </h3>
-                  
+
                   <div className="space-y-6">
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div 
-                        className="group cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 border-primary bg-primary/5 shadow-md"
+                        className={`group cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 shadow-md' : 'border-muted bg-card hover:border-primary/50 hover:bg-muted/50'}`}
+                        onClick={() => {
+                          setPaymentMethod('cod');
+                          setSelectedApp(null);
+                        }}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-primary text-primary-foreground">
+                          <div className={`p-2 rounded-lg ${paymentMethod === 'cod' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary'}`}>
                             <Truck className="h-5 w-5" />
                           </div>
                           <div>
@@ -169,13 +187,109 @@ export const Checkout = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full h-14 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98] mt-8" 
+                      <div 
+                        className={`group cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 ${paymentMethod === 'online' ? 'border-primary bg-primary/5 shadow-md' : 'border-muted bg-card hover:border-primary/50 hover:bg-muted/50'}`}
+                        onClick={() => {
+                          setPaymentMethod('online');
+                          if (!selectedApp) setSelectedApp('phonepe');
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg ${paymentMethod === 'online' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary'}`}>
+                            <CreditCard className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold">Online Payment</p>
+                            <p className="text-[10px] text-muted-foreground">Manual UPI (Secure)</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Online Sub-options */}
+                    {paymentMethod === 'online' && (
+                      <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
+                        <div className="space-y-4">
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Select Your Payment App</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {[
+                              { id: 'phonepe', name: 'PhonePe', color: '#5F259F' },
+                              { id: 'gpay', name: 'GPay', color: '#4285F4' },
+                              { id: 'paytm', name: 'Paytm', color: '#00BAF2' },
+                              { id: 'other', name: 'Others', color: '#000000' }
+                            ].map((app) => (
+                              <div 
+                                key={app.id}
+                                className={`cursor-pointer rounded-xl border-2 p-3 flex flex-col items-center justify-center gap-2 transition-all h-20 ${selectedApp === app.id ? 'border-primary bg-primary/10 shadow-sm scale-105' : 'border-muted bg-card hover:border-primary/30'}`}
+                                onClick={() => setSelectedApp(app.id)}
+                              >
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted/50">
+                                  <Smartphone className="h-4 w-4" style={{ color: app.color }} />
+                                </div>
+                                <span className="text-[10px] font-bold">{app.name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* QR & Details Card */}
+                        <div className="bg-white p-6 rounded-2xl border-2 border-primary/10 shadow-sm space-y-6">
+                          <div className="flex flex-col md:flex-row gap-6 items-center">
+                            <div className="shrink-0 space-y-2 text-center">
+                              <div className="p-3 bg-white border-4 border-primary/5 rounded-2xl shadow-inner inline-block">
+                                <img src="/admin_qr.png" alt="Payment QR" className="w-40 h-40 object-contain" />
+                              </div>
+                              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Scan with any UPI app</p>
+                            </div>
+                            
+                            <div className="flex-1 w-full space-y-4">
+                              <div className="bg-muted/30 p-4 rounded-xl space-y-1">
+                                <p className="text-xs text-muted-foreground">Amount to Pay</p>
+                                <p className="text-3xl font-black text-primary">₹{checkoutTotal.toLocaleString('en-IN')}</p>
+                              </div>
+                              
+                              <div className="space-y-3">
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 1: Make Payment</label>
+                                  <a href={upiUrl} className="block">
+                                    <Button type="button" variant="outline" className="w-full justify-between h-12 rounded-xl border-primary/20 hover:bg-primary/5">
+                                      <span className="flex items-center gap-2">
+                                        <Smartphone className="h-4 w-4 text-primary" />
+                                        Pay via {selectedApp?.toUpperCase()}
+                                      </span>
+                                      <ChevronRight className="h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </a>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 2: Enter Transaction ID</label>
+                                  <Input 
+                                    placeholder="Enter 12-digit UTR / Ref Number" 
+                                    className="h-12 rounded-xl border-2 focus:border-primary font-mono"
+                                    value={transactionId}
+                                    onChange={(e) => setTransactionId(e.target.value)}
+                                    required
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex gap-3">
+                            <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0" />
+                            <div className="text-[11px] text-blue-800 leading-relaxed">
+                              **Secure Manual Verification:** Once you submit, our team will verify the payment using your Transaction ID. Your order status will be updated within 2 hours.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                <Button
+                  type="submit"
+                  className="w-full h-14 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98] mt-8"
                   disabled={loading}
                 >
                   {loading ? (
@@ -228,7 +342,7 @@ export const Checkout = () => {
                   <span className="text-primary">₹{checkoutTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>
-              
+
               <div className="rounded-xl bg-muted/40 p-4 space-y-3 mt-6 border border-muted-foreground/10">
                 <div className="flex items-center gap-3 text-xs">
                   <div className="p-1.5 rounded-full bg-primary/10 text-primary">

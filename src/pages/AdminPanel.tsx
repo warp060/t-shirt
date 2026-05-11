@@ -335,7 +335,7 @@ export const AdminPanel = () => {
                 <form onSubmit={handleAddProduct} className="space-y-4">
                   <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required />
                   <Input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required />
-                  
+
                   <div className="space-y-2">
                     <label className="text-xs font-medium text-muted-foreground">Product Image</label>
                     <div className={`relative border-2 border-dashed rounded-lg p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/50 ${newProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
@@ -356,10 +356,10 @@ export const AdminPanel = () => {
                         </>
                       )}
                     </div>
-                    <Input 
-                      placeholder="Or paste Image URL" 
-                      value={newProduct.image_url && !newProduct.image_url.startsWith('data:') ? newProduct.image_url : ''} 
-                      onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} 
+                    <Input
+                      placeholder="Or paste Image URL"
+                      value={newProduct.image_url && !newProduct.image_url.startsWith('data:') ? newProduct.image_url : ''}
+                      onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })}
                     />
                   </div>
 
@@ -419,7 +419,7 @@ export const AdminPanel = () => {
                             <form onSubmit={handleUpdateProduct} className="space-y-4">
                               <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
                               <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required />
-                              
+
                               <div className="space-y-2">
                                 <label className="text-xs font-medium text-muted-foreground">Product Image</label>
                                 <div className={`relative border-2 border-dashed rounded-lg p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/50 ${editingProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
@@ -440,10 +440,10 @@ export const AdminPanel = () => {
                                     </>
                                   )}
                                 </div>
-                                <Input 
-                                  placeholder="Or paste Image URL" 
-                                  value={editingProduct.image_url && !editingProduct.image_url.startsWith('data:') ? editingProduct.image_url : ''} 
-                                  onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })} 
+                                <Input
+                                  placeholder="Or paste Image URL"
+                                  value={editingProduct.image_url && !editingProduct.image_url.startsWith('data:') ? editingProduct.image_url : ''}
+                                  onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
                                 />
                               </div>
 
