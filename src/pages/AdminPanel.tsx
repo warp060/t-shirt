@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
 export const AdminPanel = () => {
@@ -40,6 +40,60 @@ export const AdminPanel = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const compressImage = (base64Str: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+    });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isEditing: boolean = false) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("Image too large (max 10MB)");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        const compressed = await compressImage(base64);
+        if (isEditing && editingProduct) {
+          setEditingProduct({ ...editingProduct, image_url: compressed });
+        } else {
+          setNewProduct({ ...newProduct, image_url: compressed });
+        }
+        toast.success("Image uploaded successfully!");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const fetchData = async () => {
     setRefreshing(true);
@@ -281,7 +335,34 @@ export const AdminPanel = () => {
                 <form onSubmit={handleAddProduct} className="space-y-4">
                   <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required />
                   <Input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required />
-                  <Input placeholder="Image URL" value={newProduct.image_url} onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} required />
+                  
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-muted-foreground">Product Image</label>
+                    <div className={`relative border-2 border-dashed rounded-lg p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/50 ${newProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
+                      <input
+                        type="file"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e)}
+                      />
+                      {newProduct.image_url ? (
+                        <div className="relative w-full aspect-square max-h-[150px] rounded overflow-hidden">
+                          <img src={newProduct.image_url} alt="Preview" className="w-full h-full object-contain" />
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="h-6 w-6 text-muted-foreground" />
+                          <p className="text-xs text-muted-foreground text-center">Click to upload product image</p>
+                        </>
+                      )}
+                    </div>
+                    <Input 
+                      placeholder="Or paste Image URL" 
+                      value={newProduct.image_url && !newProduct.image_url.startsWith('data:') ? newProduct.image_url : ''} 
+                      onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })} 
+                    />
+                  </div>
+
                   <Input type="number" placeholder="Stock" value={newProduct.stock} onChange={e => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })} required />
                   <textarea
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
@@ -338,7 +419,34 @@ export const AdminPanel = () => {
                             <form onSubmit={handleUpdateProduct} className="space-y-4">
                               <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
                               <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required />
-                              <Input placeholder="Image URL" value={editingProduct.image_url} onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })} required />
+                              
+                              <div className="space-y-2">
+                                <label className="text-xs font-medium text-muted-foreground">Product Image</label>
+                                <div className={`relative border-2 border-dashed rounded-lg p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/50 ${editingProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
+                                  <input
+                                    type="file"
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e, true)}
+                                  />
+                                  {editingProduct.image_url ? (
+                                    <div className="relative w-full aspect-square max-h-[150px] rounded overflow-hidden">
+                                      <img src={editingProduct.image_url} alt="Preview" className="w-full h-full object-contain" />
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Upload className="h-6 w-6 text-muted-foreground" />
+                                      <p className="text-xs text-muted-foreground text-center">Click to change product image</p>
+                                    </>
+                                  )}
+                                </div>
+                                <Input 
+                                  placeholder="Or paste Image URL" 
+                                  value={editingProduct.image_url && !editingProduct.image_url.startsWith('data:') ? editingProduct.image_url : ''} 
+                                  onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })} 
+                                />
+                              </div>
+
                               <Input type="number" placeholder="Stock" value={editingProduct.stock} onChange={e => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) })} required />
                               <textarea
                                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
