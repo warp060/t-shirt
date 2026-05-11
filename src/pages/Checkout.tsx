@@ -48,10 +48,6 @@ export const Checkout = () => {
 
   const currentApp = paymentApps[selectedApp];
   const adminName = "Abbas Threads";
-  // Added tn (note) and tr (reference) to make it more professional and help prevent bank blocks
-  const transactionRef = `T${Date.now().toString().slice(-8)}`;
-  const upiUrl = `upi://pay?pa=${currentApp.upiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR&tn=${encodeURIComponent(`Order from ${formData.fullName || 'Abbas Threads'}`)}&tr=${transactionRef}&mode=02&purpose=00`;
-
   const [formData, setFormData] = useState({
     fullName: '',
     email: user?.email || '',
@@ -61,6 +57,11 @@ export const Checkout = () => {
     zipCode: '',
     phone: '',
   });
+
+  // Added tn (note) and tr (reference) to make it more professional and help prevent bank blocks
+  // Moved after formData to fix "ReferenceError: Cannot access 'formData' before initialization"
+  const transactionRef = `T${Date.now().toString().slice(-8)}`;
+  const upiUrl = `upi://pay?pa=${currentApp.upiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR&tn=${encodeURIComponent(`Order from ${formData.fullName || 'Abbas Threads'}`)}&tr=${transactionRef}&mode=02&purpose=00`;
 
   useEffect(() => {
     if (user && profile) {
