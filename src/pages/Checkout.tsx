@@ -22,12 +22,33 @@ export const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online'>('cod');
-  const [selectedApp, setSelectedApp] = useState<string | null>(null);
+  const [selectedApp, setSelectedApp] = useState<'phonepe' | 'gpay' | 'others'>('phonepe');
   const [transactionId, setTransactionId] = useState('');
   
-  const adminUpiId = "6369906810@ptyes";
+  const paymentApps = {
+    phonepe: {
+      name: "PhonePe",
+      upiId: "6369906810@ptyes",
+      qrImage: "/phonepe_qr.jpg",
+      color: "#5F259F"
+    },
+    gpay: {
+      name: "Google Pay",
+      upiId: "abbas6618532@oksbi",
+      qrImage: "/gpay_qr.jpg",
+      color: "#4285F4"
+    },
+    others: {
+      name: "Other UPI",
+      upiId: "6369906810@ptyes",
+      qrImage: "/phonepe_qr.jpg",
+      color: "#000000"
+    }
+  };
+
+  const currentApp = paymentApps[selectedApp];
   const adminName = "Abbas Threads";
-  const upiUrl = `upi://pay?pa=${adminUpiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR`;
+  const upiUrl = `upi://pay?pa=${currentApp.upiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR`;
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -80,6 +101,7 @@ export const Checkout = () => {
         paymentDetails: { 
           provider: 'manual_upi',
           app: selectedApp,
+          upiId: currentApp.upiId,
           transactionId: paymentMethod === 'online' ? transactionId : null
         }
       };
@@ -172,10 +194,7 @@ export const Checkout = () => {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div 
                         className={`group cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 shadow-md' : 'border-muted bg-card hover:border-primary/50 hover:bg-muted/50'}`}
-                        onClick={() => {
-                          setPaymentMethod('cod');
-                          setSelectedApp(null);
-                        }}
+                        onClick={() => setPaymentMethod('cod')}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${paymentMethod === 'cod' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary'}`}>
@@ -190,10 +209,7 @@ export const Checkout = () => {
 
                       <div 
                         className={`group cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 ${paymentMethod === 'online' ? 'border-primary bg-primary/5 shadow-md' : 'border-muted bg-card hover:border-primary/50 hover:bg-muted/50'}`}
-                        onClick={() => {
-                          setPaymentMethod('online');
-                          if (!selectedApp) setSelectedApp('phonepe');
-                        }}
+                        onClick={() => setPaymentMethod('online')}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${paymentMethod === 'online' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary'}`}>
@@ -209,31 +225,51 @@ export const Checkout = () => {
 
                     {paymentMethod === 'online' && (
                       <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
+                        <div className="space-y-4">
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Select Your Payment App</p>
+                          <div className="grid grid-cols-3 gap-3">
+                            {(Object.entries(paymentApps) as [keyof typeof paymentApps, typeof paymentApps['phonepe']][]).map(([id, app]) => (
+                              <div 
+                                key={id}
+                                className={`cursor-pointer rounded-xl border-2 p-3 flex flex-col items-center justify-center gap-2 transition-all ${selectedApp === id ? 'border-primary bg-primary/10 shadow-sm scale-105' : 'border-muted bg-card hover:border-primary/30'}`}
+                                onClick={() => setSelectedApp(id)}
+                              >
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted/50">
+                                  <Smartphone className="h-4 w-4" style={{ color: app.color }} />
+                                </div>
+                                <span className="text-[10px] font-bold">{app.name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
                         <div className="bg-white p-6 sm:p-8 rounded-2xl border-2 border-primary/10 shadow-sm space-y-8">
                           <div className="flex flex-col items-center text-center space-y-6">
                             <div className="space-y-2">
-                              <h4 className="text-lg font-bold">Scan & Pay with any App</h4>
-                              <p className="text-xs text-muted-foreground">PhonePe, GPay, Paytm, or any UPI app</p>
+                              <h4 className="text-lg font-bold">Scan & Pay with {currentApp.name}</h4>
+                              <p className="text-xs text-muted-foreground">Pay exactly ₹{checkoutTotal.toLocaleString('en-IN')}</p>
                             </div>
 
                             <div className="p-4 bg-white border-4 border-primary/5 rounded-3xl shadow-inner inline-block">
-                              <img src="/admin_qr.png" alt="Payment QR" className="w-56 h-56 sm:w-64 sm:h-64 object-contain mx-auto" />
+                              <img src={currentApp.qrImage} alt={`${currentApp.name} QR`} className="w-56 h-72 sm:w-64 sm:h-80 object-contain mx-auto rounded-xl" />
                             </div>
-
-                            <div className="bg-primary/5 p-5 rounded-2xl w-full max-w-xs space-y-1">
-                              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Amount to Pay</p>
-                              <p className="text-4xl font-black text-primary">₹{checkoutTotal.toLocaleString('en-IN')}</p>
+                            
+                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-full text-[10px] font-mono text-muted-foreground">
+                              <span>UPI: {currentApp.upiId}</span>
+                              <Button variant="ghost" size="icon" className="h-4 w-4" onClick={(e) => { e.preventDefault(); copyToClipboard(currentApp.upiId); }}>
+                                <Copy className="h-3 w-3" />
+                              </Button>
                             </div>
                           </div>
                           
                           <div className="space-y-6">
                             <div className="space-y-4">
                               <div className="space-y-2">
-                                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 1: Open UPI App & Pay</label>
+                                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Step 1: Open {currentApp.name} & Pay</label>
                                 <a href={upiUrl} className="block">
                                   <Button type="button" variant="outline" className="w-full h-12 rounded-xl border-primary/20 hover:bg-primary/5 gap-2">
                                     <Smartphone className="h-4 w-4 text-primary" />
-                                    Click here to Pay via App (Mobile)
+                                    Pay via {currentApp.name} (Mobile)
                                   </Button>
                                 </a>
                               </div>
@@ -247,14 +283,13 @@ export const Checkout = () => {
                                   onChange={(e) => setTransactionId(e.target.value)}
                                   required
                                 />
-                                <p className="text-[10px] text-center text-muted-foreground">You can find this in your bank app payment history</p>
                               </div>
                             </div>
 
                             <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex gap-3">
                               <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0" />
                               <div className="text-[11px] text-blue-800 leading-relaxed">
-                                **Important:** Please enter the correct Transaction ID. Our team will verify it manually before processing your order.
+                                **Verification:** Our team will verify the payment on {currentApp.name} using your Transaction ID.
                               </div>
                             </div>
                           </div>
