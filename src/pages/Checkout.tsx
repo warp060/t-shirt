@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
-import { CheckCircle2, Truck, ShieldCheck, IndianRupee } from 'lucide-react';
+import { CheckCircle2, Truck, ShieldCheck, IndianRupee, QrCode, Smartphone, Copy, CreditCard, ChevronRight } from 'lucide-react';
 
 export const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
