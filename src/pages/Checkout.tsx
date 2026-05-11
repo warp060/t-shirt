@@ -48,7 +48,9 @@ export const Checkout = () => {
 
   const currentApp = paymentApps[selectedApp];
   const adminName = "Abbas Threads";
-  const upiUrl = `upi://pay?pa=${currentApp.upiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR`;
+  // Added tn (note) and tr (reference) to make it more professional and help prevent bank blocks
+  const transactionRef = `T${Date.now().toString().slice(-8)}`;
+  const upiUrl = `upi://pay?pa=${currentApp.upiId}&pn=${encodeURIComponent(adminName)}&am=${checkoutTotal}&cu=INR&tn=${encodeURIComponent(`Order from ${formData.fullName || 'Abbas Threads'}`)}&tr=${transactionRef}&mode=02&purpose=00`;
 
   const [formData, setFormData] = useState({
     fullName: '',
