@@ -253,13 +253,6 @@ export const Checkout = () => {
                             <div className="p-4 bg-white border-4 border-primary/5 rounded-3xl shadow-inner inline-block">
                               <img src={currentApp.qrImage} alt={`${currentApp.name} QR`} className="w-56 h-72 sm:w-64 sm:h-80 object-contain mx-auto rounded-xl" />
                             </div>
-                            
-                            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-full text-[10px] font-mono text-muted-foreground">
-                              <span>UPI: {currentApp.upiId}</span>
-                              <Button variant="ghost" size="icon" className="h-4 w-4" onClick={(e) => { e.preventDefault(); copyToClipboard(currentApp.upiId); }}>
-                                <Copy className="h-3 w-3" />
-                              </Button>
-                            </div>
                           </div>
                           
                           <div className="space-y-6">
