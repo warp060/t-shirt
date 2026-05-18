@@ -649,11 +649,11 @@ app.post('/api/custom-designs/:id/cancel', async (req, res) => {
         setImmediate(async () => {
             try {
                 const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [designs[0].user_id]);
-                if (users.length > 0) {
-                    const designWithReason = { ...designs[0], cancel_reason: cancel_reason || null };
-                    await sendCustomDesignCancellationNotification(designWithReason, users[0]);
-                    console.log(`[MAIL] ✅ Custom design cancellation notification sent for design: ${designId}`);
-                }
+                const user = users.length > 0 ? users[0] : { name: 'Unknown User', email: 'N/A' };
+                
+                const designWithReason = { ...designs[0], cancel_reason: cancel_reason || null };
+                await sendCustomDesignCancellationNotification(designWithReason, user);
+                console.log(`[MAIL] ✅ Custom design cancellation notification sent for design: ${designId}`);
             } catch (err) {
                 console.error("[MAIL] ❌ Custom design cancellation notification failed:", err);
             }
