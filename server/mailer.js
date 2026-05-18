@@ -250,6 +250,54 @@ const templates = {
         </table>
     </body>
     </html>
+    `,
+
+    // ─── CUSTOM DESIGN CANCELLED ──────────────────
+    customDesignCancelled: (design, user) => `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
+            <tr><td align="center">
+                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                    
+                    <!-- Header -->
+                    <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">Custom Service Cancellation Notice</div>
+                    </td></tr>
+
+                    <!-- Body -->
+                    <tr><td style="padding: 25px 25px 10px;">
+                        <h2 style="margin: 0 0 20px; font-size: 18px; color: #c62828; border-bottom: 2px solid #c62828; padding-bottom: 8px;">Custom Design Cancelled</h2>
+
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${user?.name || 'N/A'}</p>
+                        <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Email:</strong> <a href="mailto:${user?.email || ''}" style="color: #1a73e8; text-decoration: none;">${user?.email || 'N/A'}</a></p>
+
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Description:</strong> ${design.description || 'No description provided'}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Phone:</strong> ${design.phone || 'No phone provided'}</p>
+                        <p style="margin: 0 0 20px; font-size: 14px; color: #333;"><strong>Address:</strong> ${design.address || 'No address provided'}</p>
+                        
+                        ${design.cancel_reason ? `
+                        <div style="background-color: #fff3f3; border-left: 3px solid #c62828; padding: 12px 15px; margin-bottom: 20px;">
+                            <p style="margin: 0 0 5px; font-size: 13px; font-weight: bold; color: #c62828; text-transform: uppercase; letter-spacing: 0.5px;">Customer's Reason</p>
+                            <p style="margin: 0; font-size: 14px; color: #333; font-style: italic;">"${design.cancel_reason}"</p>
+                        </div>
+                        ` : ''}
+                    </td></tr>
+
+                    <!-- Footer -->
+                    <tr><td style="background-color: #fafafa; padding: 15px 25px; border-top: 1px solid #eee; text-align: center;">
+                        <p style="margin: 0; font-size: 11px; color: #999;">This is an automated email from Abbas Threads. Please do not reply.</p>
+                    </td></tr>
+
+                </table>
+            </td></tr>
+        </table>
+    </body>
+    </html>
     `
 };
 
@@ -277,6 +325,27 @@ module.exports = {
 
         return sendEmail(
             `Custom Design Request from ${user?.name || 'User'} - Abbas Threads`,
+            html,
+            attachments
+        );
+    },
+
+    sendCustomDesignCancellationNotification: (design, user) => {
+        const html = templates.customDesignCancelled(design, user);
+        const imageUrl = design.imageUrl || design.image_url || '';
+        const attachments = [];
+
+        const parsed = parseDataUrl(imageUrl);
+        if (parsed) {
+            attachments.push({
+                filename: `custom-design.${parsed.extension}`,
+                content: parsed.base64,
+            });
+            console.log(`[MAIL] Attaching design image (${parsed.mimeType}) for cancellation`);
+        }
+
+        return sendEmail(
+            `Custom Design Request CANCELLED by ${user?.name || 'User'} - Abbas Threads`,
             html,
             attachments
         );

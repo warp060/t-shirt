@@ -12,7 +12,7 @@ const pool = require('./db');
 const jwt = require('jsonwebtoken');
 const { register, login, googleLogin } = require('./auth');
 
-const { sendOrderNotification, sendCancellationNotification, sendCustomDesignNotification } = require('./mailer');
+const { sendOrderNotification, sendCancellationNotification, sendCustomDesignNotification, sendCustomDesignCancellationNotification } = require('./mailer');
 
 const app = express();
 
@@ -644,6 +644,21 @@ app.post('/api/custom-designs/:id/cancel', async (req, res) => {
 
         await pool.execute('UPDATE custom_designs SET status = "cancelled", cancel_reason = ? WHERE id = ?', [cancel_reason || null, designId]);
         console.log(`[CANCEL DESIGN] Successfully cancelled design: ${designId}`);
+
+        // Admin notification - Backgrounded
+        setImmediate(async () => {
+            try {
+                const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [designs[0].user_id]);
+                if (users.length > 0) {
+                    const designWithReason = { ...designs[0], cancel_reason: cancel_reason || null };
+                    await sendCustomDesignCancellationNotification(designWithReason, users[0]);
+                    console.log(`[MAIL] ✅ Custom design cancellation notification sent for design: ${designId}`);
+                }
+            } catch (err) {
+                console.error("[MAIL] ❌ Custom design cancellation notification failed:", err);
+            }
+        });
+
         res.json({ message: 'Design request cancelled successfully' });
     } catch (error) {
         console.error("Cancel design error:", error);
