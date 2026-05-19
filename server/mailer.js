@@ -155,7 +155,7 @@ const templates = {
     `,
 
     // ─── ORDER CANCELLED ───────────────────────────
-    orderCancelled: (order) => `
+    orderCancelled: (order, items = []) => `
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -187,6 +187,36 @@ const templates = {
                         </div>
                         ` : ''}
                     </td></tr>
+
+                    ${items && items.length > 0 ? `
+                    <!-- Cancelled Items -->
+                    <tr><td style="padding: 0 25px 15px;">
+                        <h3 style="margin: 0 0 10px; font-size: 14px; color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Cancelled Items</h3>
+                        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 5px;">
+                            ${items.map(item => `
+                            <tr>
+                                <td style="padding: 8px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee; vertical-align: middle;">
+                                    <table cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                        <tr>
+                                            ${item.image_url ? `
+                                            <td style="padding-right: 12px; vertical-align: middle;">
+                                                <img src="${item.image_url}" width="45" height="45" style="border-radius: 4px; object-fit: cover; border: 1px solid #e0e0e0; display: block;" alt="${item.name || 'Product'}" />
+                                            </td>
+                                            ` : ''}
+                                            <td style="vertical-align: middle;">
+                                                <span style="font-weight: 500; color: #1a1a1a;">${item.name || 'Product'}</span>
+                                                <br/>
+                                                <span style="font-size: 12px; color: #777;">Qty: ${item.quantity}</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding: 8px 0; font-size: 14px; color: #333; text-align: right; border-bottom: 1px solid #eee; vertical-align: middle; font-weight: bold;">₹${item.price}</td>
+                            </tr>
+                            `).join('')}
+                        </table>
+                    </td></tr>
+                    ` : ''}
 
                     <!-- Shipping Address -->
                     <tr><td style="padding: 0 25px 15px;">
@@ -320,8 +350,8 @@ module.exports = {
     sendOrderNotification: (order, items) => 
         sendEmail(`New Order #${order.id || 'Pending'} - Abbas Threads`, templates.newOrder(order, items)),
     
-    sendCancellationNotification: (order) => 
-        sendEmail(`Order #${order.id} Cancelled - Abbas Threads`, templates.orderCancelled(order)),
+    sendCancellationNotification: (order, items) => 
+        sendEmail(`Order #${order.id} Cancelled - Abbas Threads`, templates.orderCancelled(order, items)),
     
     sendCustomDesignNotification: (design, user) => {
         const html = templates.customDesign(design, user);

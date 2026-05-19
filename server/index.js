@@ -628,7 +628,18 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
                         ...fullOrders[0],
                         address: JSON.parse(fullOrders[0].shipping_address)
                     };
-                    await sendCancellationNotification(fullOrder);
+                    const [items] = await pool.execute(
+                        'SELECT oi.*, p.name, p.image_url FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?',
+                        [orderId]
+                    );
+                    const enrichedItems = items.map(item => ({
+                        productId: item.product_id,
+                        name: item.name,
+                        image_url: item.image_url,
+                        quantity: item.quantity,
+                        price: parseFloat(item.price_at_purchase)
+                    }));
+                    await sendCancellationNotification(fullOrder, enrichedItems);
                     console.log(`[MAIL] ✅ Cancellation notification sent for Order #${orderId}`);
                 }
             } catch (err) {
