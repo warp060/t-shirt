@@ -176,6 +176,17 @@ export const OrderHistory = () => {
     }
   };
 
+  const handleDeleteOrder = async (orderId: number) => {
+    if (!confirm("Are you sure you want to delete this order? This action cannot be undone.")) return;
+    try {
+      await api.delete(`/orders/${orderId}`);
+      toast.success("Order deleted successfully");
+      setOrders(orders.filter(o => o.id !== orderId));
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete order");
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -319,22 +330,22 @@ export const OrderHistory = () => {
                         <span className="text-xs text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</span>
                       </div>
 
-                      {(order.status === 'pending' || order.status === 'processing') && (
-                        <div className="relative">
-                          <Button 
-                            variant="secondary" 
-                            size="icon" 
-                            className="group/btn h-8 w-8 rounded-full shadow-md bg-background/80 backdrop-blur-sm hover:bg-background border border-border/20 transition-all cursor-pointer"
-                            onClick={() => setActiveMenu(activeMenu === -order.id ? null : -order.id)}
-                          >
-                            <Settings className="h-4 w-4 text-muted-foreground group-hover/btn:text-foreground group-hover/btn:rotate-45 transition-transform duration-500 ease-out" />
-                          </Button>
-                          {activeMenu === -order.id && (
-                            <>
-                              <div className="fixed inset-0 z-0" onClick={() => setActiveMenu(null)} />
-                              <div className="absolute right-0 mt-2 w-44 bg-background/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-xl shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] py-1.5 z-10 text-left animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="relative">
+                        <Button 
+                          variant="secondary" 
+                          size="icon" 
+                          className="group/btn h-8 w-8 rounded-full shadow-md bg-background/80 backdrop-blur-sm hover:bg-background border border-border/20 transition-all cursor-pointer"
+                          onClick={() => setActiveMenu(activeMenu === -order.id ? null : -order.id)}
+                        >
+                          <Settings className="h-4 w-4 text-muted-foreground group-hover/btn:text-foreground group-hover/btn:rotate-45 transition-transform duration-500 ease-out" />
+                        </Button>
+                        {activeMenu === -order.id && (
+                          <>
+                            <div className="fixed inset-0 z-0" onClick={() => setActiveMenu(null)} />
+                            <div className="absolute right-0 mt-2 w-44 bg-background/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-xl shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] py-1.5 z-10 text-left animate-in fade-in slide-in-from-top-2 duration-200">
+                              {(order.status === 'pending' || order.status === 'processing') && (
                                 <button
-                                  className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-all flex items-center gap-2 cursor-pointer"
+                                  className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-all flex items-center gap-2 cursor-pointer border-b border-border/50"
                                   onClick={() => {
                                     setCancelingOrder(order);
                                     setActiveMenu(null);
@@ -342,11 +353,20 @@ export const OrderHistory = () => {
                                 >
                                   <XCircle className="h-3.5 w-3.5" /> Cancel Order
                                 </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
+                              )}
+                              <button
+                                className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-all flex items-center gap-2 cursor-pointer"
+                                onClick={() => {
+                                  handleDeleteOrder(order.id);
+                                  setActiveMenu(null);
+                                }}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" /> Delete Order
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
 
                     <div className="space-y-6">

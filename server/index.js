@@ -641,6 +641,37 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
     }
 });
 
+app.delete('/api/orders/:id', async (req, res) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+        const orderId = req.params.id;
+        const [orders] = await connection.execute('SELECT * FROM orders WHERE id = ?', [orderId]);
+        if (orders.length === 0) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        const order = orders[0];
+        
+        // If it was active, restore product stocks
+        if (order.status === 'pending' || order.status === 'processing') {
+            const [items] = await connection.execute('SELECT * FROM order_items WHERE order_id = ?', [orderId]);
+            for (const item of items) {
+                await connection.execute('UPDATE products SET stock = stock + ? WHERE id = ?', [item.quantity, item.product_id]);
+            }
+        }
+        
+        await connection.execute('DELETE FROM orders WHERE id = ?', [orderId]);
+        await connection.commit();
+        res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        await connection.rollback();
+        console.error("Delete order error:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
+    } finally {
+        connection.release();
+    }
+});
+
 app.post('/api/custom-designs/:id/cancel', async (req, res) => {
     console.log(`[CANCEL DESIGN] Attempting to cancel design: ${req.params.id}`);
     try {
