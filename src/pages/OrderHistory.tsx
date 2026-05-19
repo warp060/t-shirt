@@ -307,14 +307,20 @@ export const OrderHistory = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-right">
-                      <div>
-                        <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-1">Order ID</p>
-                        <p className="text-sm font-mono font-medium text-muted-foreground">#ORD-{order.id.toString().padStart(6, '0')}</p>
+                    <div className="text-right">
+                      <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-1">Order ID</p>
+                      <p className="text-sm font-mono font-medium text-muted-foreground">#ORD-{order.id.toString().padStart(6, '0')}</p>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                      <div className="flex items-center gap-3">
+                        {getStatusBadge(order.status)}
+                        <span className="text-xs text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</span>
                       </div>
-                      
+
                       {(order.status === 'pending' || order.status === 'processing') && (
-                        <div className="relative translate-y-[5px]">
+                        <div className="relative">
                           <Button 
                             variant="secondary" 
                             size="icon" 
@@ -341,14 +347,6 @@ export const OrderHistory = () => {
                           )}
                         </div>
                       )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-                      <div className="flex items-center gap-3">
-                        {getStatusBadge(order.status)}
-                        <span className="text-xs text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</span>
-                      </div>
                     </div>
 
                     <div className="space-y-6">
