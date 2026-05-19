@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite --port=3000 --host=0.0.0.0\" \"cd server && node index.js\"",
-    "dev:server": "cd server && node index.js",
+    "dev": "concurrently \"vite --port=3000 --host=0.0.0.0\" \"cd server && node --watch index.js\"",
+    "dev:server": "cd server && node --watch index.js",
     "dev:all": "npm run dev",
     "build": "vite build",
     "preview": "vite preview",
