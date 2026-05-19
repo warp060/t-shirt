@@ -571,9 +571,13 @@ app.post('/api/orders', async (req, res) => {
                 try {
                     const enrichedItems = await Promise.all(items.map(async (item) => {
                         try {
-                            const [products] = await pool.execute('SELECT name FROM products WHERE id = ?', [item.productId || item.id]);
-                            return { ...item, name: products.length > 0 ? products[0].name : (item.name || 'Product') };
-                        } catch (e) { return { ...item, name: item.name || 'Product' }; }
+                            const [products] = await pool.execute('SELECT name, image_url FROM products WHERE id = ?', [item.productId || item.id]);
+                            return { 
+                                ...item, 
+                                name: products.length > 0 ? products[0].name : (item.name || 'Product'),
+                                image_url: products.length > 0 ? products[0].image_url : (item.image_url || '')
+                            };
+                        } catch (e) { return { ...item, name: item.name || 'Product', image_url: item.image_url || '' }; }
                     }));
                     await sendOrderNotification({ id: orderId, totalAmount, address, paymentMethod }, enrichedItems);
                     console.log(`[MAIL] ✅ Admin email sent for Order #${orderId}`);

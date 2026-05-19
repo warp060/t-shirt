@@ -99,13 +99,28 @@ const templates = {
                             </tr>
                             ${items.map(item => `
                             <tr>
-                                <td style="padding: 10px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee;">${item.name || 'Product'} x ${item.quantity}</td>
-                                <td style="padding: 10px 0; font-size: 14px; color: #333; text-align: right; border-bottom: 1px solid #eee;">₹${item.price}</td>
+                                <td style="padding: 10px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee; vertical-align: middle;">
+                                    <table cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                        <tr>
+                                            ${item.image_url ? `
+                                            <td style="padding-right: 12px; vertical-align: middle;">
+                                                <img src="${item.image_url}" width="45" height="45" style="border-radius: 4px; object-fit: cover; border: 1px solid #e0e0e0; display: block;" alt="${item.name || 'Product'}" />
+                                            </td>
+                                            ` : ''}
+                                            <td style="vertical-align: middle;">
+                                                <span style="font-weight: 500; color: #1a1a1a;">${item.name || 'Product'}</span>
+                                                <br/>
+                                                <span style="font-size: 12px; color: #777;">Qty: ${item.quantity}</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding: 10px 0; font-size: 14px; color: #333; text-align: right; border-bottom: 1px solid #eee; vertical-align: middle; font-weight: bold;">₹${item.price}</td>
                             </tr>
                             `).join('')}
                             <tr>
-                                <td style="padding: 12px 0; font-size: 15px; color: #1a1a1a; font-weight: bold;">Total Amount</td>
-                                <td style="padding: 12px 0; font-size: 16px; color: #1a1a1a; text-align: right; font-weight: bold;">₹${order.totalAmount || order.total_amount}</td>
+                                <td style="padding: 12px 0; font-size: 15px; color: #1a1a1a; font-weight: bold; vertical-align: middle;">Total Amount</td>
+                                <td style="padding: 12px 0; font-size: 16px; color: #1a1a1a; text-align: right; font-weight: bold; vertical-align: middle;">₹${order.totalAmount || order.total_amount}</td>
                             </tr>
                         </table>
                     </td></tr>
