@@ -293,11 +293,11 @@ export const AdminPanel = () => {
       {/* Metrics Grid */}
       <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
         {/* Glow ambient effects behind the cards */}
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 w-72 h-32 bg-zinc-200/30 dark:bg-zinc-800/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 translate-x-1/2 w-72 h-32 bg-zinc-100/20 dark:bg-zinc-900/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 w-80 h-36 bg-zinc-200/50 dark:bg-zinc-800/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 translate-x-1/2 w-80 h-36 bg-zinc-100/40 dark:bg-zinc-900/15 rounded-full blur-[80px] pointer-events-none" />
 
         {/* Card 1: Products */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/40 bg-white/10 dark:bg-zinc-950/10 backdrop-blur-lg p-6 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.6)] hover:bg-white/20 dark:hover:bg-zinc-950/20 hover:border-white/80 dark:hover:border-zinc-700/60 transition-all duration-500 ease-out hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Total Products</span>
             <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
@@ -311,7 +311,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 2: Orders */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/40 bg-white/10 dark:bg-zinc-950/10 backdrop-blur-lg p-6 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.6)] hover:bg-white/20 dark:hover:bg-zinc-950/20 hover:border-white/80 dark:hover:border-zinc-700/60 transition-all duration-500 ease-out hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Total Orders</span>
             <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
@@ -325,7 +325,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 3: Revenue */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/40 bg-white/10 dark:bg-zinc-950/10 backdrop-blur-lg p-6 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.6)] hover:bg-white/20 dark:hover:bg-zinc-950/20 hover:border-white/80 dark:hover:border-zinc-700/60 transition-all duration-500 ease-out hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Total Revenue</span>
             <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
@@ -339,7 +339,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 4: Avg Value */}
-        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/40 bg-white/10 dark:bg-zinc-950/10 backdrop-blur-lg p-6 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_20px_48px_-10px_rgba(0,0,0,0.6)] hover:bg-white/20 dark:hover:bg-zinc-950/20 hover:border-white/80 dark:hover:border-zinc-700/60 transition-all duration-500 ease-out hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Average Order</span>
             <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
