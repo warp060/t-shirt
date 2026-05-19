@@ -113,6 +113,22 @@ app.get('/api/custom-designs/user/:userId', async (req, res) => {
 });
 
 
+app.delete('/api/custom-designs/:id', async (req, res) => {
+    try {
+        const designId = req.params.id;
+        const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
+        if (designs.length === 0) {
+            return res.status(404).json({ message: 'Design not found' });
+        }
+        await pool.execute('DELETE FROM custom_designs WHERE id = ?', [designId]);
+        res.json({ message: 'Design request deleted successfully' });
+    } catch (error) {
+        console.error("Delete custom design error:", error);
+        res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+});
+
+
 // Newsletter Subscription
 app.post('/api/subscribe', async (req, res) => {
     try {

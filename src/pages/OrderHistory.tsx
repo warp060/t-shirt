@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth';
 import { Order, CustomDesign } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette, MoreVertical, XCircle } from 'lucide-react';
+import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette, MoreVertical, XCircle, Settings, Trash2 } from 'lucide-react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -163,6 +163,16 @@ export const OrderHistory = () => {
       toast.error(error.message || "Failed to cancel design request");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteDesign = async (designId: number) => {
+    try {
+      await api.delete(`/custom-designs/${designId}`);
+      toast.success("Design request deleted successfully");
+      setCustomDesigns(customDesigns.filter(d => d.id !== designId));
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete design request");
     }
   };
 
@@ -394,34 +404,45 @@ export const OrderHistory = () => {
                       <Badge className="capitalize shadow-md" variant={design.status === 'pending' ? 'secondary' : design.status === 'completed' ? 'default' : 'outline'}>
                         {design.status}
                       </Badge>
-                      {design.status === 'pending' && (
-                        <div className="relative">
-                          <Button 
-                            variant="secondary" 
-                            size="icon" 
-                            className="h-8 w-8 rounded-full shadow-md bg-background/80 backdrop-blur-sm hover:bg-background"
-                            onClick={() => setActiveMenu(activeMenu === design.id ? null : design.id)}
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                          {activeMenu === design.id && (
-                            <>
-                              <div className="fixed inset-0 z-0" onClick={() => setActiveMenu(null)} />
-                              <div className="absolute right-0 mt-1 w-40 bg-background border rounded-lg shadow-lg py-1 z-10">
+                      <div className="relative">
+                        <Button 
+                          variant="secondary" 
+                          size="icon" 
+                          className="group/btn h-8 w-8 rounded-full shadow-md bg-background/80 backdrop-blur-sm hover:bg-background border border-border/20 transition-all cursor-pointer"
+                          onClick={() => setActiveMenu(activeMenu === design.id ? null : design.id)}
+                        >
+                          <Settings className="h-4 w-4 text-muted-foreground group-hover/btn:text-foreground group-hover/btn:rotate-45 transition-transform duration-500 ease-out" />
+                        </Button>
+                        {activeMenu === design.id && (
+                          <>
+                            <div className="fixed inset-0 z-0" onClick={() => setActiveMenu(null)} />
+                            <div className="absolute right-0 mt-2 w-44 bg-background/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-xl shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] py-1.5 z-10 animate-in fade-in slide-in-from-top-2 duration-200">
+                              {design.status === 'pending' && (
                                 <button
-                                  className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted transition-colors flex items-center gap-2"
+                                  className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-all flex items-center gap-2 cursor-pointer"
                                   onClick={() => {
                                     setCancelingDesign(design);
                                     setActiveMenu(null);
                                   }}
                                 >
-                                  <XCircle className="h-4 w-4" /> Cancel Request
+                                  <XCircle className="h-3.5 w-3.5" /> Cancel Request
                                 </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
+                              )}
+                              <button
+                                className={`w-full text-left px-3.5 py-2 text-xs font-semibold text-destructive hover:bg-destructive/10 transition-all flex items-center gap-2 cursor-pointer ${design.status === 'pending' ? 'border-t border-border/20 mt-1' : ''}`}
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to delete this design request?")) {
+                                    handleDeleteDesign(design.id);
+                                  }
+                                  setActiveMenu(null);
+                                }}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" /> Delete Request
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <CardContent className="p-5">
