@@ -313,7 +313,7 @@ export const OrderHistory = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                    <div className="flex flex-row items-center justify-between gap-4 mb-8">
                       <div className="flex items-center gap-3">
                         {getStatusBadge(order.status)}
                         <span className="text-xs text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</span>
