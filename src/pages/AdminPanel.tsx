@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { Product, Order, UserProfile, CustomDesign } from '../types';
+import { Product, Order, UserProfile, CustomDesign, Review } from '../types';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Mail, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 
 export const AdminPanel = () => {
@@ -263,82 +263,129 @@ export const AdminPanel = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
-        <LayoutDashboard className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Manage your store products, orders, and users.</p>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-500">
+      {/* Dashboard Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-border/60">
+        <div className="flex items-center gap-3.5">
+          <div className="p-2.5 bg-primary/10 dark:bg-primary/20 rounded-xl text-primary ring-4 ring-primary/5">
+            <LayoutDashboard className="h-6 w-6 sm:h-7 sm:w-7" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/75 bg-clip-text text-transparent">Admin Dashboard</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Control panel for managing your store products, orders, customers, and designs.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {refreshing ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground bg-muted/50 rounded-lg animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+              Syncing data...
+            </span>
+          ) : (
+            <Button variant="outline" size="sm" onClick={fetchData} className="text-xs flex items-center gap-1.5 font-medium border-border/60 hover:bg-muted/50 transition-all cursor-pointer">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Live Sync Active
+            </Button>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-4 mb-8">
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
-            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground hidden sm:block" />
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <div className="text-xl sm:text-2xl font-bold">{products.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
-            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Orders</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground hidden sm:block" />
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <div className="text-xl sm:text-2xl font-bold">{orders.length}</div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
-            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Revenue</CardTitle>
-            <div className="text-primary font-bold hidden sm:block">₹</div>
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <div className="text-lg sm:text-2xl font-bold truncate">₹{totalRevenue.toLocaleString('en-IN')}</div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
-            <CardTitle className="text-[10px] sm:text-sm font-medium uppercase tracking-wider text-muted-foreground">Avg Value</CardTitle>
-            <LayoutDashboard className="h-4 w-4 text-muted-foreground hidden sm:block" />
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <div className="text-lg sm:text-2xl font-bold truncate">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
-          </CardContent>
-        </Card>
+      {/* Metrics Grid */}
+      <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+        {/* Glow ambient effects behind the cards */}
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 w-72 h-32 bg-zinc-200/30 dark:bg-zinc-800/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 translate-x-1/2 w-72 h-32 bg-zinc-100/20 dark:bg-zinc-900/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Card 1: Products */}
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Total Products</span>
+            <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
+              <Package className="h-4.5 w-4.5" />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-3xl font-black tracking-tight text-foreground">{products.length}</span>
+            <span className="text-[11px] text-muted-foreground/80 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Items active</span>
+          </div>
+        </div>
+
+        {/* Card 2: Orders */}
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Total Orders</span>
+            <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
+              <ShoppingBag className="h-4.5 w-4.5" />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-3xl font-black tracking-tight text-foreground">{orders.length}</span>
+            <span className="text-[11px] text-muted-foreground/80 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Received logs</span>
+          </div>
+        </div>
+
+        {/* Card 3: Revenue */}
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Total Revenue</span>
+            <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
+              <DollarSign className="h-4.5 w-4.5" />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-3xl font-black tracking-tight text-foreground">₹{totalRevenue.toLocaleString('en-IN')}</span>
+            <span className="text-[11px] text-muted-foreground/80 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Gross earnings</span>
+          </div>
+        </div>
+
+        {/* Card 4: Avg Value */}
+        <div className="group relative overflow-hidden rounded-2xl border border-white/60 dark:border-zinc-800/60 bg-white/20 dark:bg-zinc-900/10 backdrop-blur-md p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.06)] dark:hover:shadow-[0_12px_40px_0_rgba(0,0,0,0.25)] hover:bg-white/40 dark:hover:bg-zinc-900/20 hover:border-zinc-300/80 dark:hover:border-zinc-700/80 transition-all duration-500 ease-out hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">Average Order</span>
+            <div className="w-9 h-9 flex items-center justify-center bg-white/60 dark:bg-zinc-900/60 text-foreground/80 border border-white/80 dark:border-zinc-800/80 rounded-xl group-hover:scale-110 group-hover:bg-foreground group-hover:text-background group-hover:border-transparent shadow-sm transition-all duration-500">
+              <span className="text-sm font-bold">₹</span>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-3xl font-black tracking-tight text-foreground">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+            <span className="text-[11px] text-muted-foreground/80 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Average ticket value</span>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="products" className="w-full">
-        <TabsList className="mb-6 w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50 rounded-lg">
-          <TabsTrigger value="products" className="flex-1 sm:flex-none py-2 px-4">Products</TabsTrigger>
-          <TabsTrigger value="orders" className="flex-1 sm:flex-none py-2 px-4">Orders</TabsTrigger>
-          <TabsTrigger value="users" className="flex-1 sm:flex-none py-2 px-4">Users</TabsTrigger>
-          <TabsTrigger value="custom" className="flex-1 sm:flex-none py-2 px-4">Custom Designs</TabsTrigger>
-          <TabsTrigger value="reviews" className="flex-1 sm:flex-none py-2 px-4">Reviews</TabsTrigger>
-          <TabsTrigger value="subscribers" className="flex-1 sm:flex-none py-2 px-4">Subscribers</TabsTrigger>
+        {/* Navigation Tabs */}
+        <TabsList className="mb-8 w-full justify-start overflow-x-auto flex-nowrap h-auto p-1.5 bg-muted/60 dark:bg-zinc-900/60 border border-border/40 backdrop-blur-sm rounded-xl">
+          <TabsTrigger value="products" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Products</TabsTrigger>
+          <TabsTrigger value="orders" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Orders</TabsTrigger>
+          <TabsTrigger value="users" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Users</TabsTrigger>
+          <TabsTrigger value="custom" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Custom Designs</TabsTrigger>
+          <TabsTrigger value="reviews" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Reviews</TabsTrigger>
+          <TabsTrigger value="subscribers" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Subscribers</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Manage Products</h2>
+        {/* Tab 1: Products */}
+        <TabsContent value="products" className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Manage Inventory</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Create, edit, or remove catalog items</p>
+            </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button><Plus className="mr-2 h-4 w-4" /> Add Product</Button>
+                <Button className="cursor-pointer font-semibold shadow-sm"><Plus className="mr-1.5 h-4 w-4" /> Add Product</Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md rounded-2xl">
                 <DialogHeader>
-                  <DialogTitle>Add New Product</DialogTitle>
+                  <DialogTitle className="text-lg font-bold">Add New Product</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleAddProduct} className="space-y-4">
-                  <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required />
-                  <Input type="number" placeholder="Price" value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required />
+                <form onSubmit={handleAddProduct} className="space-y-4 pt-2">
+                  <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required className="h-10" />
+                  <Input type="number" placeholder="Price" value={newProduct.price || ''} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required className="h-10" />
 
                   <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground">Product Image</label>
-                    <div className={`relative border-2 border-dashed rounded-lg p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/50 ${newProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
+                    <label className="text-xs font-semibold text-muted-foreground">Product Image</label>
+                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/40 ${newProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
                       <input
                         type="file"
                         className="absolute inset-0 opacity-0 cursor-pointer"
@@ -346,7 +393,7 @@ export const AdminPanel = () => {
                         onChange={(e) => handleImageUpload(e)}
                       />
                       {newProduct.image_url ? (
-                        <div className="relative w-full aspect-square max-h-[150px] rounded overflow-hidden">
+                        <div className="relative w-full aspect-square max-h-[140px] rounded overflow-hidden">
                           <img src={newProduct.image_url} alt="Preview" className="w-full h-full object-contain" />
                         </div>
                       ) : (
@@ -360,19 +407,20 @@ export const AdminPanel = () => {
                       placeholder="Or paste Image URL"
                       value={newProduct.image_url && !newProduct.image_url.startsWith('data:') ? newProduct.image_url : ''}
                       onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })}
+                      className="h-10"
                     />
                   </div>
 
-                  <Input type="number" placeholder="Stock" value={newProduct.stock} onChange={e => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })} required />
+                  <Input type="number" placeholder="Stock Quantity" value={newProduct.stock || ''} onChange={e => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) })} required className="h-10" />
                   <textarea
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                    placeholder="Description"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring min-h-[80px]"
+                    placeholder="Product Description"
                     value={newProduct.description}
                     onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
                     required
                   />
                   <select
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm h-10"
                     value={newProduct.category}
                     onChange={e => setNewProduct({ ...newProduct, category: e.target.value as any })}
                   >
@@ -381,273 +429,443 @@ export const AdminPanel = () => {
                     <option value="Oversized">Oversized</option>
                     <option value="Printed">Printed</option>
                   </select>
-                  <Button type="submit" className="w-full">Save Product</Button>
+                  <Button type="submit" className="w-full h-10 font-bold cursor-pointer">Save Product</Button>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map(product => (
-                <TableRow key={product.id}>
-                  <TableCell><img src={product.image_url} className="h-10 w-10 object-cover rounded" /></TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>₹{product.price.toLocaleString('en-IN')}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Dialog open={!!editingProduct} onOpenChange={(open) => !open && setEditingProduct(null)}>
-                        <DialogTrigger asChild>
-                          <Button variant="ghost" size="icon" onClick={() => setEditingProduct(product)}><Pencil className="h-4 w-4" /></Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Edit Product</DialogTitle>
-                          </DialogHeader>
-                          {editingProduct && (
-                            <form onSubmit={handleUpdateProduct} className="space-y-4">
-                              <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} required />
-                              <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required />
 
-                              <div className="space-y-2">
-                                <label className="text-xs font-medium text-muted-foreground">Product Image</label>
-                                <div className={`relative border-2 border-dashed rounded-lg p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/50 ${editingProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
-                                  <input
-                                    type="file"
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e, true)}
-                                  />
-                                  {editingProduct.image_url ? (
-                                    <div className="relative w-full aspect-square max-h-[150px] rounded overflow-hidden">
-                                      <img src={editingProduct.image_url} alt="Preview" className="w-full h-full object-contain" />
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <Upload className="h-6 w-6 text-muted-foreground" />
-                                      <p className="text-xs text-muted-foreground text-center">Click to change product image</p>
-                                    </>
-                                  )}
-                                </div>
-                                <Input
-                                  placeholder="Or paste Image URL"
-                                  value={editingProduct.image_url && !editingProduct.image_url.startsWith('data:') ? editingProduct.image_url : ''}
-                                  onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
-                                />
-                              </div>
-
-                              <Input type="number" placeholder="Stock" value={editingProduct.stock} onChange={e => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) })} required />
-                              <textarea
-                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                                placeholder="Description"
-                                value={editingProduct.description}
-                                onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
-                                required
-                              />
-                              <select
-                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                value={editingProduct.category}
-                                onChange={e => setEditingProduct({ ...editingProduct, category: e.target.value as any })}
-                              >
-                                <option value="Men">Men</option>
-                                <option value="Women">Women</option>
-                                <option value="Oversized">Oversized</option>
-                                <option value="Printed">Printed</option>
-                              </select>
-                              <Button type="submit" className="w-full">Update Product</Button>
-                            </form>
+          <div className="border border-border/50 rounded-xl overflow-hidden shadow-sm bg-card/30 backdrop-blur-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-muted/40 dark:bg-zinc-900/40">
+                  <TableRow>
+                    <TableHead className="w-[85px] py-4">Image</TableHead>
+                    <TableHead className="py-4">Name</TableHead>
+                    <TableHead className="py-4">Category</TableHead>
+                    <TableHead className="py-4">Price</TableHead>
+                    <TableHead className="py-4">Stock</TableHead>
+                    <TableHead className="py-4 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {products.map(product => (
+                    <TableRow key={product.id} className="hover:bg-muted/20 dark:hover:bg-zinc-900/20 transition-colors">
+                      <TableCell className="py-3">
+                        <div className="relative h-11 w-11 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center shadow-inner">
+                          {product.image_url ? (
+                            <img src={product.image_url} className="h-full w-full object-cover" />
+                          ) : (
+                            <ImageIcon className="h-4 w-4 text-muted-foreground" />
                           )}
-                        </DialogContent>
-                      </Dialog>
-                      <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-semibold text-foreground/90 py-3 max-w-[220px] truncate">
+                        {product.name}
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary text-secondary-foreground border border-border">
+                          {product.category}
+                        </span>
+                      </TableCell>
+                      <TableCell className="font-semibold text-foreground py-3">
+                        ₹{product.price.toLocaleString('en-IN')}
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{product.stock}</span>
+                          {product.stock <= 5 && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 animate-pulse">
+                              <AlertCircle className="h-2.5 w-2.5" />
+                              Low
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Dialog open={!!editingProduct && editingProduct.id === product.id} onOpenChange={(open) => !open && setEditingProduct(null)}>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="icon" onClick={() => setEditingProduct(product)} className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-muted cursor-pointer transition-colors"><Pencil className="h-4 w-4" /></Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md rounded-2xl">
+                              <DialogHeader>
+                                <DialogTitle className="text-lg font-bold">Edit Product</DialogTitle>
+                              </DialogHeader>
+                              {editingProduct && (
+                                <form onSubmit={handleUpdateProduct} className="space-y-4 pt-2">
+                                  <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} required className="h-10" />
+                                  <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required className="h-10" />
+
+                                  <div className="space-y-2">
+                                    <label className="text-xs font-semibold text-muted-foreground">Product Image</label>
+                                    <div className={`relative border-2 border-dashed rounded-xl p-4 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-accent/40 ${editingProduct.image_url ? 'border-primary bg-primary/5' : 'border-muted-foreground/20'}`}>
+                                      <input
+                                        type="file"
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e, true)}
+                                      />
+                                      {editingProduct.image_url ? (
+                                        <div className="relative w-full aspect-square max-h-[140px] rounded overflow-hidden">
+                                          <img src={editingProduct.image_url} alt="Preview" className="w-full h-full object-contain" />
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <Upload className="h-6 w-6 text-muted-foreground" />
+                                          <p className="text-xs text-muted-foreground text-center">Click to change product image</p>
+                                        </>
+                                      )}
+                                    </div>
+                                    <Input
+                                      placeholder="Or paste Image URL"
+                                      value={editingProduct.image_url && !editingProduct.image_url.startsWith('data:') ? editingProduct.image_url : ''}
+                                      onChange={e => setEditingProduct({ ...editingProduct, image_url: e.target.value })}
+                                      className="h-10"
+                                    />
+                                  </div>
+
+                                  <Input type="number" placeholder="Stock Quantity" value={editingProduct.stock} onChange={e => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) })} required className="h-10" />
+                                  <textarea
+                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring min-h-[80px]"
+                                    placeholder="Product Description"
+                                    value={editingProduct.description}
+                                    onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                                    required
+                                  />
+                                  <select
+                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm h-10"
+                                    value={editingProduct.category}
+                                    onChange={e => setEditingProduct({ ...editingProduct, category: e.target.value as any })}
+                                  >
+                                    <option value="Men">Men</option>
+                                    <option value="Women">Women</option>
+                                    <option value="Oversized">Oversized</option>
+                                    <option value="Printed">Printed</option>
+                                  </select>
+                                  <Button type="submit" className="w-full h-10 font-bold cursor-pointer">Update Product</Button>
+                                </form>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 cursor-pointer transition-colors" onClick={() => handleDeleteProduct(product.id)}><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {products.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                        No products found. Add your first item.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </TabsContent>
 
-        <TabsContent value="orders">
-          <h2 className="text-xl font-bold mb-6">Manage Orders</h2>
-          <div className="border rounded-lg overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map(order => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono text-xs">{order.id}</TableCell>
-                    <TableCell>{order.address.fullName}</TableCell>
-                    <TableCell>₹{order.total_amount.toLocaleString('en-IN')}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="capitalize">{order.paymentMethod || 'cod'}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
-                    </TableCell>
-                    <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>View</Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Order Details</DialogTitle>
-                            </DialogHeader>
-                            {selectedOrder && (
-                              <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                  <span className="text-muted-foreground">Order ID:</span>
-                                  <span className="font-mono">{selectedOrder.id}</span>
-                                  <span className="text-muted-foreground">Customer:</span>
-                                  <span>{selectedOrder.address.fullName}</span>
-                                  <span className="text-muted-foreground">Email:</span>
-                                  <span>{selectedOrder.address.email}</span>
-                                  <span className="text-muted-foreground">Address:</span>
-                                  <span>{selectedOrder.address.street}, {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.zipCode}</span>
-                                  <span className="text-muted-foreground">Payment:</span>
-                                  <span className="capitalize font-medium">{selectedOrder.paymentMethod || 'cod'}</span>
-                                  {selectedOrder.paymentDetails?.upiId && (
-                                    <>
-                                      <span className="text-muted-foreground">UPI ID:</span>
-                                      <span className="text-primary font-mono">{selectedOrder.paymentDetails.upiId}</span>
-                                    </>
-                                  )}
-                                  {selectedOrder.cancel_reason && (
-                                    <>
-                                      <span className="text-destructive font-semibold">Cancel Reason:</span>
-                                      <span className="text-destructive italic col-span-2">{selectedOrder.cancel_reason}</span>
-                                    </>
-                                  )}
-                                </div>
-                                <div className="border-t pt-4">
-                                  <h4 className="font-semibold mb-2">Items</h4>
-                                  <div className="space-y-2">
-                                    {selectedOrder.items.map((item, idx) => (
-                                      <div key={idx} className="flex justify-between text-sm">
-                                        <span>{item.name} (x{item.quantity})</span>
-                                        <span>₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+        {/* Tab 2: Orders */}
+        <TabsContent value="orders" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Order Logs</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Track and update customer order states</p>
+            </div>
+          </div>
+
+          <div className="border border-border/50 rounded-xl overflow-hidden shadow-sm bg-card/30 backdrop-blur-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-muted/40 dark:bg-zinc-900/40">
+                  <TableRow>
+                    <TableHead className="py-4">Order ID</TableHead>
+                    <TableHead className="py-4">Customer</TableHead>
+                    <TableHead className="py-4">Amount</TableHead>
+                    <TableHead className="py-4">Payment</TableHead>
+                    <TableHead className="py-4">Status</TableHead>
+                    <TableHead className="py-4">Date</TableHead>
+                    <TableHead className="py-4 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.map(order => (
+                    <TableRow key={order.id} className="hover:bg-muted/20 dark:hover:bg-zinc-900/20 transition-colors">
+                      <TableCell className="font-mono text-xs font-semibold py-4 text-primary">{order.id}</TableCell>
+                      <TableCell className="py-4 font-medium">{order.address.fullName}</TableCell>
+                      <TableCell className="py-4 font-semibold text-foreground">₹{order.total_amount.toLocaleString('en-IN')}</TableCell>
+                      <TableCell className="py-4">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-muted text-muted-foreground border border-border uppercase tracking-wider">
+                          {order.paymentMethod || 'cod'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        {order.status === 'delivered' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Delivered
+                          </span>
+                        )}
+                        {order.status === 'shipped' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                            Shipped
+                          </span>
+                        )}
+                        {order.status === 'processing' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Processing
+                          </span>
+                        )}
+                        {order.status === 'pending' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping" style={{ animationDuration: '3s' }} />
+                            Pending
+                          </span>
+                        )}
+                        {order.status === 'cancelled' && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                            Cancelled
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="py-4 text-xs text-muted-foreground font-medium">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell className="py-4 text-right">
+                        <div className="flex items-center justify-end gap-2.5">
+                          <Dialog open={!!selectedOrder && selectedOrder.id === order.id} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)} className="h-8 text-xs font-semibold border-border/60 hover:bg-muted/50 cursor-pointer transition-colors">Receipt</Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-md rounded-2xl">
+                              <DialogHeader>
+                                <DialogTitle className="text-lg font-bold">Invoice Details</DialogTitle>
+                              </DialogHeader>
+                              {selectedOrder && (
+                                <div className="space-y-6 pt-2">
+                                  <div className="flex justify-between items-center border-b border-border/40 pb-4">
+                                    <div>
+                                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block">Order Ref</span>
+                                      <h3 className="font-mono text-sm font-extrabold text-foreground">{selectedOrder.id}</h3>
+                                    </div>
+                                    <div className="text-right">
+                                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground block">Date Placed</span>
+                                      <p className="text-sm font-medium text-foreground">{new Date(selectedOrder.created_at).toLocaleDateString()}</p>
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 text-sm">
+                                    <div>
+                                      <span className="text-xs text-muted-foreground block mb-0.5 font-medium">Customer Name</span>
+                                      <span className="font-semibold text-foreground">{selectedOrder.address.fullName}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-xs text-muted-foreground block mb-0.5 font-medium">Email Address</span>
+                                      <span className="font-medium text-foreground truncate block">{selectedOrder.address.email || 'N/A'}</span>
+                                    </div>
+                                    <div className="col-span-2">
+                                      <span className="text-xs text-muted-foreground block mb-0.5 font-medium">Shipping Address</span>
+                                      <span className="text-foreground text-xs leading-relaxed font-medium">
+                                        {selectedOrder.address.street}, {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.zipCode}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="text-xs text-muted-foreground block mb-0.5 font-medium">Payment Method</span>
+                                      <span className="capitalize font-semibold inline-flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                        {selectedOrder.paymentMethod || 'cod'}
+                                      </span>
+                                    </div>
+                                    {selectedOrder.paymentDetails?.upiId && (
+                                      <div>
+                                        <span className="text-xs text-muted-foreground block mb-0.5 font-medium">UPI ID Reference</span>
+                                        <span className="text-primary font-mono text-xs font-semibold">{selectedOrder.paymentDetails.upiId}</span>
                                       </div>
-                                    ))}
-                                    <div className="flex justify-between font-bold border-t pt-2 mt-2">
-                                      <span>Total</span>
-                                      <span>₹{selectedOrder.total_amount.toLocaleString('en-IN')}</span>
+                                    )}
+                                    {selectedOrder.cancel_reason && (
+                                      <div className="col-span-2 bg-rose-500/5 border border-rose-500/10 rounded-lg p-3">
+                                        <span className="text-xs font-bold text-rose-600 dark:text-rose-400 block mb-0.5">Cancellation Reason</span>
+                                        <span className="text-rose-600 dark:text-rose-400 text-xs italic">{selectedOrder.cancel_reason}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="border-t border-border/40 pt-4">
+                                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-muted-foreground mb-3">Order Summary</h4>
+                                    <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-1">
+                                      {selectedOrder.items.map((item, idx) => (
+                                        <div key={idx} className="flex justify-between items-center text-sm py-1 border-b border-border/30 last:border-0">
+                                          <div className="flex flex-col">
+                                            <span className="font-semibold text-foreground">{item.name}</span>
+                                            <span className="text-xs text-muted-foreground font-medium">Qty: {item.quantity} × ₹{item.price.toLocaleString('en-IN')}</span>
+                                          </div>
+                                          <span className="font-semibold text-foreground">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <div className="flex justify-between items-center font-extrabold text-base border-t border-border/40 pt-4 mt-3 text-foreground">
+                                      <span>Total Amount</span>
+                                      <span className="text-primary text-lg">₹{selectedOrder.total_amount.toLocaleString('en-IN')}</span>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                        <Select onValueChange={(val: string) => updateOrderStatus(order.id, val)}>
-                          <SelectTrigger className="w-[130px]">
-                            <SelectValue placeholder="Update Status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="processing">Processing</SelectItem>
-                            <SelectItem value="shipped">Shipped</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                          <Select onValueChange={(val: string) => updateOrderStatus(order.id, val)} defaultValue={order.status}>
+                            <SelectTrigger className="w-[125px] h-8 text-xs font-semibold border-border/60 cursor-pointer">
+                              <SelectValue placeholder="Update Status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="processing">Processing</SelectItem>
+                              <SelectItem value="shipped">Shipped</SelectItem>
+                              <SelectItem value="delivered">Delivered</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {orders.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
+                        No orders recorded yet.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="users">
-          <h2 className="text-xl font-bold mb-6">User Management</h2>
-          <div className="border rounded-lg overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Joined</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map(user => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={user.role === 'admin' ? 'destructive' : 'outline'}
-                        className="cursor-pointer hover:opacity-80"
-                        onClick={() => toggleUserRole(user.id, user.role)}
-                      >
-                        {user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+        {/* Tab 3: Users */}
+        <TabsContent value="users" className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Customer Database</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Toggle administrative access or review accounts</p>
+          </div>
+
+          <div className="border border-border/50 rounded-xl overflow-hidden shadow-sm bg-card/30 backdrop-blur-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-muted/40 dark:bg-zinc-900/40">
+                  <TableRow>
+                    <TableHead className="py-4">Name</TableHead>
+                    <TableHead className="py-4">Email Address</TableHead>
+                    <TableHead className="py-4">Access Level</TableHead>
+                    <TableHead className="py-4">Joined Date</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {users.map(user => (
+                    <TableRow key={user.id} className="hover:bg-muted/20 dark:hover:bg-zinc-900/20 transition-colors">
+                      <TableCell className="font-semibold text-foreground py-4">{user.name}</TableCell>
+                      <TableCell className="py-4 font-medium text-muted-foreground">{user.email}</TableCell>
+                      <TableCell className="py-4">
+                        <button
+                          onClick={() => toggleUserRole(user.id, user.role)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all border shadow-sm cursor-pointer ${
+                            user.role === 'admin' 
+                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 hover:bg-rose-500/20' 
+                              : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${user.role === 'admin' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                          {user.role === 'admin' ? 'Administrator' : 'Customer'}
+                        </button>
+                      </TableCell>
+                      <TableCell className="py-4 text-xs text-muted-foreground font-semibold">{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                  {users.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
+                        No registered users found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="custom">
-          <h2 className="text-xl font-bold mb-6">Custom Design Requests</h2>
+        {/* Tab 4: Custom Designs */}
+        <TabsContent value="custom" className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Printing Requests</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Manage custom fabric layout designs and mockups</p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {customDesigns.map((design) => (
-              <Card key={design.id} className="overflow-hidden border-none shadow-md bg-card/50">
-                <div className="aspect-square relative group">
-                  <img src={design.image_url} alt="Custom Design" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
-                    <p className="text-white text-xs text-center">{design.description || "No description provided."}</p>
+              <div key={design.id} className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/30 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                <div className="aspect-square relative overflow-hidden bg-muted">
+                  <img src={design.image_url} alt="Custom Design" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <p className="text-white text-xs leading-relaxed">{design.description || "No description provided."}</p>
                   </div>
-                  <Badge className="absolute top-2 right-2 capitalize" variant={design.status === 'pending' ? 'secondary' : design.status === 'completed' ? 'default' : 'outline'}>
-                    {design.status}
-                  </Badge>
+                  <div className="absolute top-3 right-3">
+                    {design.status === 'completed' && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500 text-emerald-50 shadow-sm border border-emerald-400/20 capitalize">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Completed
+                      </span>
+                    )}
+                    {design.status === 'pending' && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-amber-50 shadow-sm border border-amber-400/20 capitalize">
+                        <AlertCircle className="h-3 w-3" />
+                        Pending
+                      </span>
+                    )}
+                    {design.status === 'processing' && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500 text-blue-50 shadow-sm border border-blue-400/20 capitalize animate-pulse">
+                        <RefreshCw className="h-3 w-3 animate-spin" style={{ animationDuration: '3s' }} />
+                        Processing
+                      </span>
+                    )}
+                    {design.status === 'cancelled' && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500 text-rose-50 shadow-sm border border-rose-400/20 capitalize">
+                        Cancelled
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <CardContent className="p-4">
-                  <div className="mb-4">
-                    <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-1">Description</p>
-                    <p className="text-sm line-clamp-3">{design.description || "No description provided."}</p>
-                  </div>
-                  <div className="flex flex-col gap-2 mb-4 border-t pt-4">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-semibold">{design.user_name}</span>
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="mb-4">
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 block mb-1">Design Spec</span>
+                      <p className="text-sm font-semibold text-foreground/90 line-clamp-3 leading-relaxed">{design.description || "No description provided."}</p>
                     </div>
-                    <div className="text-xs text-muted-foreground truncate">{design.user_email}</div>
-                    <div className="text-[10px] text-muted-foreground mt-1">Submitted: {new Date(design.created_at).toLocaleString()}</div>
+                    
+                    <div className="flex flex-col gap-2.5 mb-5 border-t border-border/40 pt-4 text-xs">
+                      <div className="flex items-center gap-2 text-foreground/80">
+                        <div className="p-1 bg-secondary rounded-md">
+                          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <span className="font-bold">{design.user_name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="p-1 bg-secondary rounded-md">
+                          <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <span className="truncate max-w-[180px] font-medium">{design.user_email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="p-1 bg-secondary rounded-md">
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                        <span className="font-medium">{new Date(design.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 border-t border-border/40 pt-4">
                     <Select onValueChange={(val: any) => updateCustomDesignStatus(design.id, val)} defaultValue={design.status}>
-                      <SelectTrigger className="flex-1 h-8 text-xs">
+                      <SelectTrigger className="flex-1 h-9 text-xs font-semibold border-border/60 hover:bg-muted/50 transition-colors cursor-pointer">
                         <SelectValue placeholder="Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -657,124 +875,142 @@ export const AdminPanel = () => {
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDeleteCustomDesign(design.id)}>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-rose-500 hover:bg-rose-500/10 hover:text-rose-600 transition-colors cursor-pointer" onClick={() => handleDeleteCustomDesign(design.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
             {customDesigns.length === 0 && (
-              <div className="col-span-full py-20 text-center text-muted-foreground">
-                <Palette className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                <p>No custom design requests found.</p>
+              <div className="col-span-full py-20 text-center text-muted-foreground bg-card/20 rounded-2xl border border-dashed border-border/60">
+                <Palette className="h-10 w-10 mx-auto mb-3 opacity-30 text-indigo-500" />
+                <p className="text-sm font-semibold">No custom design requests found.</p>
               </div>
             )}
           </div>
         </TabsContent>
-        <TabsContent value="reviews">
-          <h2 className="text-xl font-bold mb-6">Manage Reviews</h2>
-          <div className="border rounded-lg overflow-hidden bg-card">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead>Product</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Rating</TableHead>
-                  <TableHead className="w-[40%]">Comment</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reviews.map((review: any) => (
-                  <TableRow key={review.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium text-primary">{review.product_name}</TableCell>
-                    <TableCell>{review.user_name}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <span className="font-bold mr-1">{review.rating}</span>
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <p className="text-sm text-muted-foreground line-clamp-2 italic">"{review.comment}"</p>
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {new Date(review.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDeleteReview(review.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {reviews.length === 0 && (
+
+        {/* Tab 5: Reviews */}
+        <TabsContent value="reviews" className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Customer Reviews</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Moderate or remove customer satisfaction reviews</p>
+          </div>
+
+          <div className="border border-border/50 rounded-xl overflow-hidden shadow-sm bg-card/30 backdrop-blur-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-muted/40 dark:bg-zinc-900/40">
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-20 text-muted-foreground">
-                      No reviews found.
-                    </TableCell>
+                    <TableHead className="py-4">Product</TableHead>
+                    <TableHead className="py-4">Customer</TableHead>
+                    <TableHead className="py-4">Rating</TableHead>
+                    <TableHead className="w-[45%] py-4">Comment</TableHead>
+                    <TableHead className="py-4">Date</TableHead>
+                    <TableHead className="py-4 text-right">Action</TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {reviews.map((review: any) => (
+                    <TableRow key={review.id} className="hover:bg-muted/20 dark:hover:bg-zinc-900/20 transition-colors">
+                      <TableCell className="font-semibold text-primary py-4">{review.product_name}</TableCell>
+                      <TableCell className="py-4 font-semibold text-foreground/80">{review.user_name}</TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-1 text-sm font-extrabold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/15 px-2 py-0.5 rounded-full w-fit">
+                          <span>{review.rating}</span>
+                          <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <p className="text-sm text-muted-foreground line-clamp-2 italic font-medium">"{review.comment}"</p>
+                      </TableCell>
+                      <TableCell className="py-4 text-xs text-muted-foreground font-semibold">
+                        {new Date(review.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="py-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-rose-500 hover:bg-rose-500/10 hover:text-rose-600 cursor-pointer transition-colors"
+                          onClick={() => handleDeleteReview(review.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {reviews.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                        No product reviews submitted yet.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="subscribers">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Manage Subscribers</h2>
+        {/* Tab 6: Subscribers */}
+        <TabsContent value="subscribers" className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Newsletter Subscribers</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Collect and export mailing list emails</p>
+            </div>
             <Button variant="outline" onClick={() => {
               const emails = subscribers.map(s => s.email).join(', ');
               navigator.clipboard.writeText(emails);
               toast.success("Copied all emails to clipboard!");
-            }}>
+            }} className="cursor-pointer font-semibold border-border/60 hover:bg-muted/50 transition-colors">
               Copy All Emails
             </Button>
           </div>
-          <div className="border rounded-lg overflow-hidden bg-card">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead>Email</TableHead>
-                  <TableHead>Subscribed Date</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {subscribers.map((sub: any) => (
-                  <TableRow key={sub.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium">{sub.email}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(sub.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDeleteSubscriber(sub.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {subscribers.length === 0 && (
+
+          <div className="border border-border/50 rounded-xl overflow-hidden shadow-sm bg-card/30 backdrop-blur-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-muted/40 dark:bg-zinc-900/40">
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-20 text-muted-foreground">
-                      No subscribers found.
-                    </TableCell>
+                    <TableHead className="py-4">Mailing Address</TableHead>
+                    <TableHead className="py-4">Subscription Date</TableHead>
+                    <TableHead className="py-4 text-right">Action</TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {subscribers.map((sub: any) => (
+                    <TableRow key={sub.id} className="hover:bg-muted/20 dark:hover:bg-zinc-900/20 transition-colors">
+                      <TableCell className="font-semibold text-foreground/90 py-4 flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <span>{sub.email}</span>
+                      </TableCell>
+                      <TableCell className="py-4 text-xs text-muted-foreground font-semibold">
+                        {new Date(sub.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="py-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-rose-500 hover:bg-rose-500/10 hover:text-rose-600 cursor-pointer transition-colors"
+                          onClick={() => handleDeleteSubscriber(sub.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {subscribers.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center py-12 text-muted-foreground">
+                        No newsletter subscribers found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

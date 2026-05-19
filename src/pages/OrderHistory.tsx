@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth';
 import { Order, CustomDesign } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette } from 'lucide-react';
+import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette, MoreVertical, XCircle } from 'lucide-react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -34,6 +34,7 @@ export const OrderHistory = () => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const handleDownloadInvoice = (order: Order) => {
     const doc = new jsPDF();
@@ -389,27 +390,47 @@ export const OrderHistory = () => {
                 <Card key={design.id} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all">
                   <div className="aspect-square relative group bg-muted">
                     <img src={design.image_url} alt="Custom Design" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    <Badge className="absolute top-3 right-3 capitalize shadow-md" variant={design.status === 'pending' ? 'secondary' : design.status === 'completed' ? 'default' : 'outline'}>
-                      {design.status}
-                    </Badge>
+                    <div className="absolute top-3 right-3 flex items-center gap-2">
+                      <Badge className="capitalize shadow-md" variant={design.status === 'pending' ? 'secondary' : design.status === 'completed' ? 'default' : 'outline'}>
+                        {design.status}
+                      </Badge>
+                      {design.status === 'pending' && (
+                        <div className="relative">
+                          <Button 
+                            variant="secondary" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-full shadow-md bg-background/80 backdrop-blur-sm hover:bg-background"
+                            onClick={() => setActiveMenu(activeMenu === design.id ? null : design.id)}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                          {activeMenu === design.id && (
+                            <>
+                              <div className="fixed inset-0 z-0" onClick={() => setActiveMenu(null)} />
+                              <div className="absolute right-0 mt-1 w-40 bg-background border rounded-lg shadow-lg py-1 z-10">
+                                <button
+                                  className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted transition-colors flex items-center gap-2"
+                                  onClick={() => {
+                                    setCancelingDesign(design);
+                                    setActiveMenu(null);
+                                  }}
+                                >
+                                  <XCircle className="h-4 w-4" /> Cancel Request
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <CardContent className="p-5">
                     <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-2">Description</p>
                     <p className="text-sm mb-4 line-clamp-2">{design.description || "No description provided."}</p>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground border-t pt-4 mb-4">
+                    <div className="flex justify-between items-center text-xs text-muted-foreground border-t pt-4">
                       <span>Submitted on</span>
                       <span className="font-medium text-foreground">{new Date(design.created_at).toLocaleDateString('en-IN')}</span>
                     </div>
-                    {design.status === 'pending' && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-destructive hover:bg-destructive/5 hover:text-destructive border-destructive/20"
-                        onClick={() => setCancelingDesign(design)}
-                      >
-                        Cancel Request
-                      </Button>
-                    )}
                   </CardContent>
                 </Card>
               ))}
