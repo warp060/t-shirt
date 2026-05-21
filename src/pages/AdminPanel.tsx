@@ -27,6 +27,7 @@ export const AdminPanel = () => {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [activeTab, setActiveTab] = useState('products');
 
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
@@ -349,9 +350,29 @@ export const AdminPanel = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="products" className="w-full">
-        {/* Navigation Tabs */}
-        <TabsList className="mb-8 w-full justify-start overflow-x-auto flex-nowrap h-auto p-1.5 bg-muted/60 dark:bg-zinc-900/60 border border-border/40 backdrop-blur-sm rounded-xl">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Navigation Tabs - Mobile Select Dropdown */}
+        <div className="block md:hidden mb-6">
+          <label className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-2">
+            Navigation Menu
+          </label>
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className="w-full h-11 px-4 bg-muted/60 dark:bg-zinc-900/60 border border-border/40 backdrop-blur-sm rounded-xl focus:ring-1 focus:ring-primary text-sm font-semibold flex items-center justify-between shadow-sm cursor-pointer">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border border-border/50 bg-background/95 backdrop-blur-md shadow-lg py-1">
+              <SelectItem value="products" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Products</SelectItem>
+              <SelectItem value="orders" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Orders</SelectItem>
+              <SelectItem value="users" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Users</SelectItem>
+              <SelectItem value="custom" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Custom Designs</SelectItem>
+              <SelectItem value="reviews" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Reviews</SelectItem>
+              <SelectItem value="subscribers" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Subscribers</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Navigation Tabs - Desktop Widescreen Triggers */}
+        <TabsList className="hidden md:flex mb-8 w-full justify-start h-auto p-1.5 bg-muted/60 dark:bg-zinc-900/60 border border-border/40 backdrop-blur-sm rounded-xl">
           <TabsTrigger value="products" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Products</TabsTrigger>
           <TabsTrigger value="orders" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Orders</TabsTrigger>
           <TabsTrigger value="users" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Users</TabsTrigger>
