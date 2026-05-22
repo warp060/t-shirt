@@ -292,110 +292,110 @@ export const AdminPanel = () => {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
         {/* Card 1: Products */}
         <div 
           onClick={() => setActiveTab('products')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <Package className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">{products.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{products.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Total Products</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Items active</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Items active</span>
         </div>
 
         {/* Card 2: Orders */}
         <div 
           onClick={() => setActiveTab('orders')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <ShoppingBag className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">{orders.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{orders.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Total Orders</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Received logs</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Received logs</span>
         </div>
 
         {/* Card 3: Revenue */}
         <div 
           onClick={() => setActiveTab('orders')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <DollarSign className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">₹{totalRevenue.toLocaleString('en-IN')}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">₹{totalRevenue.toLocaleString('en-IN')}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Total Revenue</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Gross earnings</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Gross earnings</span>
         </div>
 
         {/* Card 4: Avg Value */}
         <div 
           onClick={() => setActiveTab('orders')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <span className="text-xl font-bold">₹</span>
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Average Order</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Average ticket value</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Average ticket value</span>
         </div>
 
         {/* Card 5: Custom Designs */}
         <div 
           onClick={() => setActiveTab('custom')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <Palette className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">{customDesigns.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{customDesigns.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Custom Designs</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Requests submitted</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Requests submitted</span>
         </div>
 
         {/* Card 6: Reviews */}
         <div 
           onClick={() => setActiveTab('reviews')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <Star className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">{reviews.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{reviews.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Customer Reviews</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Feedback comments</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Feedback comments</span>
         </div>
 
         {/* Card 7: Subscribers */}
         <div 
           onClick={() => setActiveTab('subscribers')}
-          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
           {/* Top: Rounded icon circle */}
-          <div className="w-14 h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-4">
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
             <Mail className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-3xl font-black tracking-tight text-foreground leading-tight">{subscribers.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{subscribers.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Subscribed Users</span>
-          <span className="text-xs text-muted-foreground/75 mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300">Newsletter list</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Newsletter list</span>
         </div>
       </div>
 
