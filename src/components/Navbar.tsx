@@ -8,6 +8,7 @@ import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils';
+import { CountdownBanner } from './CountdownBanner';
 
 const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={`${className} transition-all duration-300 group-hover:scale-110 drop-shadow-sm`}>
@@ -28,6 +29,8 @@ export const Navbar = () => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
   const [isOnline, setIsOnline] = React.useState<boolean | null>(null);
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const [content, setContent] = useState<Record<string, string>>({});
+  const [promoContent, setPromoContent] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const checkApi = async () => {
@@ -38,7 +41,20 @@ export const Navbar = () => {
         setIsOnline(false);
       }
     };
+    const fetchContent = async () => {
+      try {
+        const [navData, promoData] = await Promise.all([
+          api.get('/page-content/navbar'),
+          api.get('/page-content/promotions').catch(() => ({}))
+        ]);
+        setContent(navData);
+        setPromoContent(promoData);
+      } catch (error) {
+        console.error("Error fetching navbar content:", error);
+      }
+    };
     checkApi();
+    fetchContent();
     const interval = setInterval(checkApi, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -61,8 +77,16 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <>
+      {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && promoContent.promo_end_date ? (
+        <CountdownBanner text={promoContent.promo_text} endDate={promoContent.promo_end_date} />
+      ) : content.announcement_bar ? (
+        <div className="bg-primary px-4 py-1.5 text-center text-xs font-medium text-primary-foreground">
+          {content.announcement_bar}
+        </div>
+      ) : null}
+      <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {isMobileSearchOpen ? (
           <div className="flex-1 flex items-center gap-2 md:hidden animate-in slide-in-from-right duration-200">
             <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(false)}>
@@ -86,7 +110,7 @@ export const Navbar = () => {
               <Link to="/" className="flex items-center gap-2 md:gap-4 group">
                 <Logo className="w-9 h-9 md:w-10 md:h-10" />
                 <div className="hidden md:flex flex-col">
-                  <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">ABBAS THREADS</span>
+                  <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">{content.brand_name || 'ABBAS THREADS'}</span>
                   <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
                     PREMIUM STORE
                   </span>
@@ -306,6 +330,7 @@ export const Navbar = () => {
         )}
       </div>
     </nav>
+    </>
   );
 };
 

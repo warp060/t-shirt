@@ -22,8 +22,19 @@ export const CustomPrinting = () => {
   const [serverVersion, setServerVersion] = useState<string | null>(null);
   const [dbStatus, setDbStatus] = useState<string | null>(null);
   const [dbError, setDbError] = useState<string | null>(null);
+  const [content, setContent] = useState<Record<string, string>>({});
 
   React.useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const data = await api.get('/page-content/custom_printing');
+        setContent(data);
+      } catch (error) {
+        console.error("Error fetching custom printing page content:", error);
+      }
+    };
+    fetchContent();
+    
     const checkServer = async () => {
       try {
         const data = await api.get('/health');
@@ -166,9 +177,9 @@ export const CustomPrinting = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
           >
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-6">Custom T-Shirt Printing</h1>
+            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-6">{content.page_title || 'Custom T-Shirt Printing'}</h1>
             <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto mb-6">
-              Bring your ideas to life! Upload your design, and we'll print it on our premium quality T-shirts with professional-grade precision.
+              {content.page_subtitle || 'Bring your ideas to life! Upload your design, and we\'ll print it on our premium quality T-shirts with professional-grade precision.'}
             </p>
           </motion.div>
         </div>

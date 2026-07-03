@@ -15,8 +15,75 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Mail, Calendar } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Mail, Calendar, FileText, Save, Type, AlignLeft, Home as HomeIcon, Paintbrush, Globe } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+
+interface PageContentItem {
+  id?: number;
+  page_id: string;
+  content_key: string;
+  content_value: string;
+}
+
+const PAGE_SECTIONS = [
+  {
+    pageId: 'home',
+    label: 'Home Page',
+    icon: <HomeIcon className="h-4 w-4" />,
+    description: 'Hero section, features, newsletter, and category headings',
+    fields: [
+      { key: 'hero_badge', label: 'Hero Badge Text', type: 'text', placeholder: 'e.g. New Collection 2026' },
+      { key: 'hero_title', label: 'Hero Title', type: 'text', placeholder: 'Main heading on hero section' },
+      { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'textarea', placeholder: 'Description below the hero title' },
+      { key: 'hero_cta_primary', label: 'Primary Button Text', type: 'text', placeholder: 'e.g. Shop Now' },
+      { key: 'hero_cta_secondary', label: 'Secondary Button Text', type: 'text', placeholder: 'e.g. Oversized Fit' },
+      { key: 'featured_title', label: 'Featured Section Title', type: 'text', placeholder: 'e.g. Featured Products' },
+      { key: 'featured_subtitle', label: 'Featured Section Subtitle', type: 'text', placeholder: 'e.g. Our most popular styles' },
+      { key: 'categories_title', label: 'Categories Section Title', type: 'text', placeholder: 'e.g. Shop by Category' },
+      { key: 'feature_1_title', label: 'Feature 1 — Title', type: 'text', placeholder: 'e.g. Free Shipping' },
+      { key: 'feature_1_desc', label: 'Feature 1 — Description', type: 'text', placeholder: 'e.g. On orders over ₹4000' },
+      { key: 'feature_2_title', label: 'Feature 2 — Title', type: 'text', placeholder: 'e.g. Secure Payment' },
+      { key: 'feature_2_desc', label: 'Feature 2 — Description', type: 'text', placeholder: 'e.g. 100% secure checkout' },
+      { key: 'feature_3_title', label: 'Feature 3 — Title', type: 'text', placeholder: 'e.g. Premium Quality' },
+      { key: 'feature_3_desc', label: 'Feature 3 — Description', type: 'text', placeholder: 'e.g. Best-in-class fabrics' },
+      { key: 'feature_4_title', label: 'Feature 4 — Title', type: 'text', placeholder: 'e.g. Fast Delivery' },
+      { key: 'feature_4_desc', label: 'Feature 4 — Description', type: 'text', placeholder: 'e.g. Ships within 24 hours' },
+      { key: 'newsletter_title', label: 'Newsletter Title', type: 'text', placeholder: 'e.g. Join the Thread Club' },
+      { key: 'newsletter_subtitle', label: 'Newsletter Subtitle', type: 'textarea', placeholder: 'Newsletter description text' },
+    ]
+  },
+  {
+    pageId: 'custom_printing',
+    label: 'Custom Printing Page',
+    icon: <Paintbrush className="h-4 w-4" />,
+    description: 'Custom t-shirt printing page title and subtitle',
+    fields: [
+      { key: 'page_title', label: 'Page Title', type: 'text', placeholder: 'e.g. Custom T-Shirt Printing' },
+      { key: 'page_subtitle', label: 'Page Subtitle', type: 'textarea', placeholder: 'Description under the page title' },
+    ]
+  },
+  {
+    pageId: 'navbar',
+    label: 'Navigation & Branding',
+    icon: <Globe className="h-4 w-4" />,
+    description: 'Brand name and announcement bar',
+    fields: [
+      { key: 'brand_name', label: 'Brand Name', type: 'text', placeholder: 'e.g. ABBAS THREADS' },
+      { key: 'announcement_bar', label: 'Announcement Bar Text', type: 'text', placeholder: 'Leave empty to hide' },
+    ]
+  },
+  {
+    pageId: 'promotions',
+    label: 'Promotions & Flash Sales',
+    icon: <AlertCircle className="h-4 w-4" />,
+    description: 'Configure real-time countdown timers and site-wide sales',
+    fields: [
+      { key: 'promo_active', label: 'Enable Flash Sale?', type: 'text', placeholder: 'Type "yes" to enable' },
+      { key: 'promo_text', label: 'Promo Banner Text', type: 'text', placeholder: 'e.g. FLASH SALE: 50% OFF EVERYTHING' },
+      { key: 'promo_end_date', label: 'Sale End Date & Time', type: 'text', placeholder: 'e.g. 2026-07-11T23:59:00' },
+    ]
+  }
+];
 
 export const AdminPanel = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,6 +95,10 @@ export const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [activeTab, setActiveTab] = useState('products');
+  const [pageContent, setPageContent] = useState<PageContentItem[]>([]);
+  const [editedContent, setEditedContent] = useState<Record<string, string>>({});
+  const [savingPages, setSavingPages] = useState(false);
+  const [activePageSection, setActivePageSection] = useState('home');
 
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
@@ -145,6 +216,21 @@ export const AdminPanel = () => {
         setSubscribers(subscribersRes.value);
       }
 
+      // Fetch page content manually inside here to not break Promise.allSettled if table doesn't exist
+      try {
+        const pageContentRes = await api.get('/page-content');
+        if (Array.isArray(pageContentRes)) {
+          setPageContent(pageContentRes);
+          const contentMap: Record<string, string> = {};
+          pageContentRes.forEach((item: PageContentItem) => {
+            contentMap[`${item.page_id}::${item.content_key}`] = item.content_value || '';
+          });
+          setEditedContent(contentMap);
+        }
+      } catch (err) {
+        console.error("Page content fetch failed:", err);
+      }
+
     } catch (error) {
       console.error("Critical error in Admin fetchData:", error);
     } finally {
@@ -246,7 +332,6 @@ export const AdminPanel = () => {
     try {
       await api.delete(`/admin/reviews/${id}`);
       fetchData();
-      toast.success('Review deleted');
     } catch (error: any) {
       toast.error(error.message || "Failed to delete review");
     }
@@ -262,6 +347,47 @@ export const AdminPanel = () => {
       toast.error(error.message || "Failed to remove subscriber");
     }
   };
+
+  // CMS Handlers
+  const getContentValue = (pageId: string, key: string): string => {
+    return editedContent[`${pageId}::${key}`] ?? '';
+  };
+
+  const setContentValue = (pageId: string, key: string, value: string) => {
+    setEditedContent(prev => ({ ...prev, [`${pageId}::${key}`]: value }));
+  };
+
+  const hasUnsavedChanges = (pageId: string): boolean => {
+    const section = PAGE_SECTIONS.find(s => s.pageId === pageId);
+    if (!section) return false;
+    return section.fields.some(field => {
+      const currentValue = pageContent.find(p => p.page_id === pageId && p.content_key === field.key)?.content_value ?? '';
+      const editedValue = editedContent[`${pageId}::${field.key}`] ?? '';
+      return currentValue !== editedValue;
+    });
+  };
+
+  const handleSavePageContent = async (pageId: string) => {
+    setSavingPages(true);
+    try {
+      const section = PAGE_SECTIONS.find(s => s.pageId === pageId);
+      if (!section) return;
+      const items = section.fields.map(field => ({
+        page_id: pageId,
+        content_key: field.key,
+        content_value: editedContent[`${pageId}::${field.key}`] ?? ''
+      }));
+      await api.put('/admin/page-content', { items });
+      toast.success(`${section.label} content saved!`);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to save page content");
+    } finally {
+      setSavingPages(false);
+    }
+  };
+
+
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-500">
@@ -294,7 +420,7 @@ export const AdminPanel = () => {
       {/* Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
         {/* Card 1: Products */}
-        <div 
+        <div
           onClick={() => setActiveTab('products')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -309,7 +435,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 2: Orders */}
-        <div 
+        <div
           onClick={() => setActiveTab('orders')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -324,7 +450,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 3: Revenue */}
-        <div 
+        <div
           onClick={() => setActiveTab('orders')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -339,7 +465,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 4: Avg Value */}
-        <div 
+        <div
           onClick={() => setActiveTab('orders')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -354,7 +480,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 5: Custom Designs */}
-        <div 
+        <div
           onClick={() => setActiveTab('custom')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -369,7 +495,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 6: Reviews */}
-        <div 
+        <div
           onClick={() => setActiveTab('reviews')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -384,7 +510,7 @@ export const AdminPanel = () => {
         </div>
 
         {/* Card 7: Subscribers */}
-        <div 
+        <div
           onClick={() => setActiveTab('subscribers')}
           className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
         >
@@ -396,6 +522,19 @@ export const AdminPanel = () => {
           <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{subscribers.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Subscribed Users</span>
           <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Newsletter list</span>
+        </div>
+
+        {/* Card 8: Pages */}
+        <div
+          onClick={() => setActiveTab('pages')}
+          className="group relative flex flex-col items-center justify-center text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/95 p-4 sm:p-6 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03),0_12px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08),0_4px_16px_-6px_rgba(0,0,0,0.02)] dark:hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.7)] hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.01] cursor-pointer"
+        >
+          <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground group-hover:text-background dark:group-hover:bg-white dark:group-hover:text-zinc-950 shadow-sm border border-black/[0.03] dark:border-white/[0.04] mb-2 sm:mb-4">
+            <FileText className="h-6 w-6" />
+          </div>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{PAGE_SECTIONS.length}</span>
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Pages</span>
+          <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Content modification</span>
         </div>
       </div>
 
@@ -416,6 +555,7 @@ export const AdminPanel = () => {
               <SelectItem value="custom" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Custom Designs</SelectItem>
               <SelectItem value="reviews" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Reviews</SelectItem>
               <SelectItem value="subscribers" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Subscribers</SelectItem>
+              <SelectItem value="pages" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Pages</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -428,6 +568,7 @@ export const AdminPanel = () => {
           <TabsTrigger value="custom" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Custom Designs</TabsTrigger>
           <TabsTrigger value="reviews" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Reviews</TabsTrigger>
           <TabsTrigger value="subscribers" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Subscribers</TabsTrigger>
+          <TabsTrigger value="pages" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Pages</TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Products */}
@@ -833,11 +974,10 @@ export const AdminPanel = () => {
                       <TableCell className="py-4">
                         <button
                           onClick={() => toggleUserRole(user.id, user.role)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all border shadow-sm cursor-pointer ${
-                            user.role === 'admin' 
-                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 hover:bg-rose-500/20' 
-                              : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all border shadow-sm cursor-pointer ${user.role === 'admin'
+                            ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 hover:bg-rose-500/20'
+                            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                            }`}
                         >
                           <span className={`w-1.5 h-1.5 rounded-full ${user.role === 'admin' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
                           {user.role === 'admin' ? 'Administrator' : 'Customer'}
@@ -906,7 +1046,7 @@ export const AdminPanel = () => {
                       <span className="text-[9px] font-extrabold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 block mb-1">Design Spec</span>
                       <p className="text-sm font-semibold text-foreground/90 line-clamp-3 leading-relaxed">{design.description || "No description provided."}</p>
                     </div>
-                    
+
                     <div className="flex flex-col gap-2.5 mb-5 border-t border-border/40 pt-4 text-xs">
                       <div className="flex items-center gap-2 text-foreground/80">
                         <div className="p-1 bg-secondary rounded-md">
@@ -1079,6 +1219,88 @@ export const AdminPanel = () => {
             </div>
           </div>
         </TabsContent>
+
+        <TabsContent value="pages" className="space-y-6">
+          <div className="flex flex-col gap-1.5 mb-6">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Page Modification</h2>
+            <p className="text-sm text-muted-foreground max-w-2xl">Modify website content text instantly without touching code.</p>
+          </div>
+
+          <div className="flex flex-wrap gap-2 mb-6">
+            {PAGE_SECTIONS.map(section => (
+              <button
+                key={section.pageId}
+                onClick={() => setActivePageSection(section.pageId)}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold border transition-all cursor-pointer ${
+                  activePageSection === section.pageId 
+                    ? 'bg-foreground text-background border-foreground shadow-sm' 
+                    : 'bg-card border-border hover:border-foreground/30 hover:bg-muted/50 text-muted-foreground'
+                }`}
+              >
+                {section.icon}
+                {section.label}
+                {hasUnsavedChanges(section.pageId) && (
+                  <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse ml-1" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {PAGE_SECTIONS.filter(s => s.pageId === activePageSection).map(section => (
+            <Card key={section.pageId} className="border-border/50 shadow-sm overflow-hidden">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 border-b border-border/50 bg-muted/20 gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    {section.icon}
+                    {section.label}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">{section.description}</p>
+                </div>
+                <Button 
+                  onClick={() => handleSavePageContent(section.pageId)}
+                  disabled={savingPages || !hasUnsavedChanges(section.pageId)}
+                  className="font-bold text-sm h-10 px-5 transition-all shadow-sm flex-shrink-0"
+                >
+                  {savingPages ? (
+                    <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Save className="h-4 w-4 mr-2" /> Save Changes</>
+                  )}
+                </Button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {section.fields.map(field => (
+                  <div key={field.key} className="space-y-2 max-w-3xl">
+                    <label className="flex items-center justify-between text-sm font-semibold text-foreground/90">
+                      <span className="flex items-center gap-1.5">
+                        {field.type === 'textarea' ? <AlignLeft className="h-3.5 w-3.5 text-muted-foreground/60" /> : <Type className="h-3.5 w-3.5 text-muted-foreground/60" />}
+                        {field.label}
+                      </span>
+                      <span className="text-[10px] font-mono text-muted-foreground/40 bg-muted/50 px-1.5 py-0.5 rounded">{field.key}</span>
+                    </label>
+                    {field.type === 'textarea' ? (
+                      <textarea
+                        value={getContentValue(section.pageId, field.key)}
+                        onChange={e => setContentValue(section.pageId, field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 min-h-[100px] resize-y placeholder:text-muted-foreground/40"
+                      />
+                    ) : (
+                      <Input
+                        value={getContentValue(section.pageId, field.key)}
+                        onChange={e => setContentValue(section.pageId, field.key, e.target.value)}
+                        placeholder={field.placeholder}
+                        className="h-10 border-input bg-background focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground/40"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ))}
+        </TabsContent>
+
       </Tabs>
     </div>
   );

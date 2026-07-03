@@ -13,6 +13,7 @@ export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [content, setContent] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -23,7 +24,16 @@ export const Home = () => {
         console.error("Error fetching featured products:", error);
       }
     };
+    const fetchContent = async () => {
+      try {
+        const data = await api.get('/page-content/home');
+        setContent(data);
+      } catch (error) {
+        console.error("Error fetching page content:", error);
+      }
+    };
     fetchProducts();
+    fetchContent();
   }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -63,22 +73,22 @@ export const Home = () => {
             transition={{ duration: 0.6 }}
             className="max-w-2xl"
           >
-            <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">New Collection 2026</Badge>
+            <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">{content.hero_badge || 'New Collection 2026'}</Badge>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
-              WEAR THE <span className="text-white">VIBE</span>.
+              {content.hero_title || 'WEAR THE VIBE.'}
             </h1>
             <p className="mb-8 text-base text-white font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-lg md:text-xl max-w-lg leading-relaxed">
-              Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.
+              {content.hero_subtitle || 'Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/products">
                 <Button size="lg" className="h-12 px-8 text-lg w-full sm:w-auto shadow-2xl">
-                  Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+                  {content.hero_cta_primary || 'Shop Now'} <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/products?category=Oversized">
                 <Button size="lg" variant="outline" className="h-12 px-8 text-lg bg-black/20 backdrop-blur-md border-white/50 text-white hover:bg-black/40 w-full sm:w-auto shadow-xl transition-all">
-                  Oversized Fit
+                  {content.hero_cta_secondary || 'Oversized Fit'}
                 </Button>
               </Link>
             </div>
@@ -90,10 +100,10 @@ export const Home = () => {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-8">
           {[
-            { icon: Truck, title: "Free Shipping", desc: "On orders over ₹4000", link: "/products" },
-            { icon: ShieldCheck, title: "Secure Payment", desc: "100% secure checkout", link: "/" },
-            { icon: Zap, title: "Premium Quality", desc: "Best-in-class fabrics", link: "/products" },
-            { icon: Zap, title: "Fast Delivery", desc: "Ships within 24 hours", link: "/products" }
+            { icon: Truck, title: content.feature_1_title || "Free Shipping", desc: content.feature_1_desc || "On orders over ₹4000", link: "/products" },
+            { icon: ShieldCheck, title: content.feature_2_title || "Secure Payment", desc: content.feature_2_desc || "100% secure checkout", link: "/" },
+            { icon: Zap, title: content.feature_3_title || "Premium Quality", desc: content.feature_3_desc || "Best-in-class fabrics", link: "/products" },
+            { icon: Zap, title: content.feature_4_title || "Fast Delivery", desc: content.feature_4_desc || "Ships within 24 hours", link: "/products" }
           ].map((feature, i) => (
             <Link
               key={i}
@@ -117,8 +127,8 @@ export const Home = () => {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Featured Products</h2>
-            <p className="text-sm sm:text-base text-muted-foreground">Our most popular styles this week.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{content.featured_title || 'Featured Products'}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">{content.featured_subtitle || 'Our most popular styles this week.'}</p>
           </div>
           <Link to="/products" className="text-sm font-semibold text-primary hover:underline flex items-center">
             View All Products <ArrowRight className="ml-1 h-4 w-4" />
@@ -133,7 +143,7 @@ export const Home = () => {
 
       {/* Categories Section */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="mb-8 text-2xl sm:text-3xl font-bold tracking-tight text-center">Shop by Category</h2>
+        <h2 className="mb-8 text-2xl sm:text-3xl font-bold tracking-tight text-center">{content.categories_title || 'Shop by Category'}</h2>
         <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
           {[
             { name: "Men", img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80" },
@@ -160,8 +170,8 @@ export const Home = () => {
       {/* Newsletter */}
       <section className="bg-primary py-12 sm:py-16 text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 text-2xl sm:text-3xl font-bold">Join the Thread Club</h2>
-          <p className="mb-8 text-sm sm:text-base text-primary-foreground/80 max-w-md mx-auto">Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+          <h2 className="mb-4 text-2xl sm:text-3xl font-bold">{content.newsletter_title || 'Join the Thread Club'}</h2>
+          <p className="mb-8 text-sm sm:text-base text-primary-foreground/80 max-w-md mx-auto">{content.newsletter_subtitle || 'Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.'}</p>
           <form onSubmit={handleSubscribe} className="mx-auto flex flex-col sm:flex-row max-w-md gap-3">
             <input
               type="email"

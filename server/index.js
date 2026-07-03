@@ -258,6 +258,67 @@ app.delete('/api/admin/subscribers/:id', authenticateToken, isAdmin, async (req,
     }
 });
 
+// Admin - Page Content Management (CMS)
+app.get('/api/page-content', async (req, res) => {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM page_content ORDER BY page_id, content_key');
+        res.json(rows);
+    } catch (error) {
+        if (error.code === 'ER_NO_SUCH_TABLE') {
+            return res.json([]);
+        }
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/page-content/:pageId', async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT content_key, content_value FROM page_content WHERE page_id = ?',
+            [req.params.pageId]
+        );
+        const content = {};
+        rows.forEach(row => { content[row.content_key] = row.content_value; });
+        res.json(content);
+    } catch (error) {
+        if (error.code === 'ER_NO_SUCH_TABLE') {
+            return res.json({});
+        }
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/api/admin/page-content', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { items } = req.body;
+        if (!items || !Array.isArray(items)) {
+            return res.status(400).json({ message: 'items array is required' });
+        }
+
+        for (const item of items) {
+            await pool.execute(
+                `INSERT INTO page_content (page_id, content_key, content_value) 
+                 VALUES (?, ?, ?) 
+                 ON DUPLICATE KEY UPDATE content_value = VALUES(content_value)`,
+                [item.page_id, item.content_key, item.content_value]
+            );
+        }
+
+        res.json({ message: 'Page content updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/api/admin/page-content/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await pool.execute('DELETE FROM page_content WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Content entry deleted' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Admin - Order Management
 app.get('/api/admin/orders', authenticateToken, isAdmin, async (req, res) => {
     try {
@@ -572,8 +633,8 @@ app.post('/api/orders', async (req, res) => {
                     const enrichedItems = await Promise.all(items.map(async (item) => {
                         try {
                             const [products] = await pool.execute('SELECT name, image_url FROM products WHERE id = ?', [item.productId || item.id]);
-                            return { 
-                                ...item, 
+                            return {
+                                ...item,
                                 name: products.length > 0 ? products[0].name : (item.name || 'Product'),
                                 image_url: products.length > 0 ? products[0].image_url : (item.image_url || '')
                             };
@@ -666,7 +727,7 @@ app.delete('/api/orders/:id', async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
         const order = orders[0];
-        
+
         // If it was active, restore product stocks
         if (order.status === 'pending' || order.status === 'processing') {
             const [items] = await connection.execute('SELECT * FROM order_items WHERE order_id = ?', [orderId]);
@@ -674,7 +735,7 @@ app.delete('/api/orders/:id', async (req, res) => {
                 await connection.execute('UPDATE products SET stock = stock + ? WHERE id = ?', [item.quantity, item.product_id]);
             }
         }
-        
+
         await connection.execute('DELETE FROM orders WHERE id = ?', [orderId]);
         await connection.commit();
         res.json({ message: 'Order deleted successfully' });
@@ -693,7 +754,7 @@ app.post('/api/custom-designs/:id/cancel', async (req, res) => {
         const designId = req.params.id;
         const { cancel_reason } = req.body;
         const [designs] = await pool.execute('SELECT * FROM custom_designs WHERE id = ?', [designId]);
-        
+
         if (designs.length === 0) {
             console.log(`[CANCEL DESIGN] Design ${designId} not found`);
             return res.status(404).json({ message: 'Design not found' });
@@ -715,7 +776,7 @@ app.post('/api/custom-designs/:id/cancel', async (req, res) => {
                 const [users] = await pool.execute('SELECT name, email FROM users WHERE id = ?', [designs[0].user_id]);
                 console.log(`[CANCEL DESIGN] Users found: ${users.length}`);
                 const user = users.length > 0 ? users[0] : { name: 'Unknown User', email: 'N/A' };
-                
+
                 const designWithReason = { ...designs[0], cancel_reason: cancel_reason || null };
                 console.log(`[CANCEL DESIGN] Calling mailer function...`);
                 const result = await sendCustomDesignCancellationNotification(designWithReason, user);
