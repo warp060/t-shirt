@@ -8,7 +8,6 @@ import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils';
-import { CountdownBanner } from './CountdownBanner';
 
 const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
   <svg viewBox="0 0 100 100" className={`${className} transition-all duration-300 group-hover:scale-110 drop-shadow-sm`}>
@@ -78,9 +77,7 @@ export const Navbar = () => {
 
   return (
     <>
-      {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && promoContent.promo_end_date ? (
-        <CountdownBanner text={promoContent.promo_text} endDate={promoContent.promo_end_date} />
-      ) : content.announcement_bar ? (
+      {content.announcement_bar ? (
         <div className="bg-primary px-4 py-1.5 text-center text-xs font-medium text-primary-foreground">
           {content.announcement_bar}
         </div>

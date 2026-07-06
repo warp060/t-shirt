@@ -14,6 +14,7 @@ export const Home = () => {
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [content, setContent] = useState<Record<string, string>>({});
+  const [promoContent, setPromoContent] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -26,8 +27,12 @@ export const Home = () => {
     };
     const fetchContent = async () => {
       try {
-        const data = await api.get('/page-content/home');
-        setContent(data);
+        const [homeData, promoData] = await Promise.all([
+          api.get('/page-content/home'),
+          api.get('/page-content/promotions').catch(() => ({}))
+        ]);
+        setContent(homeData);
+        setPromoContent(promoData);
       } catch (error) {
         console.error("Error fetching page content:", error);
       }
@@ -66,12 +71,12 @@ export const Home = () => {
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="container relative mx-auto flex h-full flex-col justify-center px-4 sm:px-6 lg:px-8">
+        <div className="container relative mx-auto flex h-full flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-2xl"
+            className="max-w-2xl pt-20 lg:pt-0"
           >
             <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">{content.hero_badge || 'New Collection 2026'}</Badge>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
@@ -93,6 +98,41 @@ export const Home = () => {
               </Link>
             </div>
           </motion.div>
+
+          {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="hidden lg:block perspective-1000 mr-8 lg:mr-16"
+            >
+              <div className="relative w-80 h-80 group preserve-3d cursor-pointer">
+                {/* Front Side */}
+                <div className="absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/20 p-8 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                  <div className="absolute top-4 right-4 animate-pulse">
+                    <Zap className="text-primary w-6 h-6" fill="currentColor" />
+                  </div>
+                  <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-4 opacity-90">Special Offer</h3>
+                  <p className="text-3xl font-extrabold text-primary mb-2 drop-shadow-md leading-tight">
+                    {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
+                  </p>
+                  <p className="text-white/60 text-sm mt-4 tracking-[0.2em] uppercase font-semibold">Hover to reveal</p>
+                </div>
+                {/* Back Side */}
+                <div className="absolute w-full h-full backface-hidden rotate-y-180 transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 bg-primary rounded-3xl border border-primary-foreground/20 p-8 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(var(--primary),0.3)]">
+                  <h3 className="text-3xl font-black text-primary-foreground mb-4 uppercase">Ends Soon</h3>
+                  <div className="text-primary-foreground/90 font-medium mb-6">
+                    Don't miss out on this exclusive deal!
+                  </div>
+                  <Link to="/products" className="w-full">
+                    <Button variant="secondary" size="lg" className="w-full font-bold shadow-xl hover:scale-105 transition-transform">
+                      Claim Offer Now
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
       </section>
 
