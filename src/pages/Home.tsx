@@ -15,6 +15,7 @@ export const Home = () => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [content, setContent] = useState<Record<string, string>>({});
   const [promoContent, setPromoContent] = useState<Record<string, string>>({});
+  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -87,11 +88,14 @@ export const Home = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="mb-8 perspective-1000 z-10 max-w-lg w-full"
+                className="mt-[5px] mb-8 perspective-1000 z-10 max-w-lg w-full"
               >
-                <div className="relative w-full h-32 sm:h-36 group preserve-3d cursor-pointer">
+                <div 
+                  className="relative w-full h-32 sm:h-36 group preserve-3d cursor-pointer"
+                  onClick={() => setIsFlipped(!isFlipped)}
+                >
                   {/* Front Side */}
-                  <div className="absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-5 flex flex-col justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 ${isFlipped ? 'rotate-y-180' : ''} bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-5 flex flex-col justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)]`}>
                     <div className="absolute top-4 right-4 animate-pulse">
                       <Zap className="text-primary w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" />
                     </div>
@@ -99,15 +103,15 @@ export const Home = () => {
                     <p className="text-xl sm:text-2xl font-extrabold text-primary drop-shadow-md leading-tight truncate">
                       {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
                     </p>
-                    <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">Hover to reveal</p>
+                    <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">Tap or hover to reveal</p>
                   </div>
                   {/* Back Side */}
-                  <div className="absolute w-full h-full backface-hidden rotate-y-180 transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-between shadow-[0_0_40px_rgba(var(--primary),0.3)]">
+                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 ${isFlipped ? 'rotate-y-0' : 'rotate-y-180'} bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-between shadow-[0_0_40px_rgba(var(--primary),0.3)]`}>
                     <div className="text-center sm:text-left mb-3 sm:mb-0">
                       <h3 className="text-xl sm:text-2xl font-black text-primary-foreground uppercase mb-1">Ends Soon</h3>
                       <p className="text-primary-foreground/90 font-medium text-sm">Don't miss this exclusive deal!</p>
                     </div>
-                    <Link to="/products">
+                    <Link to="/products" onClick={(e) => e.stopPropagation()}>
                       <Button variant="secondary" size="lg" className="font-bold shadow-xl hover:scale-105 transition-transform whitespace-nowrap">
                         Claim Now
                       </Button>
