@@ -79,8 +79,13 @@ const PAGE_SECTIONS = [
     description: 'Configure real-time countdown timers and site-wide sales',
     fields: [
       { key: 'promo_active', label: 'Enable Flash Sale?', type: 'text', placeholder: 'Type "yes" to enable' },
-      { key: 'promo_text', label: 'Promo Banner Text', type: 'text', placeholder: 'e.g. FLASH SALE: 50% OFF EVERYTHING' },
-      { key: 'promo_end_date', label: 'Sale End Date & Time', type: 'text', placeholder: 'e.g. 2026-07-11T23:59:00' },
+      { key: 'promo_text', label: 'Promo Main Text', type: 'text', placeholder: 'e.g. 50% OFF ALL T-SHIRTS' },
+      { key: 'promo_front_title', label: 'Front Card Title', type: 'text', placeholder: 'e.g. SPECIAL OFFER' },
+      { key: 'promo_front_desc', label: 'Front Card Footer', type: 'text', placeholder: 'e.g. Tap or hover to reveal' },
+      { key: 'promo_back_title', label: 'Back Card Title', type: 'text', placeholder: 'e.g. ENDS SOON' },
+      { key: 'promo_back_desc', label: 'Back Card Description', type: 'text', placeholder: 'e.g. Don\'t miss this exclusive deal!' },
+      { key: 'promo_btn_text', label: 'Back Button Text', type: 'text', placeholder: 'e.g. Claim Now' },
+      { key: 'promo_end_date', label: 'Sale End Date & Time', type: 'text', placeholder: 'e.g. 2026-07-11 11:59 PM' },
     ]
   }
 ];
