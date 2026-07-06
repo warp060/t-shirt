@@ -9,6 +9,65 @@ import { api } from '../lib/api';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 
+const CountdownTimer = ({ endDate }: { endDate: string }) => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isActive, setIsActive] = useState(true);
+
+  useEffect(() => {
+    if (!endDate) return;
+    const targetDate = new Date(endDate).getTime();
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference <= 0) {
+        setIsActive(false);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      } else {
+        setIsActive(true);
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        });
+      }
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, [endDate]);
+
+  if (!isActive) return null;
+
+  return (
+    <div className="flex items-center gap-1.5 sm:gap-2 font-mono mt-2 justify-center sm:justify-start">
+      <div className="flex flex-col items-center">
+        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.days.toString().padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Days</span>
+      </div>
+      <span className="text-lg sm:text-xl font-bold opacity-50 leading-none -mt-3">:</span>
+      <div className="flex flex-col items-center">
+        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.hours.toString().padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Hrs</span>
+      </div>
+      <span className="text-lg sm:text-xl font-bold opacity-50 leading-none -mt-3">:</span>
+      <div className="flex flex-col items-center">
+        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Mins</span>
+      </div>
+      <span className="text-lg sm:text-xl font-bold opacity-50 leading-none -mt-3">:</span>
+      <div className="flex flex-col items-center">
+        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Secs</span>
+      </div>
+    </div>
+  );
+};
+
+
 export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [email, setEmail] = useState('');
@@ -99,21 +158,26 @@ export const Home = () => {
                     <div className="absolute top-4 right-4 animate-pulse">
                       <Zap className="text-primary w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-black text-white tracking-widest uppercase mb-1 opacity-90">Special Offer</h3>
+                    <h3 className="text-lg sm:text-xl font-black text-white tracking-widest uppercase mb-1 opacity-90">{promoContent.promo_front_title || 'Special Offer'}</h3>
                     <p className="text-xl sm:text-2xl font-extrabold text-primary drop-shadow-md leading-tight truncate">
                       {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
                     </p>
-                    <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">Tap or hover to reveal</p>
+                    <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">{promoContent.promo_front_desc || 'Tap or hover to reveal'}</p>
                   </div>
                   {/* Back Side */}
                   <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 ${isFlipped ? 'rotate-y-0' : 'rotate-y-180'} bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-between shadow-[0_0_40px_rgba(var(--primary),0.3)]`}>
                     <div className="text-center sm:text-left mb-3 sm:mb-0">
-                      <h3 className="text-xl sm:text-2xl font-black text-primary-foreground uppercase mb-1">Ends Soon</h3>
-                      <p className="text-primary-foreground/90 font-medium text-sm">Don't miss this exclusive deal!</p>
+                      <h3 className="text-xl sm:text-2xl font-black text-primary-foreground uppercase mb-1">{promoContent.promo_back_title || 'Ends Soon'}</h3>
+                      <p className="text-primary-foreground/90 font-medium text-sm">{promoContent.promo_back_desc || "Don't miss this exclusive deal!"}</p>
+                      {promoContent.promo_end_date && (
+                        <div className="text-primary-foreground">
+                          <CountdownTimer endDate={promoContent.promo_end_date} />
+                        </div>
+                      )}
                     </div>
                     <Link to="/products" onClick={(e) => e.stopPropagation()}>
                       <Button variant="secondary" size="lg" className="font-bold shadow-xl hover:scale-105 transition-transform whitespace-nowrap">
-                        Claim Now
+                        {promoContent.promo_btn_text || 'Claim Now'}
                       </Button>
                     </Link>
                   </div>
