@@ -150,27 +150,27 @@ export const Home = () => {
                 className="mt-[5px] mb-8 perspective-1000 z-10 max-w-lg w-full"
               >
                 <div 
-                  className="relative w-full h-32 sm:h-36 group preserve-3d cursor-pointer"
+                  className="relative w-full h-[280px] sm:h-[180px] group preserve-3d cursor-pointer"
                   onClick={() => setIsFlipped(!isFlipped)}
                 >
                   {/* Front Side */}
-                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 ${isFlipped ? 'rotate-y-180' : ''} bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-5 flex flex-col justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)]`}>
+                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 ${isFlipped ? 'rotate-y-180' : ''} bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-5 flex flex-col justify-center items-center text-center shadow-[0_0_40px_rgba(0,0,0,0.5)]`}>
                     <div className="absolute top-4 right-4 animate-pulse">
                       <Zap className="text-primary w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" />
                     </div>
                     <h3 className="text-lg sm:text-xl font-black text-white tracking-widest uppercase mb-1 opacity-90">{promoContent.promo_front_title || 'Special Offer'}</h3>
-                    <p className="text-xl sm:text-2xl font-extrabold text-primary drop-shadow-md leading-tight truncate">
+                    <p className="text-xl sm:text-2xl font-extrabold text-primary drop-shadow-md leading-tight truncate max-w-full">
                       {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
                     </p>
                     <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">{promoContent.promo_front_desc || 'Tap or hover to reveal'}</p>
                   </div>
                   {/* Back Side */}
-                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 ${isFlipped ? 'rotate-y-0' : 'rotate-y-180'} bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-between shadow-[0_0_40px_rgba(var(--primary),0.3)]`}>
-                    <div className="text-center sm:text-left mb-3 sm:mb-0">
+                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 ${isFlipped ? 'rotate-y-0' : 'rotate-y-180'} bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 sm:gap-0 shadow-[0_0_40px_rgba(var(--primary),0.3)]`}>
+                    <div className="text-center sm:text-left mb-0 flex-1">
                       <h3 className="text-xl sm:text-2xl font-black text-primary-foreground uppercase mb-1">{promoContent.promo_back_title || 'Ends Soon'}</h3>
                       <p className="text-primary-foreground/90 font-medium text-sm">{promoContent.promo_back_desc || "Don't miss this exclusive deal!"}</p>
                       {promoContent.promo_end_date && (
-                        <div className="text-primary-foreground">
+                        <div className="mt-3 text-primary-foreground flex justify-center sm:justify-start">
                           <CountdownTimer endDate={promoContent.promo_end_date} />
                         </div>
                       )}
