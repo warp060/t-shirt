@@ -123,7 +123,7 @@ export const Home = () => {
   return (
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
-      <section className="relative h-[70vh] sm:h-[80vh] w-full overflow-hidden bg-black text-white">
+      <section className="relative min-h-[85dvh] sm:h-[80vh] w-full overflow-hidden bg-black text-white">
         <div className="absolute inset-0">
           <img
             src="/hero-bg-premium.png"
@@ -131,12 +131,12 @@ export const Home = () => {
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="container relative mx-auto flex h-full flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="container relative mx-auto flex h-full flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 pb-8 sm:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-2xl pt-20 lg:pt-0"
+            className="max-w-2xl pt-28 lg:pt-0 w-full"
           >
             <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">{content.hero_badge || 'New Collection 2026'}</Badge>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
@@ -150,7 +150,7 @@ export const Home = () => {
                 className="mt-[5px] mb-8 perspective-1000 z-10 max-w-lg w-full"
               >
                 <div 
-                  className="relative w-full h-[280px] sm:h-[180px] group preserve-3d cursor-pointer"
+                  className="relative w-full h-[260px] sm:h-[160px] group preserve-3d cursor-pointer"
                   onClick={() => setIsFlipped(!isFlipped)}
                 >
                   {/* Front Side */}
