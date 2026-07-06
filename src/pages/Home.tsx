@@ -82,9 +82,44 @@ export const Home = () => {
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
               {content.hero_title || 'WEAR THE VIBE.'}
             </h1>
-            <p className="mb-8 text-base text-white font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-lg md:text-xl max-w-lg leading-relaxed">
-              {content.hero_subtitle || 'Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.'}
-            </p>
+            {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="mb-8 perspective-1000 z-10 max-w-lg w-full"
+              >
+                <div className="relative w-full h-32 sm:h-36 group preserve-3d cursor-pointer">
+                  {/* Front Side */}
+                  <div className="absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-5 flex flex-col justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                    <div className="absolute top-4 right-4 animate-pulse">
+                      <Zap className="text-primary w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" />
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-black text-white tracking-widest uppercase mb-1 opacity-90">Special Offer</h3>
+                    <p className="text-xl sm:text-2xl font-extrabold text-primary drop-shadow-md leading-tight truncate">
+                      {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
+                    </p>
+                    <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">Hover to reveal</p>
+                  </div>
+                  {/* Back Side */}
+                  <div className="absolute w-full h-full backface-hidden rotate-y-180 transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-between shadow-[0_0_40px_rgba(var(--primary),0.3)]">
+                    <div className="text-center sm:text-left mb-3 sm:mb-0">
+                      <h3 className="text-xl sm:text-2xl font-black text-primary-foreground uppercase mb-1">Ends Soon</h3>
+                      <p className="text-primary-foreground/90 font-medium text-sm">Don't miss this exclusive deal!</p>
+                    </div>
+                    <Link to="/products">
+                      <Button variant="secondary" size="lg" className="font-bold shadow-xl hover:scale-105 transition-transform whitespace-nowrap">
+                        Claim Now
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <p className="mb-8 text-base text-white font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-lg md:text-xl max-w-lg leading-relaxed">
+                {content.hero_subtitle || 'Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.'}
+              </p>
+            )}
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/products">
                 <Button size="lg" className="h-12 px-8 text-lg w-full sm:w-auto shadow-2xl">
@@ -99,40 +134,7 @@ export const Home = () => {
             </div>
           </motion.div>
 
-          {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mt-8 lg:mt-0 lg:mr-16 perspective-1000 z-10"
-            >
-              <div className="relative w-72 h-72 sm:w-80 sm:h-80 group preserve-3d cursor-pointer mx-auto lg:mx-0">
-                {/* Front Side */}
-                <div className="absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/20 p-8 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-                  <div className="absolute top-4 right-4 animate-pulse">
-                    <Zap className="text-primary w-6 h-6" fill="currentColor" />
-                  </div>
-                  <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-4 opacity-90">Special Offer</h3>
-                  <p className="text-3xl font-extrabold text-primary mb-2 drop-shadow-md leading-tight">
-                    {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
-                  </p>
-                  <p className="text-white/60 text-sm mt-4 tracking-[0.2em] uppercase font-semibold">Hover to reveal</p>
-                </div>
-                {/* Back Side */}
-                <div className="absolute w-full h-full backface-hidden rotate-y-180 transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 bg-primary rounded-3xl border border-primary-foreground/20 p-8 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(var(--primary),0.3)]">
-                  <h3 className="text-3xl font-black text-primary-foreground mb-4 uppercase">Ends Soon</h3>
-                  <div className="text-primary-foreground/90 font-medium mb-6">
-                    Don't miss out on this exclusive deal!
-                  </div>
-                  <Link to="/products" className="w-full">
-                    <Button variant="secondary" size="lg" className="w-full font-bold shadow-xl hover:scale-105 transition-transform">
-                      Claim Offer Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
+
         </div>
       </section>
 
