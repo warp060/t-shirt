@@ -8,7 +8,6 @@ import { motion } from 'motion/react';
 import { api } from '../lib/api';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-import { CouponBanner } from '../components/CouponBanner';
 
 export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -98,13 +97,6 @@ export const Home = () => {
                 </Button>
               </Link>
             </div>
-
-            {/* Mobile Coupon Banner */}
-            {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && (
-              <div className="block lg:hidden mt-8 w-full relative z-20">
-                <CouponBanner offerText={promoContent.promo_text} />
-              </div>
-            )}
           </motion.div>
 
           {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && (
@@ -112,9 +104,9 @@ export const Home = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="hidden lg:block perspective-1000 mr-8 lg:mr-16"
+              className="mt-8 lg:mt-0 lg:mr-16 perspective-1000 z-10"
             >
-              <div className="relative w-80 h-80 group preserve-3d cursor-pointer">
+              <div className="relative w-72 h-72 sm:w-80 sm:h-80 group preserve-3d cursor-pointer mx-auto lg:mx-0">
                 {/* Front Side */}
                 <div className="absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/20 p-8 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(0,0,0,0.5)]">
                   <div className="absolute top-4 right-4 animate-pulse">
