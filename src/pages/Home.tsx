@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { api } from '../lib/api';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
+import { CouponBanner } from '../components/CouponBanner';
 
 export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -97,6 +98,13 @@ export const Home = () => {
                 </Button>
               </Link>
             </div>
+
+            {/* Mobile Coupon Banner */}
+            {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && (
+              <div className="block lg:hidden mt-8 w-full relative z-20">
+                <CouponBanner offerText={promoContent.promo_text} />
+              </div>
+            )}
           </motion.div>
 
           {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text && (
