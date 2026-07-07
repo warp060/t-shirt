@@ -1,40 +1,41 @@
-const nodemailer = require('nodemailer');
-
+// Resend HTTP API - Works on Render (no SMTP needed)
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS
-    }
-});
 
 const sendEmail = async (subject, html, attachments = []) => {
     try {
         console.log(`[MAIL] Sending email: "${subject}" to ${ADMIN_EMAIL}`);
         
-        const mailOptions = {
-            from: `"Abbas Threads" <${EMAIL_USER}>`,
-            to: ADMIN_EMAIL,
+        const emailData = {
+            from: 'Abbas Threads <onboarding@resend.dev>',
+            to: [ADMIN_EMAIL],
             subject: subject,
             html: html,
         };
 
         if (attachments.length > 0) {
-            mailOptions.attachments = attachments.map(att => ({
-                filename: att.filename,
-                content: att.content,
-                encoding: 'base64'
-            }));
+            emailData.attachments = attachments;
             console.log(`[MAIL] Including ${attachments.length} attachment(s)`);
         }
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`[MAIL] ✅ Email sent successfully! ID: ${info.messageId}`);
-        return true;
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log(`[MAIL] ✅ Email sent successfully! ID: ${data.id}`);
+            return true;
+        } else {
+            console.error(`[MAIL] ❌ Resend API error:`, data);
+            return false;
+        }
     } catch (error) {
         console.error('[MAIL] ❌ Error sending email:', error);
         return false;
