@@ -174,11 +174,11 @@ const isAdmin = async (req, res, next) => {
 
         console.log(`[ADMIN CHECK] Attempt by: ${userEmail}`);
 
-        if (userEmail === 'ambroabu145@gmail.com') {
+        if (userEmail === 'abbas6618532@gmail.com') {
             return next();
         } else {
             console.log(`[ADMIN DENIED] User ${userEmail} is not the master admin.`);
-            return res.status(403).json({ message: 'Access denied. Only ambroabu145@gmail.com is allowed.' });
+            return res.status(403).json({ message: 'Access denied. Only abbas6618532@gmail.com is allowed.' });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
