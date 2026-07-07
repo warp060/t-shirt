@@ -10,14 +10,11 @@ import { api } from '../lib/api';
 import { cn } from '../lib/utils';
 
 const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
-  <svg viewBox="0 0 100 100" className={`${className} transition-all duration-300 group-hover:scale-110 drop-shadow-sm`}>
-    <circle cx="50" cy="50" r="48" fill="#E8E9EB" />
-    <path id="brandCurve" d="M 22,42 A 28,28 0 0,1 78,42" fill="none" />
-    <text className="text-[6px] font-black uppercase tracking-[0.1em] fill-black/80">
-      <textPath href="#brandCurve" startOffset="50%" textAnchor="middle">ABBAS THREADS</textPath>
-    </text>
-    <text x="50" y="72" textAnchor="middle" style={{ fontFamily: "'Times New Roman', Times, serif" }} className="text-[46px] font-bold fill-black">AT</text>
-  </svg>
+  <img 
+    src="/logo.png" 
+    alt="Abbas Threads" 
+    className={`${className} rounded-lg shadow-md transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg object-cover`}
+  />
 );
 
 export const Navbar = () => {
