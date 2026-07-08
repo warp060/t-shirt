@@ -10,6 +10,7 @@ export interface Product {
   id: number;
   name: string;
   price: number;
+  original_price?: number;
   description: string;
   category: 'Men' | 'Women' | 'Oversized' | 'Printed';
   image_url: string;

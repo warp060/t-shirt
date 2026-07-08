@@ -108,6 +108,7 @@ export const AdminPanel = () => {
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
     price: 0,
+    original_price: undefined,
     description: '',
     category: 'Men',
     image_url: '',
@@ -258,7 +259,7 @@ export const AdminPanel = () => {
     e.preventDefault();
     try {
       await api.post('/products', newProduct);
-      setNewProduct({ name: '', price: 0, description: '', category: 'Men', image_url: '', stock: 0 });
+      setNewProduct({ name: '', price: 0, original_price: undefined, description: '', category: 'Men', image_url: '', stock: 0 });
       fetchData(); // Refresh list immediately
       toast.success('Product added successfully!');
     } catch (error: any) {
@@ -593,7 +594,10 @@ export const AdminPanel = () => {
                 </DialogHeader>
                 <form onSubmit={handleAddProduct} className="space-y-4 pt-2">
                   <Input placeholder="Product Name" value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} required className="h-10" />
-                  <Input type="number" placeholder="Price" value={newProduct.price || ''} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required className="h-10" />
+                  <div className="flex gap-2">
+                    <Input type="number" placeholder="Price (₹)" value={newProduct.price || ''} onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })} required className="h-10" />
+                    <Input type="number" placeholder="Original Price (₹) (Optional)" value={newProduct.original_price || ''} onChange={e => setNewProduct({ ...newProduct, original_price: parseFloat(e.target.value) || undefined })} className="h-10" />
+                  </div>
 
                   <div className="space-y-2">
                     <label className="text-xs font-semibold text-muted-foreground">Product Image</label>
@@ -707,7 +711,10 @@ export const AdminPanel = () => {
                               {editingProduct && (
                                 <form onSubmit={handleUpdateProduct} className="space-y-4 pt-2">
                                   <Input placeholder="Product Name" value={editingProduct.name} onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })} required className="h-10" />
-                                  <Input type="number" placeholder="Price" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required className="h-10" />
+                                  <div className="flex gap-2">
+                                    <Input type="number" placeholder="Price (₹)" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })} required className="h-10" />
+                                    <Input type="number" placeholder="Original Price (₹) (Optional)" value={editingProduct.original_price || ''} onChange={e => setEditingProduct({ ...editingProduct, original_price: parseFloat(e.target.value) || undefined })} className="h-10" />
+                                  </div>
 
                                   <div className="space-y-2">
                                     <label className="text-xs font-semibold text-muted-foreground">Product Image</label>

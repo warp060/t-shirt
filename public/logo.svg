@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Light gray background -->
+  <rect width="512" height="512" rx="12" fill="#eaeaea"/>
+
+  <!-- White circle - centered and large -->
+  <circle cx="256" cy="220" r="190" fill="#ffffff"/>
+
+  <!-- T-shirt silhouette - big, bold, clean -->
+  <g transform="translate(256, 185)">
+    <!-- Left shoulder + sleeve -->
+    <polygon points="-25,-100 -75,-90 -120,-55 -95,-10 -65,-25 -65,95 65,95 65,-25 95,-10 120,-55 75,-90 25,-100" fill="#1a1a1a"/>
+    <!-- Neckline cutout -->
+    <ellipse cx="0" cy="-92" rx="28" ry="14" fill="#ffffff"/>
+  </g>
+
+  <!-- ABBAS THREADS text -->
+  <text x="256" y="370" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="400" letter-spacing="3" fill="#2a2a2a">ABBAS THREADS</text>
+
+  <!-- STORE text with alternating shades -->
+  <text x="186" y="415" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="16" fill="#333333">S</text>
+  <text x="218" y="415" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="16" fill="#999999">T</text>
+  <text x="250" y="415" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="16" fill="#333333">O</text>
+  <text x="284" y="415" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="16" fill="#999999">R</text>
+  <text x="316" y="415" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="16" fill="#333333">E</text>
+</svg>

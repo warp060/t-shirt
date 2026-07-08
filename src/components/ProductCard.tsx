@@ -17,6 +17,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
 
+  const hasDiscount = product.original_price && product.original_price > product.price;
+  const originalPrice = product.original_price || product.price;
+  const discountPercentage = hasDiscount 
+    ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
+    : 0;
+
   const handleBuyNow = () => {
     if (product.stock > 0) {
       addItem(product);
@@ -53,7 +59,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </Badge>
           </div>
         </Link>
-        <CardContent className="p-3 sm:p-4">
+        <CardContent className="p-3 sm:p-4 pb-2">
           <div className="flex items-center justify-between mb-1 gap-2">
             <Link to={`/product/${product.id}`} className="hover:underline flex-1 min-w-0">
               <h3 className="font-semibold text-sm sm:text-lg truncate">{product.name}</h3>
@@ -63,7 +69,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <span>{product.rating || 4.5}</span>
             </div>
           </div>
-          <p className="text-lg sm:text-xl font-bold text-primary">₹{product.price.toLocaleString('en-IN')}</p>
+          
+          {hasDiscount ? (
+            <>
+              <div className="flex items-center gap-1.5 mb-2 mt-0.5">
+                <p className="text-xl sm:text-2xl font-bold text-foreground">₹{product.price.toLocaleString('en-IN')}</p>
+                <p className="text-sm text-muted-foreground line-through font-medium">₹{originalPrice.toLocaleString('en-IN')}</p>
+                <p className="text-sm font-bold text-[#4CAF50]">{discountPercentage}% off</p>
+              </div>
+              <div className="inline-block bg-[#f4f0ff] text-[#7837d9] px-2 py-0.5 text-[11px] font-semibold rounded mb-1">
+                Top Discount of the Sale
+              </div>
+            </>
+          ) : (
+            <p className="text-xl sm:text-2xl font-bold text-foreground mb-2 mt-0.5">₹{product.price.toLocaleString('en-IN')}</p>
+          )}
         </CardContent>
         <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
           <Button 

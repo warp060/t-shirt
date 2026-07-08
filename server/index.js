@@ -478,10 +478,10 @@ app.get('/api/products/:id', async (req, res) => {
 
 app.post('/api/products', authenticateToken, isAdmin, async (req, res) => {
     try {
-        const { name, price, description, category, image_url, stock } = req.body;
+        const { name, price, original_price, description, category, image_url, stock } = req.body;
         const [result] = await pool.execute(
-            'INSERT INTO products (name, price, description, category, image_url, stock) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, price, description, category, image_url, stock]
+            'INSERT INTO products (name, price, original_price, description, category, image_url, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [name, price, original_price || null, description, category, image_url, stock]
         );
         res.status(201).json({ id: result.insertId, message: 'Product created' });
     } catch (error) {
@@ -491,10 +491,10 @@ app.post('/api/products', authenticateToken, isAdmin, async (req, res) => {
 
 app.put('/api/products/:id', authenticateToken, isAdmin, async (req, res) => {
     try {
-        const { name, price, description, category, image_url, stock } = req.body;
+        const { name, price, original_price, description, category, image_url, stock } = req.body;
         await pool.execute(
-            'UPDATE products SET name = ?, price = ?, description = ?, category = ?, image_url = ?, stock = ? WHERE id = ?',
-            [name, price, description, category, image_url, stock, req.params.id]
+            'UPDATE products SET name = ?, price = ?, original_price = ?, description = ?, category = ?, image_url = ?, stock = ? WHERE id = ?',
+            [name, price, original_price || null, description, category, image_url, stock, req.params.id]
         );
         res.json({ message: 'Product updated' });
     } catch (error) {
