@@ -53,9 +53,10 @@ export const Checkout = () => {
     email: user?.email || '',
     street: '',
     city: '',
-    state: '',
+    state: 'Tamil Nadu',
     zipCode: '',
     phone: '',
+    country: 'India',
   });
 
   // Added tn (note) and tr (reference) to make it more professional and help prevent bank blocks
@@ -72,6 +73,30 @@ export const Checkout = () => {
       }));
     }
   }, [user, profile]);
+
+  useEffect(() => {
+    const fetchCity = async () => {
+      if (formData.zipCode.length === 6) {
+        try {
+          const response = await fetch(`https://api.postalpincode.in/pincode/${formData.zipCode}`);
+          const data = await response.json();
+          if (data && data[0] && data[0].Status === 'Success') {
+            const postOffice = data[0].PostOffice[0];
+            const fetchedCity = postOffice.District || postOffice.Block || postOffice.Name;
+            const fetchedState = postOffice.State;
+            setFormData(prev => ({
+              ...prev,
+              city: fetchedCity,
+              state: fetchedState
+            }));
+          }
+        } catch (error) {
+          console.error("Failed to fetch pin code details", error);
+        }
+      }
+    };
+    fetchCity();
+  }, [formData.zipCode]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -153,6 +178,40 @@ export const Checkout = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {formData.state === 'Tamil Nadu' ? (
+                <div className="relative mb-8 group animate-in slide-in-from-top-4 fade-in">
+                  {/* Glowing background blob for glass effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 rounded-2xl blur-md opacity-10 group-hover:opacity-25 transition duration-1000 group-hover:duration-300 animate-pulse" style={{ animationDuration: '4s' }}></div>
+                  
+                  {/* Glass card */}
+                  <div className="relative flex items-start gap-4 p-5 bg-white/40 backdrop-blur-xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:bg-white/60">
+                    <div className="relative p-3 bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg rounded-xl shrink-0 mt-0.5 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                      <Truck className="h-5 w-5 text-white animate-bounce" style={{ animationDuration: '2s' }} />
+                    </div>
+                    <div className="relative z-10 pt-0.5">
+                      <h4 className="text-[16px] font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-700 to-green-900 tracking-tight">
+                        Tamil Nadu Delivery Only
+                      </h4>
+                      <p className="text-[13px] font-semibold text-slate-700/80 mt-1 leading-relaxed">
+                        Now delivering across Tamil Nadu. India-wide shipping coming soon.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-6 flex items-start gap-3">
+                  <div className="p-1 bg-red-100 text-red-700 rounded-full shrink-0 mt-0.5">
+                    <Truck className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-red-900">Out of Delivery Area</h4>
+                    <p className="text-xs text-red-800 mt-1">
+                      Sorry, we currently only ship within Tamil Nadu (Your zip code is in {formData.state}).
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -168,18 +227,24 @@ export const Checkout = () => {
                   <label className="text-sm font-medium">Street Address</label>
                   <Input name="street" placeholder="123 Main St, Apartment 4B" value={formData.street} onChange={handleInputChange} className="h-11" required />
                 </div>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">City</label>
-                    <Input name="city" placeholder="Mumbai" value={formData.city} onChange={handleInputChange} className="h-11" required />
+                    <label className="text-sm font-medium">Country</label>
+                    <Input name="country" value="India" className="h-11 bg-muted/50 text-muted-foreground cursor-not-allowed" readOnly />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">State</label>
-                    <Input name="state" placeholder="Maharashtra" value={formData.state} onChange={handleInputChange} className="h-11" required />
+                    <Input name="state" value={formData.state} className="h-11 bg-muted/50 text-muted-foreground cursor-not-allowed" readOnly />
                   </div>
-                  <div className="space-y-2 col-span-2 sm:col-span-1">
-                    <label className="text-sm font-medium">Zip Code</label>
-                    <Input name="zipCode" placeholder="400001" value={formData.zipCode} onChange={handleInputChange} className="h-11" required />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Zip Code (PIN Code)</label>
+                    <Input name="zipCode" placeholder="600001" maxLength={6} value={formData.zipCode} onChange={handleInputChange} className="h-11" required />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">City</label>
+                    <Input name="city" placeholder="Chennai" value={formData.city} onChange={handleInputChange} className="h-11 bg-muted/30" required />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -295,10 +360,10 @@ export const Checkout = () => {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
+                <Button 
+                  type="submit" 
                   className="w-full h-14 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98] mt-8"
-                  disabled={loading}
+                  disabled={loading || formData.state !== 'Tamil Nadu'}
                 >
                   {loading ? (
                     <div className="flex items-center gap-2">

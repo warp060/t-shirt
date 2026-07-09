@@ -299,7 +299,7 @@ export const OrderHistory = () => {
           ) : (
             <div className="space-y-8">
               {orders.map((order) => (
-                <Card key={order.id} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-shadow duration-300">
+                <Card key={`order-${order.id}`} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-shadow duration-300">
                   <CardHeader className="bg-muted/30 border-b flex flex-row items-center justify-between py-5 px-6">
                     <div className="grid grid-cols-2 sm:flex gap-6 sm:gap-12">
                       <div>
@@ -370,8 +370,8 @@ export const OrderHistory = () => {
                     </div>
 
                     <div className="space-y-6">
-                      {order.items.map((item) => (
-                        <div key={item.productId} className="flex gap-5 group">
+                      {order.items.map((item, index) => (
+                        <div key={`${item.productId}-${index}`} className="flex gap-5 group">
                           <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-muted border group-hover:border-primary/50 transition-colors">
                             <img src={item.image} alt={item.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                           </div>
@@ -428,14 +428,14 @@ export const OrderHistory = () => {
               <p className="text-muted-foreground max-w-xs mx-auto mb-8">
                 You haven't submitted any custom designs yet. Let your creativity run wild!
               </p>
-              <Button onClick={() => navigate('/service')} className="gap-2">
+              <Button onClick={() => navigate('/custom-printing')} className="gap-2">
                 Create Design <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {customDesigns.map((design) => (
-                <Card key={design.id} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all">
+                <Card key={`design-${design.id}`} className="overflow-hidden border-none shadow-md hover:shadow-lg transition-all">
                   <div className="aspect-square relative group bg-muted">
                     <img src={design.image_url} alt="Custom Design" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute top-3 right-3 flex items-center gap-2">
