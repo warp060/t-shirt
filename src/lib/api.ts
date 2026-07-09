@@ -25,7 +25,7 @@ export const api = {
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          window.location.href = '/auth';
           throw new Error('Session expired. Please log in again.');
         }
 
@@ -73,7 +73,7 @@ export const api = {
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          window.location.href = '/auth';
           throw new Error('Session expired. Please log in again.');
         }
 
@@ -119,7 +119,7 @@ export const api = {
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          window.location.href = '/auth';
           throw new Error('Session expired. Please log in again.');
         }
 
@@ -161,7 +161,7 @@ export const api = {
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          window.location.href = '/auth';
           throw new Error('Session expired. Please log in again.');
         }
 

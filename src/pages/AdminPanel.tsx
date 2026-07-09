@@ -99,6 +99,7 @@ export const AdminPanel = () => {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('products');
   const [pageContent, setPageContent] = useState<PageContentItem[]>([]);
   const [editedContent, setEditedContent] = useState<Record<string, string>>({});
@@ -261,6 +262,7 @@ export const AdminPanel = () => {
       await api.post('/products', newProduct);
       setNewProduct({ name: '', price: 0, original_price: undefined, description: '', category: 'Men', image_url: '', stock: 0 });
       fetchData(); // Refresh list immediately
+      setIsAddProductOpen(false);
       toast.success('Product added successfully!');
     } catch (error: any) {
       toast.error(error.message || "Failed to add product");
@@ -584,7 +586,7 @@ export const AdminPanel = () => {
               <h2 className="text-xl font-bold tracking-tight">Manage Inventory</h2>
               <p className="text-xs text-muted-foreground mt-0.5">Create, edit, or remove catalog items</p>
             </div>
-            <Dialog>
+            <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
               <DialogTrigger asChild>
                 <Button className="cursor-pointer font-semibold shadow-sm"><Plus className="mr-1.5 h-4 w-4" /> Add Product</Button>
               </DialogTrigger>

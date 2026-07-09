@@ -370,6 +370,12 @@ app.put('/api/admin/orders/:id/status', authenticateToken, isAdmin, async (req, 
         await pool.execute('UPDATE orders SET status = ? WHERE id = ?', [status, orderId]);
 
         if (status === 'cancelled' && oldStatus !== 'cancelled') {
+            // Restore product stock
+            const [items] = await pool.execute('SELECT * FROM order_items WHERE order_id = ?', [orderId]);
+            for (const item of items) {
+                await pool.execute('UPDATE products SET stock = stock + ? WHERE id = ?', [item.quantity, item.product_id]);
+            }
+
             const order = orders[0];
             const fullOrder = {
                 ...order,

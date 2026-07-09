@@ -213,10 +213,8 @@ export const Auth = () => {
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => toast.error("Google login failed")}
-              useOneTap
               theme="outline"
               size="large"
-              width="100%"
             />
           </div>
         </CardContent>

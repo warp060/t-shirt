@@ -17,10 +17,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
 
-  const hasDiscount = product.original_price && product.original_price > product.price;
-  const originalPrice = product.original_price || product.price;
+  const currentPrice = Number(product.price);
+  const originalPrice = product.original_price ? Number(product.original_price) : currentPrice;
+  const hasDiscount = originalPrice > currentPrice;
   const discountPercentage = hasDiscount 
-    ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
+    ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
     : 0;
 
   const handleBuyNow = () => {
@@ -73,7 +74,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {hasDiscount ? (
             <>
               <div className="flex items-center gap-1.5 mb-2 mt-0.5">
-                <p className="text-xl sm:text-2xl font-bold text-foreground">₹{product.price.toLocaleString('en-IN')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-foreground">₹{currentPrice.toLocaleString('en-IN')}</p>
                 <p className="text-sm text-muted-foreground line-through font-medium">₹{originalPrice.toLocaleString('en-IN')}</p>
                 <p className="text-sm font-bold text-[#4CAF50]">{discountPercentage}% off</p>
               </div>
@@ -82,7 +83,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               </div>
             </>
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-foreground mb-2 mt-0.5">₹{product.price.toLocaleString('en-IN')}</p>
+            <p className="text-xl sm:text-2xl font-bold text-foreground mb-2 mt-0.5">₹{currentPrice.toLocaleString('en-IN')}</p>
           )}
         </CardContent>
         <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
@@ -103,7 +104,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           >
             <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
             <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-current group-hover:scale-110 transition-transform duration-300" />
-            Buy at ₹{product.price.toLocaleString('en-IN')}
+            Buy at ₹{currentPrice.toLocaleString('en-IN')}
           </Button>
 
           <Button 
