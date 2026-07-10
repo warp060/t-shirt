@@ -921,7 +921,7 @@ export const AdminPanel = () => {
                                         <div key={idx} className="flex justify-between items-center text-sm py-1 border-b border-border/30 last:border-0">
                                           <div className="flex flex-col">
                                             <span className="font-semibold text-foreground">{item.name}</span>
-                                            <span className="text-xs text-muted-foreground font-medium">Qty: {item.quantity} × ₹{item.price.toLocaleString('en-IN')}</span>
+                                            <span className="text-xs text-muted-foreground font-medium">Qty: {item.quantity} × ₹{item.price.toLocaleString('en-IN')}{item.size ? ` • Size: ${item.size}` : ''}</span>
                                           </div>
                                           <span className="font-semibold text-foreground">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
                                         </div>

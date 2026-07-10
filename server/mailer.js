@@ -5,7 +5,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
 const sendEmail = async (subject, html, attachments = []) => {
     try {
         console.log(`[MAIL] Sending email: "${subject}" to ${ADMIN_EMAIL}`);
-        
+
         const emailData = {
             from: 'Abbas Threads <onboarding@resend.dev>',
             to: [ADMIN_EMAIL],
@@ -407,12 +407,12 @@ const templates = {
 };
 
 module.exports = {
-    sendOrderNotification: (order, items) => 
+    sendOrderNotification: (order, items) =>
         sendEmail(`New Order #${order.id || 'Pending'} - Abbas Threads`, templates.newOrder(order, items)),
-    
-    sendCancellationNotification: (order, items) => 
+
+    sendCancellationNotification: (order, items) =>
         sendEmail(`Order #${order.id} Cancelled - Abbas Threads`, templates.orderCancelled(order, items)),
-    
+
     sendCustomDesignNotification: (design, user) => {
         const html = templates.customDesign(design, user);
         const imageUrl = design.imageUrl || design.image_url || '';
