@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../lib/auth';
-import { Order, CustomDesign } from '../types';
+import { Order, CustomDesign, ReturnRequest } from '../types';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette, MoreVertical, XCircle, Settings, Trash2 } from 'lucide-react';
+import { Package, Truck, CheckCircle2, Clock, CreditCard, Smartphone, Wallet, QrCode, ArrowRight, Star, Palette, MoreVertical, XCircle, Settings, Trash2, RotateCcw, AlertTriangle } from 'lucide-react';
 import { api } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -25,6 +25,7 @@ export const OrderHistory = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [customDesigns, setCustomDesigns] = useState<CustomDesign[]>([]);
+  const [returns, setReturns] = useState<ReturnRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
   const [reviewingItem, setReviewingItem] = useState<{ productId: number, name: string } | null>(null);
@@ -192,9 +193,10 @@ export const OrderHistory = () => {
       if (!user) return;
       setLoading(true);
       try {
-        const [ordersRes, customDesignsRes] = await Promise.allSettled([
+        const [ordersRes, customDesignsRes, returnsRes] = await Promise.allSettled([
           api.get(`/orders/${user.id}`),
-          api.get(`/custom-designs/user/${user.id}`)
+          api.get(`/custom-designs/user/${user.id}`),
+          api.get(`/returns/user/${user.id}`)
         ]);
 
         if (ordersRes.status === 'fulfilled') {
@@ -208,6 +210,12 @@ export const OrderHistory = () => {
         } else {
           console.error("Custom designs fetch failed:", customDesignsRes.reason);
           toast.error("Could not load custom designs. Has the backend updated?");
+        }
+        
+        if (returnsRes.status === 'fulfilled') {
+          setReturns(returnsRes.value);
+        } else {
+          console.error("Returns fetch failed:", returnsRes.reason);
         }
       } catch (error) {
         console.error("Error fetching history data:", error);
@@ -279,6 +287,9 @@ export const OrderHistory = () => {
           <TabsTrigger value="custom" className="flex-1 sm:flex-none py-2.5 px-6 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
             <Palette className="h-4 w-4 mr-2" /> Custom Designs ({customDesigns.length})
           </TabsTrigger>
+          <TabsTrigger value="returns" className="flex-1 sm:flex-none py-2.5 px-6 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <RotateCcw className="h-4 w-4 mr-2" /> Returns ({returns.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="orders" className="space-y-8 mt-0">
@@ -342,7 +353,7 @@ export const OrderHistory = () => {
                         {activeMenu === -order.id && (
                           <>
                             <div className="fixed inset-0 z-0" onClick={() => setActiveMenu(null)} />
-                            <div className="absolute right-0 mt-2 w-44 bg-background/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-xl shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] py-1.5 z-10 text-left animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="absolute right-0 mt-2 w-max min-w-[11rem] bg-background/90 dark:bg-zinc-900/90 backdrop-blur-md border border-border/80 rounded-xl shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] py-1.5 z-10 text-left animate-in fade-in slide-in-from-top-2 duration-200">
                               {(order.status === 'pending' || order.status === 'processing') && (
                                 <button
                                   className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-all flex items-center gap-2 cursor-pointer border-b border-border/50"
@@ -354,6 +365,30 @@ export const OrderHistory = () => {
                                   <XCircle className="h-3.5 w-3.5" /> Cancel Order
                                 </button>
                               )}
+                              
+                              {order.status === 'delivered' && order.items.map(item => {
+                                  const deliveredDate = order.delivered_at ? new Date(order.delivered_at) : new Date(order.updated_at || order.created_at);
+                                  const diffTime = new Date().getTime() - deliveredDate.getTime();
+                                  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                                  const returnRequested = returns.some(r => r.order_id === order.id && r.product_id === item.productId);
+                                  
+                                  if (!returnRequested && diffDays <= 5) {
+                                      return (
+                                          <button
+                                              key={item.productId}
+                                              className="w-full text-left px-3.5 py-2.5 text-xs font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 hover:bg-violet-500/10 dark:hover:bg-violet-500/20 transition-all flex items-center gap-2 cursor-pointer border-b border-border/50 tracking-wide"
+                                              onClick={() => {
+                                                navigate(`/return-request/${order.id}/${item.productId}`);
+                                                setActiveMenu(null);
+                                              }}
+                                          >
+                                              <RotateCcw className="h-3.5 w-3.5" /> Request Return ({5 - diffDays} days left)
+                                          </button>
+                                      );
+                                  }
+                                  return null;
+                              })}
+
                               <button
                                 className="w-full text-left px-3.5 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 transition-all flex items-center gap-2 cursor-pointer"
                                 onClick={() => {
@@ -394,6 +429,7 @@ export const OrderHistory = () => {
                               >
                                 Write Review
                               </Button>
+                              
                             </div>
                           </div>
                         </div>
@@ -490,6 +526,61 @@ export const OrderHistory = () => {
                       <span>Submitted on</span>
                       <span className="font-medium text-foreground">{new Date(design.created_at).toLocaleDateString('en-IN')}</span>
                     </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="returns" className="space-y-8 mt-0">
+          {returns.length === 0 ? (
+            <div className="text-center py-20 border-2 border-dashed rounded-3xl bg-muted/20">
+              <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <RotateCcw className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">No returns requested</h2>
+              <p className="text-muted-foreground max-w-xs mx-auto mb-8">
+                You haven't requested any returns yet.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {returns.map((ret) => (
+                <Card key={`return-${ret.id}`} className="overflow-hidden border-none shadow-md">
+                  <CardHeader className="bg-muted/30 border-b py-4 px-6 flex flex-row items-center justify-between">
+                    <div>
+                      <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-1">Return Requested On</p>
+                      <p className="text-sm font-semibold">{new Date(ret.created_at).toLocaleDateString('en-IN')}</p>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider mb-1">Status</p>
+                       <Badge variant={ret.status === 'refunded' ? 'default' : ret.status === 'rejected' ? 'destructive' : 'secondary'} className="capitalize">
+                         {ret.status.replace('_', ' ')}
+                       </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                     <div className="flex gap-5">
+                       <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted border">
+                         <img src={ret.product_image} alt={ret.product_name} className="h-full w-full object-cover" />
+                       </div>
+                       <div className="flex-1">
+                         <h4 className="font-bold text-lg">{ret.product_name}</h4>
+                         <p className="text-sm text-muted-foreground mt-1">Order: #ORD-{ret.order_id.toString().padStart(6, '0')}</p>
+                         <p className="text-sm text-muted-foreground mt-1">Reason: {ret.reason}</p>
+                         
+                         {ret.status === 'rejected' && ret.rejection_reason && (
+                           <div className="mt-4 bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm flex gap-2 items-start">
+                             <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                             <div>
+                               <p className="font-bold">Return Rejected</p>
+                               <p>{ret.rejection_reason}</p>
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                     </div>
                   </CardContent>
                 </Card>
               ))}

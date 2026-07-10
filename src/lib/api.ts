@@ -5,7 +5,7 @@ const getBaseUrl = () => {
   return url + '/api';
 };
 
-const API_BASE_URL = getBaseUrl();
+export const API_BASE_URL = getBaseUrl();
 
 export const api = {
   get: async (endpoint: string) => {

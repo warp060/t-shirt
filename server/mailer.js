@@ -110,7 +110,7 @@ const templates = {
                                             <td style="vertical-align: middle;">
                                                 <span style="font-weight: 500; color: #1a1a1a;">${item.name || 'Product'}</span>
                                                 <br/>
-                                                <span style="font-size: 12px; color: #777;">Qty: ${item.quantity}</span>
+                                                <span style="font-size: 12px; color: #777;">Qty: ${item.quantity} ${item.size ? `| Size: ${item.size}` : ''}</span>
                                             </td>
                                         </tr>
                                     </table>
@@ -343,6 +343,66 @@ const templates = {
         </table>
     </body>
     </html>
+    `,
+
+    // ─── RETURN REQUEST SUBMITTED ───────────────────────────
+    returnSubmitted: (user, orderId, productId) => `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
+            <tr><td align="center">
+                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                    <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">New Return Request</div>
+                    </td></tr>
+                    <tr><td style="padding: 25px 25px 10px;">
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Date:</strong> ${formatDate()}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Customer:</strong> ${user?.name || 'N/A'}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Order ID:</strong> #ORD-${orderId}</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>Product ID:</strong> ${productId}</p>
+                        <p style="margin: 20px 0 20px; font-size: 14px; color: #333; text-align: center;">Please click the button below to review this return request in the Admin Panel.</p>
+                        <div style="text-align: center;">
+                            <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px;">Open Admin Panel</a>
+                        </div>
+                    </td></tr>
+                </table>
+            </td></tr>
+        </table>
+    </body>
+    </html>
+    `,
+
+    // ─── RETURN STATUS UPDATE ───────────────────────────
+    returnStatusUpdate: (user, orderId, productId, status, rejectionReason) => `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
+            <tr><td align="center">
+                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                    <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
+                        <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
+                        <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">Return Status Update</div>
+                    </td></tr>
+                    <tr><td style="padding: 25px 25px 10px;">
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;">Hi ${user?.name || 'Customer'},</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;">Your return request for Order #ORD-${orderId} (Product ID: ${productId}) has been updated.</p>
+                        <p style="margin: 0 0 8px; font-size: 14px; color: #333;"><strong>New Status:</strong> ${status.toUpperCase().replace('_', ' ')}</p>
+                        ${rejectionReason ? `<p style="margin: 0 0 8px; font-size: 14px; color: #c62828;"><strong>Reason:</strong> ${rejectionReason}</p>` : ''}
+                        <p style="margin: 20px 0 20px; font-size: 14px; color: #333; text-align: center;">You can view the full details of this return in your Order History.</p>
+                        <div style="text-align: center;">
+                            <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/orders" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px;">View Order History</a>
+                        </div>
+                    </td></tr>
+                </table>
+            </td></tr>
+        </table>
+    </body>
+    </html>
     `
 };
 
@@ -395,4 +455,17 @@ module.exports = {
             attachments
         );
     },
+
+    sendReturnSubmittedNotification: (user, orderId, productId) => {
+        const html = templates.returnSubmitted(user, orderId, productId);
+        return sendEmail(`New Return Request - Order #ORD-${orderId}`, html);
+    },
+
+    sendReturnStatusUpdateNotification: (user, orderId, productId, status, rejectionReason) => {
+        const html = templates.returnStatusUpdate(user, orderId, productId, status, rejectionReason);
+        // Send to customer, but we only have ADMIN_EMAIL setup right now via Resend sandbox,
+        // so it will go to ADMIN_EMAIL unless Resend domain is verified.
+        // We will pass the subject normally.
+        return sendEmail(`Return Status Updated: ${status.replace('_', ' ')} - Order #ORD-${orderId}`, html);
+    }
 };

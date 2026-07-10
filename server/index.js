@@ -11,6 +11,24 @@ const cors = require('cors');
 const pool = require('./db');
 const jwt = require('jsonwebtoken');
 const { register, login, googleLogin } = require('./auth');
+const multer = require('multer');
+const fs = require('fs');
+
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir)
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname))
+    }
+});
+const upload = multer({ storage: storage });
 
 const { sendOrderNotification, sendCancellationNotification, sendCustomDesignNotification, sendCustomDesignCancellationNotification } = require('./mailer');
 
@@ -21,6 +39,7 @@ app.use(cors());
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Log all requests for debugging online
 app.use((req, res, next) => {
@@ -347,7 +366,8 @@ app.get('/api/admin/orders', authenticateToken, isAdmin, async (req, res) => {
                     name: item.name,
                     image: item.image_url,
                     quantity: item.quantity,
-                    price: item.price_at_purchase
+                    price: item.price_at_purchase,
+                    size: item.size || null
                 }))
             };
         }));
@@ -367,7 +387,14 @@ app.put('/api/admin/orders/:id/status', authenticateToken, isAdmin, async (req, 
         if (orders.length === 0) return res.status(404).json({ message: 'Order not found' });
         const oldStatus = orders[0].status;
 
-        await pool.execute('UPDATE orders SET status = ? WHERE id = ?', [status, orderId]);
+        let updateQuery = 'UPDATE orders SET status = ? WHERE id = ?';
+        let updateParams = [status, orderId];
+
+        if (status === 'delivered') {
+            updateQuery = 'UPDATE orders SET status = ?, delivered_at = CURRENT_TIMESTAMP WHERE id = ?';
+        }
+
+        await pool.execute(updateQuery, updateParams);
 
         if (status === 'cancelled' && oldStatus !== 'cancelled') {
             // Restore product stock
@@ -571,7 +598,8 @@ app.get('/api/orders/:userId', async (req, res) => {
                     name: item.name,
                     image: item.image_url,
                     quantity: item.quantity,
-                    price: parseFloat(item.price_at_purchase)
+                    price: parseFloat(item.price_at_purchase),
+                    size: item.size || null
                 }))
             };
         }));
@@ -625,7 +653,7 @@ app.post('/api/orders', async (req, res) => {
                 if (product.stock < item.quantity) throw new Error(`Insufficient stock for ${product.name}`);
 
                 await connection.execute('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, productId]);
-                await connection.execute('INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase) VALUES (?, ?, ?, ?)', [orderId, productId, item.quantity, item.price]);
+                await connection.execute('INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase, size) VALUES (?, ?, ?, ?, ?)', [orderId, productId, item.quantity, item.price, item.size || null]);
             }
 
             console.log(`[ORDER] Committing transaction...`);
@@ -796,6 +824,140 @@ app.post('/api/custom-designs/:id/cancel', async (req, res) => {
     } catch (error) {
         console.error("Cancel design error:", error);
         res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+});
+
+// ==========================================
+// RETURN & REFUND ROUTES
+// ==========================================
+
+app.post('/api/returns', authenticateToken, upload.fields([
+    { name: 'photos', maxCount: 10 },
+    { name: 'video', maxCount: 1 },
+    { name: 'invoice', maxCount: 1 }
+]), async (req, res) => {
+    try {
+        const { orderId, productId, reason, description } = req.body;
+        const userId = req.user.id;
+
+        if (!req.files || !req.files['photos'] || !req.files['invoice']) {
+            return res.status(400).json({ message: 'Photos and invoice are required.' });
+        }
+
+        const photos = req.files['photos'].map(file => `/uploads/${file.filename}`);
+        const invoice = `/uploads/${req.files['invoice'][0].filename}`;
+        const video = req.files['video'] ? `/uploads/${req.files['video'][0].filename}` : null;
+
+        // Check if return request already exists
+        const [existing] = await pool.execute('SELECT * FROM return_requests WHERE order_id = ? AND product_id = ?', [orderId, productId]);
+        if (existing.length > 0) {
+            return res.status(400).json({ message: 'Return request already exists for this product.' });
+        }
+
+        await pool.execute(
+            'INSERT INTO return_requests (order_id, product_id, user_id, reason, description, images, video, invoice_image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [orderId, productId, userId, reason, description || '', JSON.stringify(photos), video, invoice, 'pending_review']
+        );
+
+        // Send email notification background
+        setImmediate(async () => {
+            try {
+                const [users] = await pool.execute('SELECT email, name FROM users WHERE id = ?', [userId]);
+                if (users.length > 0) {
+                    const { sendReturnSubmittedNotification } = require('./mailer');
+                    if(sendReturnSubmittedNotification) {
+                         await sendReturnSubmittedNotification(users[0], orderId, productId);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to send return notification:", e);
+            }
+        });
+
+        res.status(201).json({ message: 'Return request submitted successfully.' });
+    } catch (error) {
+        console.error("Submit return error:", error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/returns/user/:userId', authenticateToken, async (req, res) => {
+    try {
+        if (req.user.id !== parseInt(req.params.userId)) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+        const [returns] = await pool.execute(`
+            SELECT rr.*, p.name as product_name, p.image_url as product_image, p.price as product_price
+            FROM return_requests rr
+            JOIN products p ON rr.product_id = p.id
+            WHERE rr.user_id = ?
+            ORDER BY rr.created_at DESC
+        `, [req.user.id]);
+        
+        returns.forEach(r => {
+            try { r.images = JSON.parse(r.images); } catch(e) {}
+        });
+
+        res.json(returns);
+    } catch (error) {
+        console.error("Get user returns error:", error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.get('/api/admin/returns', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const [returns] = await pool.execute(`
+            SELECT rr.*, u.name as user_name, u.email as user_email, p.name as product_name, p.image_url as product_image, p.price as product_price
+            FROM return_requests rr
+            JOIN users u ON rr.user_id = u.id
+            JOIN products p ON rr.product_id = p.id
+            ORDER BY rr.created_at DESC
+        `);
+
+        returns.forEach(r => {
+            try { r.images = JSON.parse(r.images); } catch(e) {}
+        });
+
+        res.json(returns);
+    } catch (error) {
+        console.error("Admin get returns error:", error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+app.put('/api/admin/returns/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { status, rejection_reason } = req.body;
+        const returnId = req.params.id;
+
+        await pool.execute(
+            'UPDATE return_requests SET status = ?, rejection_reason = ? WHERE id = ?',
+            [status, rejection_reason || null, returnId]
+        );
+
+        // Send email notification based on status
+        setImmediate(async () => {
+            try {
+                const [returns] = await pool.execute('SELECT user_id, order_id, product_id FROM return_requests WHERE id = ?', [returnId]);
+                if (returns.length > 0) {
+                    const [users] = await pool.execute('SELECT email, name FROM users WHERE id = ?', [returns[0].user_id]);
+                    if (users.length > 0) {
+                        const { sendReturnStatusUpdateNotification } = require('./mailer');
+                        if (sendReturnStatusUpdateNotification) {
+                             await sendReturnStatusUpdateNotification(users[0], returns[0].order_id, returns[0].product_id, status, rejection_reason);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to send return status notification:", e);
+            }
+        });
+
+        res.json({ message: 'Return status updated successfully' });
+    } catch (error) {
+        console.error("Update return status error:", error);
+        res.status(500).json({ message: error.message });
     }
 });
 

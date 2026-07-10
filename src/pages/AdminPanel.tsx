@@ -15,8 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Mail, Calendar, FileText, Save, Type, AlignLeft, Home as HomeIcon, Paintbrush, Globe } from 'lucide-react';
+import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Mail, Calendar, FileText, Save, Type, AlignLeft, Home as HomeIcon, Paintbrush, Globe, RotateCcw } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { ReturnManagement } from '../components/ReturnManagement';
 
 interface PageContentItem {
   id?: number;
@@ -437,7 +438,7 @@ export const AdminPanel = () => {
             <Package className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{products.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight w-full truncate px-1">{products.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Total Products</span>
           <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Items active</span>
         </div>
@@ -452,7 +453,7 @@ export const AdminPanel = () => {
             <ShoppingBag className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">{orders.length}</span>
+          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight w-full truncate px-1">{orders.length}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Total Orders</span>
           <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Received logs</span>
         </div>
@@ -467,7 +468,7 @@ export const AdminPanel = () => {
             <DollarSign className="h-6 w-6" />
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">₹{totalRevenue.toLocaleString('en-IN')}</span>
+          <span className="text-xl sm:text-2xl font-black tracking-tight text-foreground leading-tight w-full truncate px-1">₹{totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Total Revenue</span>
           <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Gross earnings</span>
         </div>
@@ -482,7 +483,7 @@ export const AdminPanel = () => {
             <span className="text-xl font-bold">₹</span>
           </div>
           {/* Bottom: Texts centered */}
-          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground leading-tight">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+          <span className="text-xl sm:text-2xl font-black tracking-tight text-foreground leading-tight w-full truncate px-1">₹{avgOrderValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300 mt-2">Average Order</span>
           <span className="text-xs text-muted-foreground/75 mt-0.5 sm:mt-1 font-medium group-hover:text-muted-foreground transition-colors duration-300 hidden sm:inline-block">Average ticket value</span>
         </div>
@@ -564,6 +565,7 @@ export const AdminPanel = () => {
               <SelectItem value="reviews" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Reviews</SelectItem>
               <SelectItem value="subscribers" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Subscribers</SelectItem>
               <SelectItem value="pages" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Pages</SelectItem>
+              <SelectItem value="returns" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Returns</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -577,6 +579,7 @@ export const AdminPanel = () => {
           <TabsTrigger value="reviews" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Reviews</TabsTrigger>
           <TabsTrigger value="subscribers" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Subscribers</TabsTrigger>
           <TabsTrigger value="pages" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Pages</TabsTrigger>
+          <TabsTrigger value="returns" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Returns</TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Products */}
@@ -1313,6 +1316,10 @@ export const AdminPanel = () => {
               </div>
             </Card>
           ))}
+        </TabsContent>
+
+        <TabsContent value="returns" className="focus-visible:outline-none">
+          <ReturnManagement />
         </TabsContent>
 
       </Tabs>

@@ -49,6 +49,7 @@ export interface Order {
   cancel_reason?: string;
   created_at: string;
   updated_at?: string;
+  delivered_at?: string;
 }
 
 export interface Review {
@@ -70,4 +71,26 @@ export interface CustomDesign {
   description: string;
   status: 'pending' | 'processing' | 'completed' | 'cancelled';
   created_at: string;
+}
+
+export interface ReturnRequest {
+  id: number;
+  order_id: number;
+  product_id: number;
+  user_id: number;
+  reason: string;
+  description: string;
+  images: string[];
+  video?: string | null;
+  invoice_image: string;
+  status: 'pending_review' | 'approved' | 'rejected' | 'return_received' | 'refund_processing' | 'refunded';
+  rejection_reason?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Included from joined queries
+  product_name?: string;
+  product_image?: string;
+  product_price?: number;
+  user_name?: string;
+  user_email?: string;
 }

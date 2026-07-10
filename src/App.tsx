@@ -17,6 +17,7 @@ const AdminPanel = React.lazy(() => import('./pages/AdminPanel').then(m => ({ de
 const OrderHistory = React.lazy(() => import('./pages/OrderHistory').then(m => ({ default: m.OrderHistory })));
 const Profile = React.lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })));
 const CustomPrinting = React.lazy(() => import('./pages/CustomPrinting').then(m => ({ default: m.CustomPrinting })));
+const ReturnRequestForm = React.lazy(() => import('./pages/ReturnRequestForm').then(m => ({ default: m.ReturnRequestForm })));
 
 const PageLoader = () => (
   <div className="flex h-screen w-full items-center justify-center bg-background">
@@ -72,6 +73,14 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/return-request/:orderId/:productId" 
+              element={
+                <ProtectedRoute>
+                  <ReturnRequestForm />
                 </ProtectedRoute>
               } 
             />

@@ -213,9 +213,14 @@ export const ProductDetails = () => {
               <Truck className="h-6 w-6 text-primary" />
               <span className="text-xs font-medium">Free Shipping</span>
             </div>
-            <div className="flex flex-col items-center text-center gap-2">
+            <div className="flex flex-col items-center text-center gap-2 group relative cursor-help">
               <RefreshCcw className="h-6 w-6 text-primary" />
-              <span className="text-xs font-medium">30-Day Returns</span>
+              <span className="text-xs font-medium">5-Day Returns</span>
+              <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-foreground text-background text-xs p-3 rounded-lg shadow-xl text-center z-10 pointer-events-none">
+                Eligible for returns within 5 days of delivery. 
+                <br/><br/>
+                <span className="text-muted/80">Note: Custom printed or personalized T-shirts are non-returnable, unless damaged or defective.</span>
+              </div>
             </div>
             <div className="flex flex-col items-center text-center gap-2">
               <ShieldCheck className="h-6 w-6 text-primary" />
