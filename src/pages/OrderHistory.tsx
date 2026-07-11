@@ -651,7 +651,7 @@ export const OrderHistory = () => {
 
       {/* Order Tracker Modal */}
       <Dialog open={!!trackingOrder} onOpenChange={(open) => !open && setTrackingOrder(null)}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Order Tracker</DialogTitle>
             <DialogDescription>
@@ -664,7 +664,7 @@ export const OrderHistory = () => {
 
       {/* Return Tracker Modal */}
       <Dialog open={!!trackingReturn} onOpenChange={(open) => !open && setTrackingReturn(null)}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Return Tracker</DialogTitle>
             <DialogDescription>
