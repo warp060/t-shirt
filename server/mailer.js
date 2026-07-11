@@ -74,7 +74,7 @@ const templates = {
     <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                <table width="500" align="center" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd;">
                     
                     <!-- Header -->
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
@@ -162,7 +162,7 @@ const templates = {
     <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                <table width="500" align="center" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd;">
                     
                     <!-- Header -->
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
@@ -257,7 +257,7 @@ const templates = {
     <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                <table width="500" align="center" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd;">
                     
                     <!-- Header -->
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
@@ -305,7 +305,7 @@ const templates = {
     <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                <table width="500" align="center" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd;">
                     
                     <!-- Header -->
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
@@ -353,7 +353,7 @@ const templates = {
     <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                <table width="500" align="center" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd;">
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
                         <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
                         <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">New Return Request</div>
@@ -383,7 +383,7 @@ const templates = {
     <body style="margin: 0; padding: 0; background-color: #f2f2f2; font-family: Arial, Helvetica, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f2f2f2; padding: 20px;">
             <tr><td align="center">
-                <table width="500" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border: 1px solid #ddd;">
+                <table width="500" align="center" cellpadding="0" cellspacing="0" style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border: 1px solid #ddd;">
                     <tr><td style="background-color: #1a1a1a; padding: 25px 20px; text-align: center;">
                         <div style="font-size: 22px; font-weight: bold; color: #ffffff; letter-spacing: 2px;">ABBAS THREADS</div>
                         <div style="font-size: 13px; color: #cccccc; margin-top: 5px;">Return Status Update</div>
