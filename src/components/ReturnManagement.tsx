@@ -27,7 +27,9 @@ export const ReturnManagement = () => {
 
   const getMediaUrl = (url: string | undefined | null) => {
     if (!url) return '';
-    if (url.startsWith('http') || url.startsWith('data:')) return url;
+    let cleanUrl = url.replace(/\\/g, '/');
+    if (cleanUrl.startsWith('http') || cleanUrl.startsWith('data:')) return cleanUrl;
+    
     let base = '';
     try {
       const parsed = new URL(API_BASE_URL || 'http://localhost:5000/api');
@@ -35,7 +37,8 @@ export const ReturnManagement = () => {
     } catch (e) {
       base = (API_BASE_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
     }
-    const cleanUrl = url.startsWith('/') ? url : '/' + url;
+    
+    cleanUrl = cleanUrl.startsWith('/') ? cleanUrl : '/' + cleanUrl;
     return base + cleanUrl;
   };
 
