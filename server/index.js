@@ -990,6 +990,19 @@ app.use((req, res) => {
     });
 });
 
+// Serve the built frontend (production)
+const distPath = path.join(__dirname, '..', 'dist');
+if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+    // SPA catch-all: serve index.html for any non-API route
+    app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+            res.sendFile(path.join(distPath, 'index.html'));
+        }
+    });
+    console.log('📦 Serving frontend from dist/');
+}
+
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error("!!! SERVER ERROR !!!", err);
