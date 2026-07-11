@@ -1,6 +1,6 @@
 import React from 'react';
 import { Order } from '../types';
-import { Package, Truck, CheckCircle2, Clock, MapPin } from 'lucide-react';
+import { Package, Truck, CheckCircle2, Clock, MapPin, Check } from 'lucide-react';
 import { Badge } from './ui/badge';
 
 interface OrderTrackerProps {
@@ -22,28 +22,36 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
     <div className="space-y-8 py-4">
       {/* Visual Timeline */}
       <div className="relative">
-        <div className="absolute top-1/2 left-0 w-full h-1 bg-muted -translate-y-1/2" />
-        <div 
-          className="absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 transition-all duration-1000" 
-          style={{ width: isCancelled ? '0%' : `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
-        />
+          <div className="absolute top-5 left-[12.5%] right-[12.5%] h-1 -translate-y-1/2 rounded-full bg-muted" />
+          <div className="absolute top-5 left-[12.5%] right-[12.5%] h-1 -translate-y-1/2 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-green-600 transition-all duration-1000" 
+              style={{ width: isCancelled ? '0%' : `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
+            />
+          </div>
         
         <div className="relative flex justify-between">
           {steps.map((step, index) => {
             const Icon = step.icon;
-            const isCompleted = !isCancelled && index <= currentStepIndex;
-            const isCurrent = !isCancelled && index === currentStepIndex;
+            const isPast = !isCancelled && (index < currentStepIndex || (index === steps.length - 1 && index === currentStepIndex));
+            const isCurrent = !isCancelled && index === currentStepIndex && !isPast;
             
             return (
-              <div key={step.status} className="flex flex-col items-center gap-2">
+              <div key={step.status} className="flex flex-col items-center gap-2 flex-1 z-10">
                 <div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-4 bg-background transition-colors duration-500 ${
-                    isCompleted ? 'border-primary text-primary' : 'border-muted text-muted-foreground'
-                  } ${isCurrent ? 'ring-4 ring-primary/20 scale-110' : ''}`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                    isPast 
+                      ? 'bg-green-600 border-green-600 text-white shadow-md shadow-green-600/30' 
+                      : isCurrent
+                        ? 'bg-orange-50 border-orange-500 text-orange-600 shadow-md shadow-orange-500/30 ring-4 ring-orange-500/20 scale-110'
+                        : 'bg-background border-muted-foreground/30 text-muted-foreground'
+                  }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  {isPast ? <Check className="h-5 w-5" strokeWidth={3} /> : <Icon className="h-5 w-5" />}
                 </div>
-                <span className={`text-[10px] font-bold uppercase tracking-tight ${isCompleted ? 'text-primary' : 'text-muted-foreground'}`}>
+                <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-tight text-center leading-tight ${
+                  isPast ? 'text-green-700' : isCurrent ? 'text-orange-600' : 'text-muted-foreground'
+                }`}>
                   {step.label}
                 </span>
               </div>

@@ -9,6 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { OrderTracker } from '../components/OrderTracker';
+import { ReturnTracker } from '../components/ReturnTracker';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,7 @@ export const OrderHistory = () => {
   const [returns, setReturns] = useState<ReturnRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
+  const [trackingReturn, setTrackingReturn] = useState<ReturnRequest | null>(null);
   const [reviewingItem, setReviewingItem] = useState<{ productId: number, name: string } | null>(null);
   const [cancelingOrder, setCancelingOrder] = useState<Order | null>(null);
   const [cancelingDesign, setCancelingDesign] = useState<CustomDesign | null>(null);
@@ -581,6 +583,9 @@ export const OrderHistory = () => {
                          )}
                        </div>
                      </div>
+                     <div className="mt-6 pt-6 border-t flex justify-end">
+                       <Button onClick={() => setTrackingReturn(ret)}>Track Return</Button>
+                     </div>
                   </CardContent>
                 </Card>
               ))}
@@ -646,7 +651,7 @@ export const OrderHistory = () => {
 
       {/* Order Tracker Modal */}
       <Dialog open={!!trackingOrder} onOpenChange={(open) => !open && setTrackingOrder(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Order Tracker</DialogTitle>
             <DialogDescription>
@@ -654,6 +659,19 @@ export const OrderHistory = () => {
             </DialogDescription>
           </DialogHeader>
           {trackingOrder && <OrderTracker order={trackingOrder} />}
+        </DialogContent>
+      </Dialog>
+
+      {/* Return Tracker Modal */}
+      <Dialog open={!!trackingReturn} onOpenChange={(open) => !open && setTrackingReturn(null)}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Return Tracker</DialogTitle>
+            <DialogDescription>
+              Tracking details for Return Request (Order #ORD-{trackingReturn?.order_id.toString().padStart(6, '0')})
+            </DialogDescription>
+          </DialogHeader>
+          {trackingReturn && <ReturnTracker returnRequest={trackingReturn} />}
         </DialogContent>
       </Dialog>
 
