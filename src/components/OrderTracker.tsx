@@ -9,7 +9,7 @@ interface OrderTrackerProps {
 
 export const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
   const steps = [
-    { status: 'pending', label: 'Order Placed', icon: Clock },
+    { status: 'pending', label: 'Order\nPlaced', icon: Clock },
     { status: 'processing', label: 'Processing', icon: Package },
     { status: 'shipped', label: 'Shipped', icon: Truck },
     { status: 'delivered', label: 'Delivered', icon: MapPin },
@@ -53,57 +53,98 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
 
   return (
     <div className="space-y-10 py-4 px-2">
-      <div className="relative pt-4 pb-2 px-1">
+      {/* Stepper */}
+      <div className="relative pt-6 pb-2 px-1">
         <div className="w-full relative">
-          <div className="absolute top-5 left-[12.5%] right-[12.5%] h-[2px] -translate-y-1/2 bg-gray-200" />
+          {/* Background track */}
+          <div className="absolute top-6 left-[12.5%] right-[12.5%] h-[3px] -translate-y-1/2 bg-gray-100 rounded-full" />
           
-          <div className="absolute top-5 left-[12.5%] right-[12.5%] h-[2px] -translate-y-1/2 overflow-hidden">
+          {/* Animated progress bar with gradient */}
+          <div className="absolute top-6 left-[12.5%] right-[12.5%] h-[3px] -translate-y-1/2 overflow-hidden rounded-full">
             <div 
-              className="h-full bg-green-600 transition-all duration-1000 ease-in-out" 
-              style={{ width: mounted && !isCancelled ? `${(currentStepIndex / (steps.length - 1)) * 100}%` : '0%' }}
+              className="h-full rounded-full transition-all duration-1000 ease-in-out" 
+              style={{ 
+                width: mounted && !isCancelled ? `${(currentStepIndex / (steps.length - 1)) * 100}%` : '0%',
+                background: 'linear-gradient(90deg, #16a34a, #22c55e, #16a34a)'
+              }}
             />
           </div>
         
+          {/* Steps */}
           <div className="relative flex justify-between mt-4">
             {steps.map((step, index) => {
               const Icon = step.icon;
-              const isPast = !isCancelled && (index < currentStepIndex || (index === steps.length - 1 && index === currentStepIndex));
-              const isCurrent = !isCancelled && index === currentStepIndex && !isPast;
+              const isCompleted = !isCancelled && (index < currentStepIndex || (index === steps.length - 1 && index === currentStepIndex));
+              const isCurrent = !isCancelled && index === currentStepIndex && !isCompleted;
               
               return (
-                <div key={step.status} className="flex flex-col items-center gap-3 flex-1 z-10 relative">
+                <div key={step.status} className="flex flex-col items-center gap-2 flex-1 z-10 relative">
+                  {/* Icon container */}
                   <div className="relative flex justify-center items-center">
+                    {/* Animated pulse rings for current step */}
                     {isCurrent && (
                       <>
-                        <div className="absolute inset-0 rounded-full bg-green-500/20 blur-xl scale-[2.5] animate-pulse pointer-events-none" />
+                        <div 
+                          className="absolute rounded-full pointer-events-none"
+                          style={{
+                            width: '56px',
+                            height: '56px',
+                            border: '2px solid rgba(22, 163, 74, 0.15)',
+                            animation: 'pulseRing 2s ease-out infinite',
+                          }}
+                        />
+                        <div 
+                          className="absolute rounded-full pointer-events-none"
+                          style={{
+                            width: '48px',
+                            height: '48px',
+                            border: '2px solid rgba(22, 163, 74, 0.25)',
+                            animation: 'pulseRing 2s ease-out infinite 0.5s',
+                          }}
+                        />
+                        <div 
+                          className="absolute rounded-full pointer-events-none"
+                          style={{
+                            width: '52px',
+                            height: '52px',
+                            background: 'radial-gradient(circle, rgba(22, 163, 74, 0.12) 0%, transparent 70%)',
+                          }}
+                        />
                       </>
                     )}
+
+                    {/* Step circle */}
                     <div 
-                      className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500 z-10 ${
+                      className={`relative rounded-full flex items-center justify-center transition-all duration-500 z-10 ${
                         mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'
                       } ${
-                        isPast 
-                          ? 'bg-green-600 text-white shadow-sm' 
+                        isCompleted 
+                          ? 'w-11 h-11 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-[0_2px_8px_rgba(22,163,74,0.35)]' 
                           : isCurrent
-                            ? 'bg-white border-[3px] border-green-600 text-green-600 shadow-md scale-110'
-                            : 'bg-white border-2 border-gray-200 text-gray-300'
+                            ? 'w-[46px] h-[46px] bg-white border-[3px] border-green-500 text-green-600 shadow-[0_0_0_4px_rgba(22,163,74,0.1),0_4px_12px_rgba(22,163,74,0.2)]'
+                            : 'w-10 h-10 bg-gray-50 border-2 border-gray-200 text-gray-300'
                       }`}
-                      style={{ transitionDelay: `${index * 100}ms` }}
+                      style={{ transitionDelay: `${index * 120}ms` }}
                     >
-                      {isPast ? (
+                      {isCompleted ? (
                         <Check className="h-5 w-5" strokeWidth={3} />
                       ) : (
-                        <Icon className="h-5 w-5" strokeWidth={isCurrent ? 2.5 : 2} />
+                        <Icon className={`${isCurrent ? 'h-[22px] w-[22px]' : 'h-5 w-5'}`} strokeWidth={isCurrent ? 2.5 : 1.5} />
                       )}
                     </div>
                   </div>
                   
-                  <span className={`text-[10px] font-bold tracking-wider uppercase text-center transition-all duration-500 max-w-[70px] leading-tight mt-1 ${
+                  {/* Label */}
+                  <span className={`text-[10px] font-bold tracking-wider uppercase text-center transition-all duration-500 max-w-[70px] leading-tight whitespace-pre-line ${
                     mounted ? 'opacity-100' : 'opacity-0'
                   } ${
-                    isPast ? 'text-green-800' : isCurrent ? 'text-green-700' : 'text-gray-400'
+                    isCompleted 
+                      ? 'text-green-700' 
+                      : isCurrent 
+                        ? 'text-green-600 font-extrabold' 
+                        : 'text-gray-400'
                   }`}
-                  style={{ transitionDelay: `${index * 100 + 100}ms` }}>
+                  style={{ transitionDelay: `${index * 120 + 100}ms` }}>
                     {step.label}
                   </span>
                 </div>
@@ -113,6 +154,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
         </div>
       </div>
 
+      {/* Cancelled banner */}
       {isCancelled && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
           <p className="text-red-600 font-bold">Order Cancelled</p>
@@ -120,6 +162,7 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
         </div>
       )}
 
+      {/* Order details and product info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="border border-gray-200 rounded-xl p-5 bg-white shadow-sm">
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-5">Order Details</h3>
@@ -176,6 +219,24 @@ export const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
           )}
         </div>
       </div>
+
+      {/* Keyframe animation styles */}
+      <style>{`
+        @keyframes pulseRing {
+          0% {
+            transform: scale(0.85);
+            opacity: 1;
+          }
+          70% {
+            transform: scale(1.3);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(1.3);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 };

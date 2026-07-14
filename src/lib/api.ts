@@ -1,8 +1,18 @@
 const getBaseUrl = () => {
-  let url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  // Remove trailing slash if present
-  if (url.endsWith('/')) url = url.slice(0, -1);
-  return url + '/api';
+  // If VITE_API_URL is explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    let url = import.meta.env.VITE_API_URL;
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    return url + '/api';
+  }
+  
+  // In production (served from same origin), use relative path
+  // In development, use localhost:5000
+  if (import.meta.env.PROD) {
+    return '/api';
+  }
+  
+  return 'http://localhost:5000/api';
 };
 
 export const API_BASE_URL = getBaseUrl();
