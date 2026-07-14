@@ -981,27 +981,27 @@ app.post('/api/cart/:userId', async (req, res) => {
     }
 });
 
-// 404 Handler for Debugging
-app.use((req, res) => {
-    console.log(`[404] ${req.method} ${req.url}`);
-    res.status(404).json({
-        message: `Route ${req.method} ${req.url} not found`,
-        hint: 'Check if you are missing /api prefix'
-    });
-});
-
 // Serve the built frontend (production)
 const distPath = path.join(__dirname, '..', 'dist');
 if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
     // SPA catch-all: serve index.html for any non-API route
-    app.get(/.*/, (req, res) => {
+    app.get('*', (req, res) => {
         if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
             res.sendFile(path.join(distPath, 'index.html'));
         }
     });
     console.log('📦 Serving frontend from dist/');
 }
+
+// 404 Handler for API routes
+app.use('/api', (req, res) => {
+    console.log(`[404] ${req.method} ${req.url}`);
+    res.status(404).json({
+        message: `Route ${req.method} ${req.url} not found`,
+        hint: 'Check if you are missing /api prefix'
+    });
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
