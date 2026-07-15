@@ -6,10 +6,10 @@ const getBaseUrl = () => {
     return url + '/api';
   }
   
-  // In production (served from same origin), use relative path
+  // In production, use the Render backend URL
   // In development, use localhost:5000
   if (import.meta.env.PROD) {
-    return '/api';
+    return 'https://abbas-threads-api.onrender.com/api';
   }
   
   return 'http://localhost:5000/api';
