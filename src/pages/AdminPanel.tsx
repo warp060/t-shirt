@@ -18,6 +18,7 @@ import {
 import { Plus, Pencil, Trash2, Package, Users, ShoppingBag, LayoutDashboard, Palette, Star, Upload, Image as ImageIcon, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Mail, Calendar, FileText, Save, Type, AlignLeft, Home as HomeIcon, Paintbrush, Globe, RotateCcw } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { ReturnManagement } from '../components/ReturnManagement';
+import { motion } from 'motion/react';
 
 interface PageContentItem {
   id?: number;
@@ -548,39 +549,68 @@ export const AdminPanel = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Navigation Tabs - Mobile Select Dropdown */}
-        <div className="block md:hidden mb-6">
+        {/* Navigation Tabs - Mobile Dropdown */}
+        <div className="block md:hidden mb-6 relative z-10">
           <label className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-2">
             Navigation Menu
           </label>
           <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full h-11 px-4 bg-muted/60 dark:bg-zinc-900/60 border border-border/40 backdrop-blur-sm rounded-xl focus:ring-1 focus:ring-primary text-sm font-semibold flex items-center justify-between shadow-sm cursor-pointer">
+            <SelectTrigger className="w-full h-12 px-4 bg-white/60 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 backdrop-blur-xl rounded-xl focus:ring-2 focus:ring-primary/20 text-sm font-semibold flex items-center justify-between shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] cursor-pointer transition-all">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border border-border/50 bg-background/95 backdrop-blur-md shadow-lg py-1">
-              <SelectItem value="products" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Products</SelectItem>
-              <SelectItem value="orders" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Orders</SelectItem>
-              <SelectItem value="users" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Users</SelectItem>
-              <SelectItem value="custom" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Custom Designs</SelectItem>
-              <SelectItem value="reviews" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Reviews</SelectItem>
-              <SelectItem value="subscribers" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Subscribers</SelectItem>
-              <SelectItem value="pages" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Pages</SelectItem>
-              <SelectItem value="returns" className="py-2.5 px-3.5 text-sm font-medium rounded-lg cursor-pointer transition-colors">Returns</SelectItem>
+            <SelectContent className="rounded-xl border border-black/5 dark:border-white/5 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-2xl shadow-2xl py-1">
+              {[
+                { id: 'products', label: 'Products', icon: Package },
+                { id: 'orders', label: 'Orders', icon: ShoppingBag },
+                { id: 'users', label: 'Users', icon: Users },
+                { id: 'custom', label: 'Custom Designs', icon: Palette },
+                { id: 'reviews', label: 'Reviews', icon: Star },
+                { id: 'subscribers', label: 'Subscribers', icon: Mail },
+                { id: 'pages', label: 'Pages', icon: FileText },
+                { id: 'returns', label: 'Returns', icon: RotateCcw }
+              ].map((item) => (
+                <SelectItem key={item.id} value={item.id} className="py-3 px-4 text-sm font-medium rounded-none cursor-pointer transition-colors focus:bg-primary/5 focus:text-primary">
+                  <div className="flex items-center gap-2">
+                    <item.icon className="h-4 w-4 opacity-70" />
+                    {item.label}
+                  </div>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Navigation Tabs - Desktop Widescreen Triggers */}
-        <TabsList className="hidden md:flex mb-8 w-full justify-start h-auto p-1.5 bg-muted/60 dark:bg-zinc-900/60 border border-border/40 backdrop-blur-sm rounded-xl">
-          <TabsTrigger value="products" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Products</TabsTrigger>
-          <TabsTrigger value="orders" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Orders</TabsTrigger>
-          <TabsTrigger value="users" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Users</TabsTrigger>
-          <TabsTrigger value="custom" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Custom Designs</TabsTrigger>
-          <TabsTrigger value="reviews" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Reviews</TabsTrigger>
-          <TabsTrigger value="subscribers" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Subscribers</TabsTrigger>
-          <TabsTrigger value="pages" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Pages</TabsTrigger>
-          <TabsTrigger value="returns" className="py-2.5 px-4.5 text-xs sm:text-sm font-semibold rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm cursor-pointer">Returns</TabsTrigger>
-        </TabsList>
+        {/* Navigation Tabs - Desktop Widescreen Animated Triggers */}
+        <div className="hidden md:flex mb-8 w-full justify-start overflow-x-auto hide-scrollbar">
+          <TabsList className="flex items-center justify-start h-auto p-1.5 bg-black/5 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-black/5 dark:border-white/5 shadow-inner w-max">
+            {[
+              { id: 'products', label: 'Products' },
+              { id: 'orders', label: 'Orders' },
+              { id: 'users', label: 'Users' },
+              { id: 'custom', label: 'Custom Designs' },
+              { id: 'reviews', label: 'Reviews' },
+              { id: 'subscribers', label: 'Subscribers' },
+              { id: 'pages', label: 'Pages' },
+              { id: 'returns', label: 'Returns' }
+            ].map((tab) => (
+              <TabsTrigger 
+                key={tab.id}
+                value={tab.id}
+                className="relative px-5 py-2.5 text-sm font-semibold rounded-xl transition-colors duration-300 cursor-pointer whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-foreground text-muted-foreground hover:text-foreground/80 bg-transparent border-none"
+              >
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="active-admin-tab"
+                    className="absolute inset-0 bg-background dark:bg-zinc-800 rounded-xl shadow-[0_2px_8px_-2px_rgba(0,0,0,0.1)] border border-black/5 dark:border-white/5"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {/* Tab 1: Products */}
         <TabsContent value="products" className="space-y-6">
