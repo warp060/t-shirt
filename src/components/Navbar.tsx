@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette, Linkedin, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, LogOut, Package, Heart, LayoutGrid, Shirt, Zap, Layers, Instagram, Twitter, Facebook, ChevronRight, Settings, Palette, Linkedin, MessageCircle, ShieldCheck, Info } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useCart } from '../lib/cart';
 import { Button, buttonVariants } from './ui/button';
@@ -115,6 +115,7 @@ export const Navbar = () => {
                   <Link to="/products?category=Men" className="transition-colors hover:text-primary">Men</Link>
                   <Link to="/products?category=Women" className="transition-colors hover:text-primary">Women</Link>
                   <Link to="/products?category=Oversized" className="transition-colors hover:text-primary">Oversized</Link>
+                  <a href="/#about-us" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); document.getElementById('about-us')?.scrollIntoView({ behavior: 'smooth' }) } }} className="transition-colors hover:text-primary">About Us</a>
                   <Link to="/custom-printing" className="transition-colors hover:text-primary font-semibold text-primary/80">Our Service</Link>
                 </div>
               </div>
@@ -260,6 +261,9 @@ export const Navbar = () => {
                             <MobileNavLink to="/products?category=Women" icon={<Shirt className="h-4 w-4" />} label="Women" />
                             <MobileNavLink to="/products?category=Oversized" icon={<Zap className="h-4 w-4" />} label="Oversized" />
                             <MobileNavLink to="/products?category=Printed" icon={<Layers className="h-4 w-4" />} label="Printed" />
+                            <a href="/#about-us" onClick={(e) => { setIsSheetOpen(false); if (window.location.pathname === '/') { e.preventDefault(); setTimeout(() => document.getElementById('about-us')?.scrollIntoView({ behavior: 'smooth' }), 150); } }} className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-muted/50 hover:text-foreground text-muted-foreground">
+                              <Info className="h-4 w-4" /> About Us
+                            </a>
                             <MobileNavLink to="/custom-printing" icon={<Palette className="h-4 w-4" />} label="Our Service" className="text-primary bg-primary/5" />
                           </div>
                         </section>

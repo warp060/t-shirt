@@ -8,6 +8,8 @@ import { motion } from 'motion/react';
 import { api } from '../lib/api';
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
+import { AboutUsSection } from '../components/AboutUsSection';
+import { VIPSection } from '../components/VIPSection';
 
 const CountdownTimer = ({ endDate }: { endDate: string }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -212,8 +214,8 @@ export const Home = () => {
           {[
             { icon: Truck, title: content.feature_1_title || "Free Shipping", desc: content.feature_1_desc || "On orders over ₹4000", link: "/products" },
             { icon: ShieldCheck, title: content.feature_2_title || "Secure Payment", desc: content.feature_2_desc || "100% secure checkout", link: "/" },
-            { icon: Zap, title: content.feature_3_title || "Premium Quality", desc: content.feature_3_desc || "Best-in-class fabrics", link: "/products" },
-            { icon: Zap, title: content.feature_4_title || "Fast Delivery", desc: content.feature_4_desc || "Ships within 24 hours", link: "/products" }
+            { icon: Zap, title: content.feature_4_title || "Fast Delivery", desc: content.feature_4_desc || "Ships within 24 hours", link: "/products" },
+            { icon: RefreshCcw, title: content.feature_5_title || "Easy Returns", desc: content.feature_5_desc || "5-day return policy", link: "/products" }
           ].map((feature, i) => (
             <Link
               key={i}
@@ -234,7 +236,7 @@ export const Home = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-20 relative z-10">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{content.featured_title || 'Featured Products'}</h2>
@@ -252,7 +254,7 @@ export const Home = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-16 relative z-10">
         <h2 className="mb-8 text-2xl sm:text-3xl font-bold tracking-tight text-center">{content.categories_title || 'Shop by Category'}</h2>
         <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
           {[
@@ -277,27 +279,16 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="bg-primary py-12 sm:py-16 text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="mb-4 text-2xl sm:text-3xl font-bold">{content.newsletter_title || 'Join the Thread Club'}</h2>
-          <p className="mb-8 text-sm sm:text-base text-primary-foreground/80 max-w-md mx-auto">{content.newsletter_subtitle || 'Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.'}</p>
-          <form onSubmit={handleSubscribe} className="mx-auto flex flex-col sm:flex-row max-w-md gap-3">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isSubscribing}
-              className="flex-1 rounded-md border-none bg-white px-4 py-2 text-black focus:outline-none h-11 disabled:opacity-50"
-            />
-            <Button type="submit" variant="secondary" className="h-11 font-bold" disabled={isSubscribing}>
-              {isSubscribing ? 'Subscribing...' : 'Subscribe'}
-            </Button>
-          </form>
-        </div>
-      </section>
+      {/* About Us Section */}
+      <AboutUsSection />
+
+      {/* VIP Membership Section */}
+      <VIPSection 
+        email={email} 
+        setEmail={setEmail} 
+        handleSubscribe={handleSubscribe} 
+        isSubscribing={isSubscribing} 
+      />
     </div>
   );
 };

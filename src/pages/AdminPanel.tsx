@@ -46,10 +46,10 @@ const PAGE_SECTIONS = [
       { key: 'feature_1_desc', label: 'Feature 1 — Description', type: 'text', placeholder: 'e.g. On orders over ₹4000' },
       { key: 'feature_2_title', label: 'Feature 2 — Title', type: 'text', placeholder: 'e.g. Secure Payment' },
       { key: 'feature_2_desc', label: 'Feature 2 — Description', type: 'text', placeholder: 'e.g. 100% secure checkout' },
-      { key: 'feature_3_title', label: 'Feature 3 — Title', type: 'text', placeholder: 'e.g. Premium Quality' },
-      { key: 'feature_3_desc', label: 'Feature 3 — Description', type: 'text', placeholder: 'e.g. Best-in-class fabrics' },
       { key: 'feature_4_title', label: 'Feature 4 — Title', type: 'text', placeholder: 'e.g. Fast Delivery' },
       { key: 'feature_4_desc', label: 'Feature 4 — Description', type: 'text', placeholder: 'e.g. Ships within 24 hours' },
+      { key: 'feature_5_title', label: 'Feature 5 — Title', type: 'text', placeholder: 'e.g. Easy Returns' },
+      { key: 'feature_5_desc', label: 'Feature 5 — Description', type: 'text', placeholder: 'e.g. 5-day return policy' },
       { key: 'newsletter_title', label: 'Newsletter Title', type: 'text', placeholder: 'e.g. Join the Thread Club' },
       { key: 'newsletter_subtitle', label: 'Newsletter Subtitle', type: 'textarea', placeholder: 'Newsletter description text' },
     ]
@@ -593,7 +593,7 @@ export const AdminPanel = () => {
               { id: 'pages', label: 'Pages' },
               { id: 'returns', label: 'Returns' }
             ].map((tab) => (
-              <TabsTrigger 
+              <TabsTrigger
                 key={tab.id}
                 value={tab.id}
                 className="relative px-5 py-2.5 text-sm font-semibold rounded-xl transition-colors duration-300 cursor-pointer whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-foreground text-muted-foreground hover:text-foreground/80 bg-transparent border-none"
@@ -1278,11 +1278,10 @@ export const AdminPanel = () => {
               <button
                 key={section.pageId}
                 onClick={() => setActivePageSection(section.pageId)}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold border transition-all cursor-pointer ${
-                  activePageSection === section.pageId 
-                    ? 'bg-foreground text-background border-foreground shadow-sm' 
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold border transition-all cursor-pointer ${activePageSection === section.pageId
+                    ? 'bg-foreground text-background border-foreground shadow-sm'
                     : 'bg-card border-border hover:border-foreground/30 hover:bg-muted/50 text-muted-foreground'
-                }`}
+                  }`}
               >
                 {section.icon}
                 {section.label}
@@ -1303,7 +1302,7 @@ export const AdminPanel = () => {
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">{section.description}</p>
                 </div>
-                <Button 
+                <Button
                   onClick={() => handleSavePageContent(section.pageId)}
                   disabled={savingPages || !hasUnsavedChanges(section.pageId)}
                   className="font-bold text-sm h-10 px-5 transition-all shadow-sm flex-shrink-0"
