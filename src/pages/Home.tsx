@@ -149,7 +149,7 @@ export const Home = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="mt-[5px] mb-8 perspective-1000 z-10 max-w-lg w-full"
               >
-                <div 
+                <div
                   className="relative w-full h-[260px] sm:h-[160px] group preserve-3d cursor-pointer"
                   onClick={() => setIsFlipped(!isFlipped)}
                 >

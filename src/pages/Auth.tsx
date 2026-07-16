@@ -21,7 +21,7 @@ export const Auth = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  
+
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({ name: '', email: '', password: '', role: 'customer' });
 
@@ -51,9 +51,9 @@ export const Auth = () => {
       await api.post('/auth/signup', signupData);
       toast.success("Account created! Please login.");
       // Auto-login after signup
-      const response = await api.post('/auth/login', { 
-        email: signupData.email, 
-        password: signupData.password 
+      const response = await api.post('/auth/login', {
+        email: signupData.email,
+        password: signupData.password
       });
       login(response.user, response.token);
       if (response.user.role === 'admin') {
@@ -71,8 +71,8 @@ export const Auth = () => {
   const handleGoogleSuccess = async (credentialResponse: any) => {
     setLoading(true);
     try {
-      const response = await api.post('/auth/google', { 
-        idToken: credentialResponse.credential 
+      const response = await api.post('/auth/google', {
+        idToken: credentialResponse.credential
       });
       login(response.user, response.token);
       toast.success(`Welcome, ${response.user.name}!`);
@@ -103,27 +103,27 @@ export const Auth = () => {
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Signup</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Email</label>
-                  <Input 
-                    type="email" 
-                    placeholder="name@example.com" 
+                  <Input
+                    type="email"
+                    placeholder="name@example.com"
                     value={loginData.email}
                     onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                    required 
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Password</label>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
                     value={loginData.password}
                     onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                    required 
+                    required
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
@@ -136,37 +136,37 @@ export const Auth = () => {
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Full Name</label>
-                  <Input 
-                    placeholder="Abbas Ali" 
+                  <Input
+                    placeholder="Abbas Ali"
                     value={signupData.name}
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                    required 
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Email</label>
-                  <Input 
-                    type="email" 
-                    placeholder="name@example.com" 
+                  <Input
+                    type="email"
+                    placeholder="name@example.com"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                    required 
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Password</label>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                    required 
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Account Type</label>
-                  <Select 
-                    value={signupData.role} 
+                  <Select
+                    value={signupData.role}
                     onValueChange={(value) => setSignupData({ ...signupData, role: value })}
                   >
                     <SelectTrigger className="w-full">
@@ -197,7 +197,7 @@ export const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
-          
+
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />

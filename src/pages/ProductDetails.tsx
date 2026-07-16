@@ -39,7 +39,7 @@ export const ProductDetails = () => {
     try {
       const productData = await api.get(`/products/${id}`);
       setProduct(productData);
-      
+
       const reviewsData = await api.get(`/products/${id}/reviews`);
       setReviews(reviewsData);
     } catch (error) {
@@ -80,7 +80,7 @@ export const ProductDetails = () => {
       toast.error("Please login to leave a review");
       return;
     }
-    
+
     setSubmittingReview(true);
     try {
       await api.post('/reviews', {
@@ -110,7 +110,7 @@ export const ProductDetails = () => {
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
         {/* Image Gallery */}
         <div className="space-y-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="aspect-[3/4] overflow-hidden rounded-2xl bg-muted"
@@ -217,8 +217,8 @@ export const ProductDetails = () => {
               <RefreshCcw className="h-6 w-6 text-primary" />
               <span className="text-xs font-medium">5-Day Returns</span>
               <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-foreground text-background text-xs p-3 rounded-lg shadow-xl text-center z-10 pointer-events-none">
-                Eligible for returns within 5 days of delivery. 
-                <br/><br/>
+                Eligible for returns within 5 days of delivery.
+                <br /><br />
                 <span className="text-muted/80">Note: Custom printed or personalized T-shirts are non-returnable, unless damaged or defective.</span>
               </div>
             </div>

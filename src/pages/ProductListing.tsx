@@ -38,14 +38,14 @@ export const ProductListing = () => {
       try {
         const params: Record<string, string> = {};
         if (searchQuery) params.search = searchQuery;
-        
+
         const queryString = new URLSearchParams(params).toString();
         const data = await api.get(`/products${queryString ? `?${queryString}` : ''}`);
-        
+
         let filtered = Array.isArray(data) ? [...data] : [];
 
         if (category && category !== 'All') {
-          filtered = filtered.filter((p: Product) => 
+          filtered = filtered.filter((p: Product) =>
             p.category.toLowerCase() === category.toLowerCase()
           );
         }
@@ -55,7 +55,7 @@ export const ProductListing = () => {
         } else if (sortBy === 'price-high') {
           filtered.sort((a: Product, b: Product) => b.price - a.price);
         } else {
-          filtered.sort((a: Product, b: Product) => 
+          filtered.sort((a: Product, b: Product) =>
             new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
           );
         }
@@ -78,10 +78,10 @@ export const ProductListing = () => {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">Categories</h3>
           {category && category !== 'All' && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-auto p-0 text-[10px] font-bold text-primary hover:bg-transparent" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto p-0 text-[10px] font-bold text-primary hover:bg-transparent"
               onClick={() => {
                 searchParams.delete('category');
                 setSearchParams(searchParams);
@@ -98,11 +98,10 @@ export const ProductListing = () => {
               <Button
                 key={cat}
                 variant={isActive ? 'secondary' : 'ghost'}
-                className={`group justify-between h-12 px-5 rounded-2xl transition-all duration-300 border-2 ${
-                  isActive 
-                  ? 'bg-primary/5 text-primary border-primary/20 shadow-sm shadow-primary/5' 
-                  : 'border-transparent hover:bg-muted hover:border-muted-foreground/10 text-muted-foreground hover:text-foreground'
-                }`}
+                className={`group justify-between h-12 px-5 rounded-2xl transition-all duration-300 border-2 ${isActive
+                    ? 'bg-primary/5 text-primary border-primary/20 shadow-sm shadow-primary/5'
+                    : 'border-transparent hover:bg-muted hover:border-muted-foreground/10 text-muted-foreground hover:text-foreground'
+                  }`}
                 onClick={() => {
                   if (cat === 'All') {
                     searchParams.delete('category');
@@ -123,7 +122,7 @@ export const ProductListing = () => {
           })}
         </div>
       </div>
-      
+
       <div>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">Price Range</h3>
@@ -134,9 +133,9 @@ export const ProductListing = () => {
             { label: '₹1000 - ₹2500', value: '1000-2500' },
             { label: 'Over ₹2500', value: '2500-plus' }
           ].map((range) => (
-            <Button 
+            <Button
               key={range.value}
-              variant="ghost" 
+              variant="ghost"
               className="justify-start h-12 px-5 rounded-2xl border-2 border-transparent hover:bg-muted hover:border-muted-foreground/10 font-medium text-muted-foreground hover:text-foreground transition-all duration-300"
             >
               <span className="text-sm">{range.label}</span>
@@ -148,7 +147,7 @@ export const ProductListing = () => {
       <div className="pt-10 pb-4">
         <div className="p-4 rounded-2xl bg-muted/30 border border-dashed border-muted-foreground/20">
           <p className="text-[10px] text-muted-foreground font-medium text-center uppercase tracking-widest leading-loose">
-            Premium Threads <br/>
+            Premium Threads <br />
             <span className="text-primary/60">Selected for you</span>
           </p>
         </div>
@@ -166,7 +165,7 @@ export const ProductListing = () => {
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">Showing {products.length} products</p>
           </div>
-          
+
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2 flex-1 sm:flex-none">
               <span className="hidden sm:inline text-sm font-medium whitespace-nowrap">Sort by:</span>
@@ -181,7 +180,7 @@ export const ProductListing = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="md:hidden h-10 w-10">

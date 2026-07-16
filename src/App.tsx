@@ -30,11 +30,11 @@ const PageLoader = () => (
 
 const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode, adminOnly?: boolean }) => {
   const { user, loading, isAdmin } = useAuth();
-  
+
   if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
   if (!user) return <Navigate to="/auth" />;
   if (adminOnly && !isAdmin) return <Navigate to="/" />;
-  
+
   return <>{children}</>;
 };
 
@@ -52,37 +52,37 @@ function AppContent() {
             <Route path="/custom-printing" element={<CustomPrinting />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/auth" element={<Auth />} />
-            <Route 
-              path="/admin" 
+            <Route
+              path="/admin"
               element={
                 <ProtectedRoute adminOnly>
                   <AdminPanel />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/orders" 
+            <Route
+              path="/orders"
               element={
                 <ProtectedRoute>
                   <OrderHistory />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/profile" 
+            <Route
+              path="/profile"
               element={
                 <ProtectedRoute>
                   <Profile />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/return-request/:orderId/:productId" 
+            <Route
+              path="/return-request/:orderId/:productId"
               element={
                 <ProtectedRoute>
                   <ReturnRequestForm />
                 </ProtectedRoute>
-              } 
+              }
             />
           </Routes>
         </React.Suspense>

@@ -20,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const currentPrice = Number(product.price);
   const originalPrice = product.original_price ? Number(product.original_price) : currentPrice;
   const hasDiscount = originalPrice > currentPrice;
-  const discountPercentage = hasDiscount 
+  const discountPercentage = hasDiscount
     ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
     : 0;
 
@@ -70,7 +70,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <span>{product.rating || 4.5}</span>
             </div>
           </div>
-          
+
           {hasDiscount ? (
             <>
               <div className="flex items-center gap-1.5 mb-2 mt-0.5">
@@ -87,18 +87,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </CardContent>
         <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
-          <Button 
+          <Button
             variant="outline"
-            className="flex-1 h-9 sm:h-10 text-[10px] sm:text-xs px-2 gap-1.5 border-primary/20 hover:bg-primary/5 hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95" 
+            className="flex-1 h-9 sm:h-10 text-[10px] sm:text-xs px-2 gap-1.5 border-primary/20 hover:bg-primary/5 hover:border-primary/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95"
             onClick={() => addItem(product)}
             disabled={product.stock === 0}
           >
             <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden xs:inline">Cart</span>
           </Button>
-          
-          <Button 
-            className="flex-[2.5] h-9 sm:h-10 text-[10px] sm:text-sm font-bold bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95 gap-1.5 overflow-hidden relative group" 
+
+          <Button
+            className="flex-[2.5] h-9 sm:h-10 text-[10px] sm:text-sm font-bold bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95 gap-1.5 overflow-hidden relative group"
             onClick={handleBuyNow}
             disabled={product.stock === 0}
           >
@@ -107,9 +107,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             Buy at ₹{currentPrice.toLocaleString('en-IN')}
           </Button>
 
-          <Button 
-            variant="outline" 
-            size="icon" 
+          <Button
+            variant="outline"
+            size="icon"
             className={`h-9 w-9 sm:h-10 sm:w-10 shrink-0 border-primary/20 hover:bg-red-50 hover:border-red-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active:scale-95 ${isLiked ? 'bg-red-50 border-red-200' : ''}`}
             onClick={(e) => {
               e.preventDefault();

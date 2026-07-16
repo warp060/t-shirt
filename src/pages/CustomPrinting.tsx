@@ -316,7 +316,7 @@ export const CustomPrinting = () => {
               <h3 className="font-bold">Need help with your design?</h3>
               <p className="text-sm text-muted-foreground">Our design experts can help you refine your vision. Chat with us on WhatsApp for instant help.</p>
               <a 
-                href="https://wa.me/919036122083?text=Hi!%20I'm%20interested%20in%20a%20custom%20T-shirt%20design." 
+                href="https://wa.me/916369906810?text=Hi!%20I'm%20interested%20in%20a%20custom%20T-shirt%20design." 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-full"

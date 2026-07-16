@@ -93,11 +93,11 @@ export const Cart = () => {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   {/* Quick Buy for exact amount */}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="mt-4 w-full h-10 border-primary/20 hover:border-primary hover:bg-primary/5 text-xs font-semibold group"
                     onClick={() => navigate('/checkout', { state: { directItem: item } })}
                   >
