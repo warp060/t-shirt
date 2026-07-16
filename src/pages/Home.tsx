@@ -10,65 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import { AboutUsSection } from '../components/AboutUsSection';
 import { VIPSection } from '../components/VIPSection';
-
-const CountdownTimer = ({ endDate }: { endDate: string }) => {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [isActive, setIsActive] = useState(true);
-
-  useEffect(() => {
-    if (!endDate) return;
-    const targetDate = new Date(endDate).getTime();
-
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
-
-      if (difference <= 0) {
-        setIsActive(false);
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      } else {
-        setIsActive(true);
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
-        });
-      }
-    };
-
-    updateTimer();
-    const timer = setInterval(updateTimer, 1000);
-    return () => clearInterval(timer);
-  }, [endDate]);
-
-  if (!isActive) return null;
-
-  return (
-    <div className="flex items-center gap-1.5 sm:gap-2 font-mono mt-2 justify-center sm:justify-start">
-      <div className="flex flex-col items-center">
-        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.days.toString().padStart(2, '0')}</span>
-        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Days</span>
-      </div>
-      <span className="text-lg sm:text-xl font-bold opacity-50 leading-none -mt-3">:</span>
-      <div className="flex flex-col items-center">
-        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.hours.toString().padStart(2, '0')}</span>
-        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Hrs</span>
-      </div>
-      <span className="text-lg sm:text-xl font-bold opacity-50 leading-none -mt-3">:</span>
-      <div className="flex flex-col items-center">
-        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Mins</span>
-      </div>
-      <span className="text-lg sm:text-xl font-bold opacity-50 leading-none -mt-3">:</span>
-      <div className="flex flex-col items-center">
-        <span className="text-lg sm:text-xl font-bold leading-none">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-        <span className="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-80 mt-1">Secs</span>
-      </div>
-    </div>
-  );
-};
-
+import { HeroCarousel } from '../components/HeroCarousel';
 
 export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -76,7 +18,6 @@ export const Home = () => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [content, setContent] = useState<Record<string, string>>({});
   const [promoContent, setPromoContent] = useState<Record<string, string>>({});
-  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -125,88 +66,7 @@ export const Home = () => {
   return (
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
-      <section className="relative min-h-[85dvh] sm:h-[80vh] w-full overflow-hidden bg-black text-white">
-        <div className="absolute inset-0">
-          <img
-            src="/hero-bg-premium.png"
-            alt="Hero Background"
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="container relative mx-auto flex h-full flex-col lg:flex-row items-center justify-between px-4 sm:px-6 lg:px-8 pb-8 sm:pb-0">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-2xl pt-28 lg:pt-0 w-full"
-          >
-            <Badge className="mb-4 bg-primary text-primary-foreground shadow-lg">{content.hero_badge || 'New Collection 2026'}</Badge>
-            <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-balance text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)]">
-              {content.hero_title || 'WEAR THE VIBE.'}
-            </h1>
-            {promoContent.promo_active?.toLowerCase() === 'yes' && promoContent.promo_text ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="mt-[5px] mb-8 perspective-1000 z-10 max-w-lg w-full"
-              >
-                <div
-                  className="relative w-full h-[260px] sm:h-[160px] group preserve-3d cursor-pointer"
-                  onClick={() => setIsFlipped(!isFlipped)}
-                >
-                  {/* Front Side */}
-                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-180 ${isFlipped ? 'rotate-y-180' : ''} bg-black/40 backdrop-blur-xl rounded-2xl border border-white/20 p-5 flex flex-col justify-center items-center text-center shadow-[0_0_40px_rgba(0,0,0,0.5)]`}>
-                    <div className="absolute top-4 right-4 animate-pulse">
-                      <Zap className="text-primary w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" />
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-black text-white tracking-widest uppercase mb-1 opacity-90">{promoContent.promo_front_title || 'Special Offer'}</h3>
-                    <p className="text-xl sm:text-2xl font-extrabold text-primary drop-shadow-md leading-tight truncate max-w-full">
-                      {promoContent.promo_text.split(':').pop() || promoContent.promo_text}
-                    </p>
-                    <p className="text-white/60 text-[10px] sm:text-xs mt-2 tracking-[0.2em] uppercase font-semibold">{promoContent.promo_front_desc || 'Tap or hover to reveal'}</p>
-                  </div>
-                  {/* Back Side */}
-                  <div className={`absolute w-full h-full backface-hidden transition-transform duration-700 transform-style-3d group-hover:rotate-y-0 ${isFlipped ? 'rotate-y-0' : 'rotate-y-180'} bg-primary rounded-2xl border border-primary-foreground/20 p-5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 sm:gap-0 shadow-[0_0_40px_rgba(var(--primary),0.3)]`}>
-                    <div className="text-center sm:text-left mb-0 flex-1">
-                      <h3 className="text-xl sm:text-2xl font-black text-primary-foreground uppercase mb-1">{promoContent.promo_back_title || 'Ends Soon'}</h3>
-                      <p className="text-primary-foreground/90 font-medium text-sm">{promoContent.promo_back_desc || "Don't miss this exclusive deal!"}</p>
-                      {promoContent.promo_end_date && (
-                        <div className="mt-3 text-primary-foreground flex justify-center sm:justify-start">
-                          <CountdownTimer endDate={promoContent.promo_end_date} />
-                        </div>
-                      )}
-                    </div>
-                    <Link to="/products" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="secondary" size="lg" className="font-bold shadow-xl hover:scale-105 transition-transform whitespace-nowrap">
-                        {promoContent.promo_btn_text || 'Claim Now'}
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ) : (
-              <p className="mb-8 text-base text-white font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-lg md:text-xl max-w-lg leading-relaxed">
-                {content.hero_subtitle || 'Premium Customized T-Shirts for Your Business. Submit your own unique designs to our Custom Service and let us bring your vision to life.'}
-              </p>
-            )}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/products">
-                <Button size="lg" className="h-12 px-8 text-lg w-full sm:w-auto shadow-2xl">
-                  {content.hero_cta_primary || 'Shop Now'} <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link to="/products?category=Oversized">
-                <Button size="lg" variant="outline" className="h-12 px-8 text-lg bg-black/20 backdrop-blur-md border-white/50 text-white hover:bg-black/40 w-full sm:w-auto shadow-xl transition-all">
-                  {content.hero_cta_secondary || 'Oversized Fit'}
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-
-
-        </div>
-      </section>
+      <HeroCarousel content={content} promoContent={promoContent} />
 
       {/* Features */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,11 +143,11 @@ export const Home = () => {
       <AboutUsSection />
 
       {/* VIP Membership Section */}
-      <VIPSection 
-        email={email} 
-        setEmail={setEmail} 
-        handleSubscribe={handleSubscribe} 
-        isSubscribing={isSubscribing} 
+      <VIPSection
+        email={email}
+        setEmail={setEmail}
+        handleSubscribe={handleSubscribe}
+        isSubscribing={isSubscribing}
       />
     </div>
   );
