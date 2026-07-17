@@ -95,11 +95,11 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Our Collections */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-20 relative z-10">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{content.featured_title || 'Featured Products'}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{content.featured_title || 'Our Collections'}</h2>
             <p className="text-sm sm:text-base text-muted-foreground">{content.featured_subtitle || 'Our most popular styles this week.'}</p>
           </div>
           <Link to="/products" className="text-sm font-semibold text-primary hover:underline flex items-center">

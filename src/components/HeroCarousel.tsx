@@ -63,7 +63,7 @@ const CountdownTimer = ({ endDate }: { endDate: string }) => {
 
 export const HeroCarousel = ({ content, promoContent }: { content: any, promoContent: any }) => {
   const AUTO_PLAY_INTERVAL = 4500;
-  
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, duration: 30, watchDrag: true },
     [
@@ -74,14 +74,14 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // 4 Completely Unique Images as requested. No duplicates.
+  // 4 Unique Images with dynamic content from Admin Panel
   const slides = [
     {
       id: 1,
-      src: '/hero-bg-premium.png',
+      src: content?.hero_slide_1_image || '/hero-bg-premium.png',
       badge: content?.hero_badge || 'New Collection 2026',
       title: content?.hero_title || 'WEAR THE VIBE.',
-      desc: 'Your Design. Our Craft. Premium custom T-shirts made for your brand.',
+      desc: content?.hero_subtitle || 'Your Design. Our Craft. Premium custom T-shirts made for your brand.',
       buttons: [
         { text: content?.hero_cta_primary || 'Shop Now', link: '/products', primary: true },
         { text: content?.hero_cta_secondary || 'Oversized Fit', link: '/products?category=Oversized', primary: false }
@@ -89,33 +89,33 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
     },
     {
       id: 2,
-      src: '/hero-slide2.png',
-      badge: 'NEW ARRIVALS',
-      title: 'Premium Comfort. Everyday Style.',
-      desc: 'Experience premium cotton, modern fits, and all-day comfort.',
+      src: content?.hero_slide_2_image || '/hero-slide2.png',
+      badge: content?.hero_slide_2_badge || 'NEW ARRIVALS',
+      title: content?.hero_slide_2_title || 'Premium Comfort. Everyday Style.',
+      desc: content?.hero_slide_2_desc || 'Experience premium cotton, modern fits, and all-day comfort.',
       buttons: [
-        { text: 'Explore Collection', link: '/products', primary: true }
+        { text: content?.hero_slide_2_cta || 'Explore Collection', link: '/products', primary: true }
       ]
     },
     {
       id: 3,
-      src: '/hero-slide3.png',
-      badge: 'LIMITED TIME OFFER',
-      title: 'FLASH SALE – 50% OFF',
-      desc: 'Flat 50% OFF on selected premium T-shirts.',
+      src: content?.hero_slide_3_image || '/hero-slide3.png',
+      badge: content?.hero_slide_3_badge || 'LIMITED TIME OFFER',
+      title: content?.hero_slide_3_title || 'FLASH SALE – 50% OFF',
+      desc: content?.hero_slide_3_desc || 'Flat 50% OFF on selected premium T-shirts.',
       showTimer: true,
       buttons: [
-        { text: 'Shop Sale', link: '/products?sale=true', primary: true }
+        { text: content?.hero_slide_3_cta || 'Shop Sale', link: '/products?sale=true', primary: true }
       ]
     },
     {
       id: 4,
-      src: '/hero-slide4.png',
-      badge: 'CUSTOM PRINTING',
-      title: 'Your Design. Your Identity.',
-      desc: 'Create personalized premium T-shirts with professional-quality printing.',
+      src: content?.hero_slide_4_image || '/hero-slide4.png',
+      badge: content?.hero_slide_4_badge || 'CUSTOM PRINTING',
+      title: content?.hero_slide_4_title || 'Your Design. Your Identity.',
+      desc: content?.hero_slide_4_desc || 'Create personalized premium T-shirts with professional-quality printing.',
       buttons: [
-        { text: 'Customize Now', link: '/custom-printing', primary: true }
+        { text: content?.hero_slide_4_cta || 'Customize Now', link: '/custom-printing', primary: true }
       ]
     }
   ];
@@ -191,16 +191,16 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
   };
 
   return (
-    <section 
+    <section
       className="group relative min-h-[85dvh] sm:min-h-[90vh] w-full bg-black"
     >
-      
+
       {/* Embla Viewport */}
       <div className="overflow-hidden w-full h-full absolute inset-0" ref={emblaRef}>
         <div className="flex w-full h-full">
           {slides.map((slide, index) => (
-            <div 
-              key={slide.id} 
+            <div
+              key={slide.id}
               className="relative flex-[0_0_100%] min-w-0 w-full h-full"
               style={{ transform: 'translate3d(0, 0, 0)' }}
             >
@@ -218,9 +218,9 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
                   className="w-full h-full"
                   style={{ willChange: 'transform, opacity', transform: 'translate3d(0,0,0)' }}
                 >
-                  <img 
-                    src={slide.src} 
-                    alt={slide.title} 
+                  <img
+                    src={slide.src}
+                    alt={slide.title}
                     loading="eager" // Preload ALL images as requested to guarantee instant swaps
                     className="w-full h-full object-cover origin-center"
                     style={{ transform: 'translate3d(0,0,0)' }}
@@ -237,7 +237,7 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
                 <AnimatePresence mode="wait">
                   {index === selectedIndex && (
                     <motion.div className="max-w-2xl w-full pointer-events-auto">
-                      
+
                       {/* Badge (150ms delay) */}
                       <motion.div variants={badgeVariants} initial="hidden" animate="visible" exit="hidden">
                         {slide.id === 1 ? (
@@ -248,18 +248,18 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
                           </span>
                         )}
                       </motion.div>
-                      
+
                       {/* Heading (300ms delay) */}
-                      <motion.h1 
+                      <motion.h1
                         variants={headingVariants} initial="hidden" animate="visible" exit="hidden"
                         className={`mb-6 font-extrabold tracking-tight text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)] ${slide.id === 1 ? 'text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-balance uppercase' : 'text-4xl sm:text-5xl lg:text-6xl leading-[1.1]'}`}
                       >
                         {slide.title}
                       </motion.h1>
-                      
+
                       {/* Description (500ms delay) */}
                       {slide.desc && (
-                        <motion.p 
+                        <motion.p
                           variants={descVariants} initial="hidden" animate="visible" exit="hidden"
                           className={`mb-8 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] max-w-lg leading-relaxed tracking-wide ${slide.id === 1 ? 'text-white/90 font-light text-lg sm:text-xl md:text-2xl' : 'font-normal text-sm sm:text-base lg:text-lg text-zinc-300'}`}
                         >
@@ -278,14 +278,13 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
                       <motion.div variants={buttonVariants} initial="hidden" animate="visible" exit="hidden" className="flex flex-col sm:flex-row gap-6 mt-6">
                         {slide.buttons.map((btn, idx) => (
                           <Link key={idx} to={btn.link} className="w-full sm:w-auto">
-                            <Button 
-                              size="lg" 
-                              variant={btn.primary ? "default" : "outline"} 
-                              className={`h-12 sm:h-14 px-8 text-sm sm:text-base font-bold w-full transition-all duration-300 group overflow-hidden relative shadow-2xl rounded-full ${
-                                btn.primary 
-                                  ? (slide.id === 1 ? "bg-white text-black hover:bg-transparent hover:text-white border-2 border-white" : "bg-white text-black hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] border-none")
-                                  : (slide.id === 1 ? "bg-black/20 backdrop-blur-md border-2 border-white/50 text-white hover:bg-white hover:text-black" : "bg-black/20 backdrop-blur-md border border-white/30 text-white hover:bg-white hover:text-black")
-                              }`}
+                            <Button
+                              size="lg"
+                              variant={btn.primary ? "default" : "outline"}
+                              className={`h-12 sm:h-14 px-8 text-sm sm:text-base font-bold w-full transition-all duration-300 group overflow-hidden relative shadow-2xl rounded-full ${btn.primary
+                                ? (slide.id === 1 ? "bg-white text-black hover:bg-transparent hover:text-white border-2 border-white" : "bg-white text-black hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] border-none")
+                                : (slide.id === 1 ? "bg-black/20 backdrop-blur-md border-2 border-white/50 text-white hover:bg-white hover:text-black" : "bg-black/20 backdrop-blur-md border border-white/30 text-white hover:bg-white hover:text-black")
+                                }`}
                             >
                               <span className="relative z-10 flex items-center justify-center">
                                 {btn.text} {btn.primary && <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />}
@@ -310,12 +309,12 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
       </div>
 
       {/* Navigation Controls - Completely detached from the slides */}
-      <div 
+      <div
         className="absolute bottom-8 left-0 right-0 z-40 px-4 sm:px-8 flex justify-between items-end container mx-auto pointer-events-none"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        
+
         {/* Progress Dots */}
         <div className="flex gap-2 pb-4 pointer-events-auto">
           {slides.map((_, idx) => (
@@ -324,7 +323,7 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
               onClick={() => scrollTo(idx)}
               className="relative w-12 sm:w-16 h-1 rounded-full bg-white/20 overflow-hidden cursor-pointer group"
             >
-              <motion.div 
+              <motion.div
                 className="absolute inset-y-0 left-0 bg-white group-hover:bg-[#D4AF37] transition-colors"
                 initial={{ width: '0%' }}
                 animate={{ width: idx === selectedIndex ? '100%' : idx < selectedIndex ? '100%' : '0%' }}
@@ -337,13 +336,13 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
 
         {/* Hover Arrows (Desktop only) */}
         <div className="hidden sm:flex gap-3 pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button 
+          <button
             onClick={scrollPrev}
             className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-black hover:scale-110 transition-all duration-300 shadow-xl"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <button 
+          <button
             onClick={scrollNext}
             className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-black hover:scale-110 transition-all duration-300 shadow-xl"
           >
@@ -354,3 +353,4 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
     </section>
   );
 };
+

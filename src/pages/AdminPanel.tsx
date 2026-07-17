@@ -34,12 +34,32 @@ const PAGE_SECTIONS = [
     icon: <HomeIcon className="h-4 w-4" />,
     description: 'Hero section, features, newsletter, and category headings',
     fields: [
-      { key: 'hero_badge', label: 'Hero Badge Text', type: 'text', placeholder: 'e.g. New Collection 2026' },
-      { key: 'hero_title', label: 'Hero Title', type: 'text', placeholder: 'Main heading on hero section' },
-      { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'textarea', placeholder: 'Description below the hero title' },
-      { key: 'hero_cta_primary', label: 'Primary Button Text', type: 'text', placeholder: 'e.g. Shop Now' },
-      { key: 'hero_cta_secondary', label: 'Secondary Button Text', type: 'text', placeholder: 'e.g. Oversized Fit' },
-      { key: 'featured_title', label: 'Featured Section Title', type: 'text', placeholder: 'e.g. Featured Products' },
+      { key: 'hero_slide_1_image', label: 'Slide 1 — Image URL', type: 'text', placeholder: 'e.g. /hero-bg-premium.png or https://...' },
+      { key: 'hero_badge', label: 'Slide 1 — Badge Text', type: 'text', placeholder: 'e.g. New Collection 2026' },
+      { key: 'hero_title', label: 'Slide 1 — Title', type: 'text', placeholder: 'Main heading on hero section' },
+      { key: 'hero_subtitle', label: 'Slide 1 — Description', type: 'textarea', placeholder: 'Description below the hero title' },
+      { key: 'hero_cta_primary', label: 'Slide 1 — Primary Button', type: 'text', placeholder: 'e.g. Shop Now' },
+      { key: 'hero_cta_secondary', label: 'Slide 1 — Secondary Button', type: 'text', placeholder: 'e.g. Oversized Fit' },
+
+      { key: 'hero_slide_2_image', label: 'Slide 2 — Image URL', type: 'text', placeholder: 'e.g. /hero-slide2.png' },
+      { key: 'hero_slide_2_badge', label: 'Slide 2 — Badge Text', type: 'text', placeholder: 'e.g. NEW ARRIVALS' },
+      { key: 'hero_slide_2_title', label: 'Slide 2 — Title', type: 'text', placeholder: 'e.g. Premium Comfort. Everyday Style.' },
+      { key: 'hero_slide_2_desc', label: 'Slide 2 — Description', type: 'textarea', placeholder: 'Description for slide 2' },
+      { key: 'hero_slide_2_cta', label: 'Slide 2 — Button Text', type: 'text', placeholder: 'e.g. Explore Collection' },
+
+      { key: 'hero_slide_3_image', label: 'Slide 3 — Image URL', type: 'text', placeholder: 'e.g. /hero-slide3.png' },
+      { key: 'hero_slide_3_badge', label: 'Slide 3 — Badge Text', type: 'text', placeholder: 'e.g. LIMITED TIME OFFER' },
+      { key: 'hero_slide_3_title', label: 'Slide 3 — Title', type: 'text', placeholder: 'e.g. FLASH SALE - 50% OFF' },
+      { key: 'hero_slide_3_desc', label: 'Slide 3 — Description', type: 'textarea', placeholder: 'Description for slide 3' },
+      { key: 'hero_slide_3_cta', label: 'Slide 3 — Button Text', type: 'text', placeholder: 'e.g. Shop Sale' },
+
+      { key: 'hero_slide_4_image', label: 'Slide 4 — Image URL', type: 'text', placeholder: 'e.g. /hero-slide4.png' },
+      { key: 'hero_slide_4_badge', label: 'Slide 4 — Badge Text', type: 'text', placeholder: 'e.g. CUSTOM PRINTING' },
+      { key: 'hero_slide_4_title', label: 'Slide 4 — Title', type: 'text', placeholder: 'e.g. Your Design. Your Identity.' },
+      { key: 'hero_slide_4_desc', label: 'Slide 4 — Description', type: 'textarea', placeholder: 'Description for slide 4' },
+      { key: 'hero_slide_4_cta', label: 'Slide 4 — Button Text', type: 'text', placeholder: 'e.g. Customize Now' },
+
+      { key: 'featured_title', label: 'Featured Section Title', type: 'text', placeholder: 'e.g. Our Collections' },
       { key: 'featured_subtitle', label: 'Featured Section Subtitle', type: 'text', placeholder: 'e.g. Our most popular styles' },
       { key: 'categories_title', label: 'Categories Section Title', type: 'text', placeholder: 'e.g. Shop by Category' },
       { key: 'feature_1_title', label: 'Feature 1 — Title', type: 'text', placeholder: 'e.g. Free Shipping' },
@@ -230,7 +250,49 @@ export const AdminPanel = () => {
         const pageContentRes = await api.get('/page-content');
         if (Array.isArray(pageContentRes)) {
           setPageContent(pageContentRes);
-          const contentMap: Record<string, string> = {};
+          
+          const DEFAULT_PAGE_CONTENT: Record<string, string> = {
+            'home::hero_slide_1_image': '/hero-bg-premium.png',
+            'home::hero_badge': 'New Collection 2026',
+            'home::hero_title': 'WEAR THE VIBE.',
+            'home::hero_subtitle': 'Your Design. Our Craft. Premium custom T-shirts made for your brand.',
+            'home::hero_cta_primary': 'Shop Now',
+            'home::hero_cta_secondary': 'Oversized Fit',
+          
+            'home::hero_slide_2_image': '/hero-slide2.png',
+            'home::hero_slide_2_badge': 'NEW ARRIVALS',
+            'home::hero_slide_2_title': 'Premium Comfort. Everyday Style.',
+            'home::hero_slide_2_desc': 'Experience premium cotton, modern fits, and all-day comfort.',
+            'home::hero_slide_2_cta': 'Explore Collection',
+          
+            'home::hero_slide_3_image': '/hero-slide3.png',
+            'home::hero_slide_3_badge': 'LIMITED TIME OFFER',
+            'home::hero_slide_3_title': 'FLASH SALE – 50% OFF',
+            'home::hero_slide_3_desc': 'Flat 50% OFF on selected premium T-shirts.',
+            'home::hero_slide_3_cta': 'Shop Sale',
+          
+            'home::hero_slide_4_image': '/hero-slide4.png',
+            'home::hero_slide_4_badge': 'CUSTOM PRINTING',
+            'home::hero_slide_4_title': 'Your Design. Your Identity.',
+            'home::hero_slide_4_desc': 'Create personalized premium T-shirts with professional-quality printing.',
+            'home::hero_slide_4_cta': 'Customize Now',
+            
+            'home::featured_title': 'Our Collections',
+            'home::featured_subtitle': 'Our most popular styles this week.',
+            'home::categories_title': 'Shop by Category',
+            'home::feature_1_title': 'Free Shipping',
+            'home::feature_1_desc': 'On orders over ₹4000',
+            'home::feature_2_title': 'Secure Payment',
+            'home::feature_2_desc': '100% secure checkout',
+            'home::feature_4_title': 'Fast Delivery',
+            'home::feature_4_desc': 'Ships within 24 hours',
+            'home::feature_5_title': 'Easy Returns',
+            'home::feature_5_desc': '5-day return policy',
+            'home::newsletter_title': 'Join the Thread Club',
+            'home::newsletter_subtitle': 'Subscribe to our newsletter for updates',
+          };
+
+          const contentMap: Record<string, string> = { ...DEFAULT_PAGE_CONTENT };
           pageContentRes.forEach((item: PageContentItem) => {
             contentMap[`${item.page_id}::${item.content_key}`] = item.content_value || '';
           });
