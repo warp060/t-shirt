@@ -115,7 +115,7 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
       title: 'Your Design. Your Identity.',
       desc: 'Create personalized premium T-shirts with professional-quality printing.',
       buttons: [
-        { text: 'Customize Now', link: '/products', primary: true }
+        { text: 'Customize Now', link: '/custom-printing', primary: true }
       ]
     }
   ];

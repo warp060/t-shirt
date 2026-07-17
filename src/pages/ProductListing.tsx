@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Product } from '../types';
 import { ProductCard } from '../components/ProductCard';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import {
   Select,
   SelectContent,
@@ -212,10 +213,15 @@ export const ProductListing = () => {
 
           {/* Product Grid */}
           <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-            {products.length === 0 && (
+            {loading ? (
+              <div className="col-span-full py-20 flex justify-center">
+                <LoadingSpinner size="lg" text="Loading products..." />
+              </div>
+            ) : products.length > 0 ? (
+              products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
               <div className="col-span-full py-20 text-center">
                 <h3 className="text-xl font-semibold">No products found</h3>
                 <p className="text-muted-foreground">Try adjusting your filters or search terms.</p>

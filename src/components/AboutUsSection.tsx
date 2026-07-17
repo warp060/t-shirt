@@ -65,26 +65,38 @@ const Counter = ({ from, to, suffix = "", duration = 2 }: { from: number, to: nu
 export const AboutUsSection = () => {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isPlayingInPlace, setIsPlayingInPlace] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Pause video when out of viewport for performance
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && !isPlayingInPlace) {
       if (isInView) {
         videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
       } else {
         videoRef.current.pause();
       }
     }
-  }, [isInView]);
+  }, [isInView, isPlayingInPlace]);
+
+  const handlePlayVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.controls = true;
+      videoRef.current.currentTime = 0;
+      videoRef.current.play();
+      setIsPlayingInPlace(true);
+      // Ensure video is slightly centered
+      videoRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
 
   const textVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: (custom: number) => ({
-      opacity: 1, 
-      y: 0, 
+      opacity: 1,
+      y: 0,
       transition: { duration: 0.8, delay: custom * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }
     })
   };
@@ -105,15 +117,15 @@ export const AboutUsSection = () => {
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-b from-[#D4AF37]/5 to-transparent blur-[120px]" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-100/80 blur-[100px]" />
-        
+
         {/* Subtle Floating Particles */}
-        <motion.div 
-          animate={{ y: [0, -20, 0], opacity: [0.2, 0.5, 0.2] }} 
+        <motion.div
+          animate={{ y: [0, -20, 0], opacity: [0.2, 0.5, 0.2] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-[30%] left-[45%] w-2 h-2 rounded-full bg-[#D4AF37]/30"
         />
-        <motion.div 
-          animate={{ y: [0, 30, 0], opacity: [0.1, 0.4, 0.1] }} 
+        <motion.div
+          animate={{ y: [0, 30, 0], opacity: [0.1, 0.4, 0.1] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           className="absolute top-[60%] right-[30%] w-3 h-3 rounded-full bg-[#D4AF37]/20"
         />
@@ -121,47 +133,52 @@ export const AboutUsSection = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-[1400px]">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
-          
+
           {/* Left Column: Cinematic Video (55%) */}
-          <motion.div 
+          <motion.div
             className="w-full lg:w-[55%] relative group"
             initial={{ opacity: 0, filter: 'blur(10px)' }}
             animate={isInView ? { opacity: 1, filter: 'blur(0px)' } : { opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative rounded-[28px] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] group-hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)] transition-shadow duration-[400ms] aspect-[4/5] sm:aspect-[3/2] lg:aspect-[4/5] xl:aspect-[3/4]">
+            <div className="relative rounded-[28px] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] group-hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)] transition-shadow duration-[400ms] aspect-[4/5] sm:aspect-[3/2] lg:aspect-[4/5] xl:aspect-[3/4] bg-black">
               {/* Dark Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 transition-opacity duration-[400ms] group-hover:opacity-80" />
-              
+              {!isPlayingInPlace && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none transition-opacity duration-[400ms] group-hover:opacity-80" />
+              )}
+
               {/* Video with Lazy Loading and Pause/Play functionality */}
-              <video 
+              <video
                 ref={videoRef}
-                autoPlay 
-                loop 
-                muted 
+                autoPlay={!isPlayingInPlace}
+                loop={!isPlayingInPlace}
+                muted={!isPlayingInPlace}
                 playsInline
-                className="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+                controls={isPlayingInPlace}
+                className={`relative z-20 w-full h-full transition-transform duration-[400ms] ${!isPlayingInPlace ? 'object-cover group-hover:scale-[1.03]' : 'object-contain'}`}
                 src="/about-video.mp4?t=1"
               />
-              
+
               {/* Play Button Overlay */}
-              <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <button 
-                  onClick={() => setIsVideoModalOpen(true)}
-                  className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 text-white hover:bg-white hover:text-black transition-all duration-500 hover:scale-110 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
-                >
-                  <Play className="w-8 h-8 ml-1" />
-                </button>
-              </div>
+              {!isPlayingInPlace && (
+                <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <button
+                    onClick={handlePlayVideo}
+                    className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 text-white hover:bg-white hover:text-black transition-all duration-500 hover:scale-110 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
+                  >
+                    <Play className="w-8 h-8 ml-1" />
+                  </button>
+                </div>
+              )}
 
             </div>
           </motion.div>
 
           {/* Right Column: Content (45%) */}
           <div className="w-full lg:w-[45%] flex flex-col justify-center perspective-[1000px]">
-            
+
             {/* Badge */}
-            <motion.div 
+            <motion.div
               custom={0} variants={textVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
               className="mb-8"
             >
@@ -186,7 +203,7 @@ export const AboutUsSection = () => {
             </h2>
 
             {/* Quote */}
-            <motion.div 
+            <motion.div
               custom={3} variants={textVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
               className="pl-6 border-l-2 border-[#D4AF37] mb-8"
             >
@@ -196,7 +213,7 @@ export const AboutUsSection = () => {
             </motion.div>
 
             {/* Brand Story */}
-            <motion.p 
+            <motion.p
               custom={4} variants={textVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
               className="text-base sm:text-lg text-zinc-600 leading-relaxed mb-12"
             >
@@ -205,7 +222,7 @@ export const AboutUsSection = () => {
 
 
             {/* Premium Statistics Cards */}
-            <motion.div 
+            <motion.div
               custom={6} variants={textVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-12 pb-12 border-b border-zinc-100"
             >
@@ -229,7 +246,7 @@ export const AboutUsSection = () => {
             </motion.div>
 
             {/* Buttons */}
-            <motion.div 
+            <motion.div
               custom={7} variants={textVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
               className="flex flex-col sm:flex-row items-center gap-6 mb-12"
             >
@@ -243,7 +260,7 @@ export const AboutUsSection = () => {
                 </Link>
               </MagneticButton>
 
-              <button onClick={() => setIsVideoModalOpen(true)} className="group flex items-center gap-3 text-sm font-bold text-zinc-900 hover:text-[#D4AF37] transition-colors duration-300">
+              <button onClick={handlePlayVideo} className="group flex items-center gap-3 text-sm font-bold text-zinc-900 hover:text-[#D4AF37] transition-colors duration-300">
                 <div className="w-12 h-12 rounded-full border border-zinc-200 flex items-center justify-center group-hover:border-[#D4AF37] group-hover:bg-[#D4AF37]/5 transition-all duration-300 group-hover:scale-110">
                   <Play className="w-4 h-4 ml-0.5" />
                 </div>
@@ -252,7 +269,7 @@ export const AboutUsSection = () => {
             </motion.div>
 
             {/* Social Proof */}
-            <motion.div 
+            <motion.div
               custom={8} variants={textVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
               className="flex items-center gap-3 pt-2"
             >
@@ -269,39 +286,6 @@ export const AboutUsSection = () => {
           </div>
         </div>
       </div>
-
-      {/* Video Modal */}
-      <AnimatePresence>
-        {isVideoModalOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-xl"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1 }} 
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-5xl aspect-video bg-black rounded-[24px] overflow-hidden shadow-2xl border border-white/10"
-            >
-              <button 
-                onClick={() => setIsVideoModalOpen(false)}
-                className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <video 
-                autoPlay 
-                controls 
-                className="w-full h-full object-contain bg-black"
-                src="/about-video.mp4?t=1"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };
