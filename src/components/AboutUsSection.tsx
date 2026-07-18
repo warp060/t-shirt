@@ -141,7 +141,7 @@ export const AboutUsSection = () => {
             animate={isInView ? { opacity: 1, filter: 'blur(0px)' } : { opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative rounded-[28px] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] group-hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)] transition-shadow duration-[400ms] aspect-[4/5] sm:aspect-[3/2] lg:aspect-[4/5] xl:aspect-[3/4] bg-black">
+            <div className="relative rounded-[28px] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] group-hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.2)] transition-shadow duration-[400ms] aspect-[4/5] sm:aspect-[3/2] lg:aspect-[4/5] xl:aspect-[3/4] bg-black max-h-[350px] sm:max-h-[450px] lg:max-h-none">
               {/* Dark Gradient Overlay */}
               {!isPlayingInPlace && (
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none transition-opacity duration-[400ms] group-hover:opacity-80" />
@@ -261,18 +261,18 @@ export const AboutUsSection = () => {
               </MagneticButton>
 
               <MagneticButton>
-                <button 
-                  onClick={handlePlayVideo} 
+                <button
+                  onClick={handlePlayVideo}
                   className="group relative flex items-center gap-4 text-sm font-bold text-zinc-900 hover:text-[#D4AF37] transition-colors duration-300"
                 >
                   <div className="relative flex items-center justify-center w-14 h-14">
                     {/* Pulsing background rings */}
                     <span className="absolute inset-0 w-full h-full rounded-full border border-[#D4AF37]/40 animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite]" />
                     <span className="absolute inset-0 w-full h-full rounded-full border border-[#D4AF37]/20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite_0.5s]" />
-                    
+
                     {/* Main circle */}
                     <div className="relative w-full h-full rounded-full bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#D4AF37] group-hover:bg-[#D4AF37]/5 group-hover:shadow-[0_0_25px_rgba(212,175,55,0.3)] transition-all duration-500 group-hover:scale-110 overflow-hidden">
-                       <Play className="w-5 h-5 ml-1 text-zinc-900 group-hover:text-[#D4AF37] transition-colors duration-300 relative z-10" />
+                      <Play className="w-5 h-5 ml-1 text-zinc-900 group-hover:text-[#D4AF37] transition-colors duration-300 relative z-10" />
                     </div>
                   </div>
                   <span className="relative overflow-hidden py-1">

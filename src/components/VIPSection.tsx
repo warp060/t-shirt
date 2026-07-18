@@ -41,39 +41,39 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (custom: number) => ({
-      opacity: 1, 
-      y: 0, 
+      opacity: 1,
+      y: 0,
       transition: { duration: 0.8, delay: custom * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }
     })
   };
 
   return (
     <section ref={containerRef} className="relative w-full py-[70px] lg:py-[120px] bg-[#111111] text-white overflow-hidden font-sans">
-      
+
       {/* Background Gold Gradients & Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex justify-center items-center">
         <div className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-tr from-[#D4AF37]/5 to-transparent blur-[120px] opacity-50" />
-        
+
         {/* Floating Particles */}
-        <motion.div 
-          animate={{ y: [0, -30, 0], opacity: [0.1, 0.3, 0.1] }} 
+        <motion.div
+          animate={{ y: [0, -30, 0], opacity: [0.1, 0.3, 0.1] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-[20%] left-[20%] w-2 h-2 rounded-full bg-[#D4AF37]"
         />
-        <motion.div 
-          animate={{ y: [0, 40, 0], opacity: [0.1, 0.2, 0.1] }} 
+        <motion.div
+          animate={{ y: [0, 40, 0], opacity: [0.1, 0.2, 0.1] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           className="absolute bottom-[30%] right-[25%] w-3 h-3 rounded-full bg-[#D4AF37]"
         />
-        <motion.div 
-          animate={{ y: [0, -20, 0], opacity: [0.1, 0.4, 0.1] }} 
+        <motion.div
+          animate={{ y: [0, -20, 0], opacity: [0.1, 0.4, 0.1] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className="absolute top-[40%] right-[15%] w-1.5 h-1.5 rounded-full bg-white"
         />
       </div>
 
       <div className="container mx-auto px-4 relative z-10 max-w-[900px] text-center flex flex-col items-center">
-        
+
         {/* Badge */}
         <motion.div custom={0} variants={fadeUpVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}>
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#D4AF37] uppercase mb-8 backdrop-blur-sm">
@@ -82,7 +82,7 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
         </motion.div>
 
         {/* Heading */}
-        <motion.h2 
+        <motion.h2
           custom={1} variants={fadeUpVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
           className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 leading-[1.15] sm:leading-[1.1]"
         >
@@ -90,7 +90,7 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
         </motion.h2>
 
         {/* Description */}
-        <motion.p 
+        <motion.p
           custom={2} variants={fadeUpVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
           className="text-sm sm:text-base lg:text-lg text-zinc-400 max-w-[600px] mx-auto mb-12 leading-relaxed"
         >
@@ -98,7 +98,7 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
         </motion.p>
 
         {/* Benefit Chips */}
-        <motion.div 
+        <motion.div
           custom={3} variants={fadeUpVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
           className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-14"
         >
@@ -116,12 +116,12 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
         </motion.div>
 
         {/* Form Container */}
-        <motion.div 
+        <motion.div
           custom={4} variants={fadeUpVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
           className="w-full max-w-[500px]"
         >
-          <form 
-            onSubmit={handleSubscribe} 
+          <form
+            onSubmit={handleSubscribe}
             className="relative flex items-center w-full bg-white/5 border border-white/10 p-1.5 rounded-[9999px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] focus-within:border-[#D4AF37]/50 focus-within:ring-1 focus-within:ring-[#D4AF37]/50 transition-all duration-300"
           >
             <input
@@ -133,14 +133,14 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
               disabled={isSubscribing}
               className="flex-1 bg-transparent border-none text-white px-4 py-3 sm:px-6 sm:py-4 text-sm sm:text-base focus:outline-none focus:ring-0 placeholder:text-zinc-600 w-full"
             />
-            
-            <MagneticButton 
+
+            <MagneticButton
               disabled={isSubscribing}
               className="group relative flex-shrink-0 inline-flex items-center justify-center h-[42px] sm:h-[52px] px-5 sm:px-8 rounded-full bg-white text-black font-bold text-[13px] sm:text-sm transition-all duration-300 hover:bg-[#D4AF37] hover:text-white overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] disabled:opacity-50"
             >
               {/* Ripple Effect */}
               <span className="absolute inset-0 w-full h-full bg-black/10 scale-0 group-hover:scale-150 rounded-full transition-transform duration-500 ease-out origin-center opacity-0 group-hover:opacity-100" />
-              
+
               <span className="relative z-10 flex items-center gap-2">
                 {isSubscribing ? 'Joining...' : 'Join Free'}
                 {!isSubscribing && (
@@ -152,7 +152,7 @@ export const VIPSection = ({ email, setEmail, handleSubscribe, isSubscribing }: 
         </motion.div>
 
         {/* Trust Row */}
-        <motion.div 
+        <motion.div
           custom={5} variants={fadeUpVariants} initial="hidden" animate={isInView ? "visible" : "hidden"}
           className="flex flex-col items-center mt-10 gap-3"
         >

@@ -100,8 +100,8 @@ export const ProductListing = () => {
                 key={cat}
                 variant={isActive ? 'secondary' : 'ghost'}
                 className={`group justify-between h-12 px-5 rounded-2xl transition-all duration-300 border-2 ${isActive
-                    ? 'bg-primary/5 text-primary border-primary/20 shadow-sm shadow-primary/5'
-                    : 'border-transparent hover:bg-muted hover:border-muted-foreground/10 text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary/5 text-primary border-primary/20 shadow-sm shadow-primary/5'
+                  : 'border-transparent hover:bg-muted hover:border-muted-foreground/10 text-muted-foreground hover:text-foreground'
                   }`}
                 onClick={() => {
                   if (cat === 'All') {
@@ -184,7 +184,7 @@ export const ProductListing = () => {
 
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden h-10 w-10">
+                <Button variant="outline" size="icon" className="lg:hidden h-10 w-10">
                   <SlidersHorizontal className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
@@ -203,16 +203,16 @@ export const ProductListing = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr]">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[200px_1fr] xl:grid-cols-[240px_1fr]">
           {/* Sidebar Filters (Desktop) */}
-          <aside className="hidden md:block">
-            <div className="sticky top-24 pr-8 border-r border-border/50 min-h-[calc(100vh-8rem)]">
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 pr-6 xl:pr-8 border-r border-border/50 min-h-[calc(100vh-8rem)]">
               <FilterContent />
             </div>
           </aside>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {loading ? (
               <div className="col-span-full py-20 flex justify-center">
                 <LoadingSpinner size="lg" text="Loading products..." />

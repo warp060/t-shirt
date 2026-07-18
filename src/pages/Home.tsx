@@ -68,33 +68,6 @@ export const Home = () => {
       {/* Hero Section */}
       <HeroCarousel content={content} promoContent={promoContent} />
 
-      {/* Features */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-8">
-          {[
-            { icon: Truck, title: content.feature_1_title || "Free Shipping", desc: content.feature_1_desc || "On orders over ₹4000", link: "/products" },
-            { icon: ShieldCheck, title: content.feature_2_title || "Secure Payment", desc: content.feature_2_desc || "100% secure checkout", link: "/" },
-            { icon: Zap, title: content.feature_4_title || "Fast Delivery", desc: content.feature_4_desc || "Ships within 24 hours", link: "/products" },
-            { icon: RefreshCcw, title: content.feature_5_title || "Easy Returns", desc: content.feature_5_desc || "5-day return policy", link: "/products" }
-          ].map((feature, i) => (
-            <Link
-              key={i}
-              to={feature.link}
-              className="group relative overflow-hidden flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 sm:gap-4 rounded-2xl border border-border p-4 sm:p-6 bg-card hover:bg-gradient-to-br hover:from-card hover:to-primary/5 shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-500"
-            >
-              <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500" />
-              <div className="relative rounded-2xl bg-primary/10 p-3 sm:p-4 text-primary group-hover:scale-110 group-hover:-rotate-3 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-sm group-hover:shadow-primary/30">
-                <feature.icon className="h-6 w-6 sm:h-7 sm:w-7" />
-              </div>
-              <div className="relative flex flex-col justify-center h-full">
-                <h3 className="font-bold text-sm sm:text-base group-hover:text-primary transition-colors duration-300">{feature.title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 sm:line-clamp-none mt-1 group-hover:text-foreground/80 transition-colors duration-300">{feature.desc}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Our Collections */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-20 relative z-10">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -141,6 +114,33 @@ export const Home = () => {
 
       {/* About Us Section */}
       <AboutUsSection />
+
+      {/* Features */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 lg:gap-8">
+          {[
+            { icon: Truck, title: content.feature_1_title || "Free Shipping", desc: content.feature_1_desc || "On orders over ₹4000", link: "/products" },
+            { icon: ShieldCheck, title: content.feature_2_title || "Secure Payment", desc: content.feature_2_desc || "100% secure checkout", link: "/" },
+            { icon: Zap, title: content.feature_4_title || "Fast Delivery", desc: content.feature_4_desc || "Ships within 24 hours", link: "/products" },
+            { icon: RefreshCcw, title: content.feature_5_title || "Easy Returns", desc: content.feature_5_desc || "5-day return policy", link: "/products" }
+          ].map((feature, i) => (
+            <Link
+              key={i}
+              to={feature.link}
+              className="group relative overflow-hidden flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 sm:gap-4 rounded-2xl border border-border p-4 sm:p-6 bg-card hover:bg-gradient-to-br hover:from-card hover:to-primary/5 shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-500"
+            >
+              <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500" />
+              <div className="relative rounded-2xl bg-primary/10 p-3 sm:p-4 text-primary group-hover:scale-110 group-hover:-rotate-3 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-sm group-hover:shadow-primary/30">
+                <feature.icon className="h-6 w-6 sm:h-7 sm:w-7" />
+              </div>
+              <div className="relative flex flex-col justify-center h-full">
+                <h3 className="font-bold text-sm sm:text-base group-hover:text-primary transition-colors duration-300">{feature.title}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 sm:line-clamp-none mt-1 group-hover:text-foreground/80 transition-colors duration-300">{feature.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* VIP Membership Section */}
       <VIPSection

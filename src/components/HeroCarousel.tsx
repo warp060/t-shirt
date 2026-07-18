@@ -42,7 +42,7 @@ const CountdownTimer = ({ endDate }: { endDate: string }) => {
   if (!isActive) return null;
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3 font-mono mt-2 mb-6 justify-start">
+    <div className="flex flex-nowrap items-center gap-1.5 xs:gap-2 sm:gap-3 font-mono mt-2 mb-6 justify-start">
       {[
         { label: 'Days', value: timeLeft.days },
         { label: 'Hrs', value: timeLeft.hours },
@@ -50,9 +50,9 @@ const CountdownTimer = ({ endDate }: { endDate: string }) => {
         { label: 'Secs', value: timeLeft.seconds }
       ].map((item, idx) => (
         <React.Fragment key={idx}>
-          <div className="flex flex-col items-center bg-black/40 backdrop-blur-xl border border-white/20 rounded-xl w-14 h-14 sm:w-16 sm:h-16 justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-            <span className="text-xl sm:text-2xl font-black leading-none text-white drop-shadow-md">{item.value.toString().padStart(2, '0')}</span>
-            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-[#D4AF37] mt-1 font-bold">{item.label}</span>
+          <div className="flex flex-col items-center bg-black/40 backdrop-blur-xl border border-white/20 rounded-xl w-12 h-12 xs:w-14 xs:h-14 sm:w-16 sm:h-16 justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+            <span className="text-lg xs:text-xl sm:text-2xl font-black leading-none text-white drop-shadow-md">{item.value.toString().padStart(2, '0')}</span>
+            <span className="text-[8px] xs:text-[9px] sm:text-[10px] uppercase tracking-widest text-[#D4AF37] mt-1 font-bold">{item.label}</span>
           </div>
           {idx < 3 && <span className="text-xl font-bold opacity-50 -mt-2 text-white">:</span>}
         </React.Fragment>
@@ -252,7 +252,7 @@ export const HeroCarousel = ({ content, promoContent }: { content: any, promoCon
                       {/* Heading (300ms delay) */}
                       <motion.h1
                         variants={headingVariants} initial="hidden" animate="visible" exit="hidden"
-                        className={`mb-6 font-extrabold tracking-tight text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)] ${slide.id === 1 ? 'text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-balance uppercase' : 'text-4xl sm:text-5xl lg:text-6xl leading-[1.1]'}`}
+                        className={`mb-6 font-extrabold tracking-tight text-white drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)] ${slide.id === 1 ? 'text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-8xl text-balance uppercase' : 'text-4xl sm:text-5xl lg:text-6xl leading-[1.1]'}`}
                       >
                         {slide.title}
                       </motion.h1>

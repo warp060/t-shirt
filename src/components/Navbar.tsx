@@ -100,17 +100,17 @@ export const Navbar = () => {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-4 md:gap-8">
-                <Link to="/" className="flex items-center gap-2 md:gap-4 group">
-                  <Logo className="w-9 h-9 md:w-10 md:h-10" />
-                  <div className="hidden md:flex flex-col">
+              <div className="flex items-center gap-4 lg:gap-6 xl:gap-8">
+                <Link to="/" className="flex items-center gap-2 lg:gap-3 xl:gap-4 group">
+                  <Logo className="w-9 h-9 lg:w-10 lg:h-10" />
+                  <div className="hidden lg:flex flex-col">
                     <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">{content.brand_name || 'ABBAS THREADS'}</span>
                     <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
                       PREMIUM STORE
                     </span>
                   </div>
                 </Link>
-                <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+                <div className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm font-medium">
                   <Link to="/products" className="transition-colors hover:text-primary">Shop All</Link>
                   <Link to="/products?category=Men" className="transition-colors hover:text-primary">Men</Link>
                   <Link to="/products?category=Women" className="transition-colors hover:text-primary">Women</Link>
@@ -124,13 +124,13 @@ export const Navbar = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="flex md:hidden"
+                  className="flex lg:hidden"
                   onClick={() => setIsMobileSearchOpen(true)}
                   title="Search"
                 >
                   <Search className="h-5 w-5" />
                 </Button>
-                <form onSubmit={handleSearch} className="hidden md:flex relative">
+                <form onSubmit={handleSearch} className="hidden lg:flex relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground cursor-pointer hover:text-primary" onClick={handleSearch} />
                   <input
                     type="search"
@@ -143,7 +143,7 @@ export const Navbar = () => {
                         handleSearch(e as any);
                       }
                     }}
-                    className="h-9 w-64 rounded-md border border-input bg-background pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="h-9 w-32 xl:w-56 2xl:w-64 rounded-md border border-input bg-background pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   />
                 </form>
 
@@ -164,14 +164,14 @@ export const Navbar = () => {
                   <div className="flex items-center gap-1 sm:gap-2">
                     <Link
                       to="/orders"
-                      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:flex")}
+                      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden lg:flex")}
                       title="My Orders"
                     >
                       <Package className="h-5 w-5" />
                     </Link>
                     <Link
                       to="/profile"
-                      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:flex")}
+                      className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden lg:flex")}
                       title="My Profile"
                     >
                       <User className="h-5 w-5" />
@@ -179,13 +179,13 @@ export const Navbar = () => {
                     {isAdmin && (
                       <Link
                         to="/admin"
-                        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden md:flex")}
+                        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "hidden lg:flex")}
                         title="Admin Panel"
                       >
                         <ShieldCheck className="h-5 w-5 text-primary" />
                       </Link>
                     )}
-                    <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout" className="hidden md:flex">
+                    <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout" className="hidden lg:flex">
                       <LogOut className="h-5 w-5" />
                     </Button>
                   </div>
@@ -198,7 +198,7 @@ export const Navbar = () => {
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                   <SheetTrigger
                     render={
-                      <Button variant="ghost" size="icon" className="md:hidden">
+                      <Button variant="ghost" size="icon" className="lg:hidden">
                         <Menu className="h-5 w-5" />
                       </Button>
                     }

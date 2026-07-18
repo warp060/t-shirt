@@ -98,7 +98,7 @@ export const ReturnRequestForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!reason) return toast.error("Please select a return reason.");
     if (reason === "Other" && !otherReason) return toast.error("Please specify the reason.");
     if (photos.length < 3) return toast.error("At least 3 clear photos are required.");
@@ -112,7 +112,7 @@ export const ReturnRequestForm = () => {
     formData.append('productId', productId!);
     formData.append('reason', finalReason);
     formData.append('description', description);
-    
+
     photos.forEach(photo => formData.append('photos', photo));
     if (video) formData.append('video', video);
     formData.append('invoice', invoice);
@@ -132,7 +132,7 @@ export const ReturnRequestForm = () => {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to submit return request.');
       }
-      
+
       setSubmitted(true);
     } catch (error: any) {
       toast.error(error.message);
@@ -179,11 +179,11 @@ export const ReturnRequestForm = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                
+
                 {/* Reason Selection */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold">Why are you returning this?</label>
-                  <select 
+                  <select
                     className="w-full h-11 rounded-xl border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
@@ -197,7 +197,7 @@ export const ReturnRequestForm = () => {
                 {reason === "Other" && (
                   <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
                     <label className="text-sm font-semibold">Please specify</label>
-                    <input 
+                    <input
                       type="text"
                       className="w-full h-11 rounded-xl border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                       value={otherReason}
@@ -209,7 +209,7 @@ export const ReturnRequestForm = () => {
 
                 <div className="space-y-3">
                   <label className="text-sm font-semibold">Additional Comments (Optional)</label>
-                  <textarea 
+                  <textarea
                     className="w-full rounded-xl border border-input bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     rows={3}
                     placeholder="Describe the issue in more detail..."
@@ -226,7 +226,7 @@ export const ReturnRequestForm = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Photos */}
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold flex items-center gap-2"><Camera className="h-4 w-4"/> Product Photos (Min 3)*</label>
+                      <label className="text-sm font-semibold flex items-center gap-2"><Camera className="h-4 w-4" /> Product Photos (Min 3)*</label>
                       <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 cursor-pointer hover:bg-muted/50 transition-colors">
                         <Upload className="h-6 w-6 text-muted-foreground mb-2" />
                         <span className="text-xs text-muted-foreground">Click to upload photos</span>
@@ -249,7 +249,7 @@ export const ReturnRequestForm = () => {
 
                     {/* Invoice */}
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4"/> Invoice Photo*</label>
+                      <label className="text-sm font-semibold flex items-center gap-2"><FileText className="h-4 w-4" /> Invoice Photo*</label>
                       <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 cursor-pointer hover:bg-muted/50 transition-colors">
                         <Upload className="h-6 w-6 text-muted-foreground mb-2" />
                         <span className="text-xs text-muted-foreground">{invoice ? invoice.name : 'Upload original invoice'}</span>
@@ -259,7 +259,7 @@ export const ReturnRequestForm = () => {
 
                     {/* Video */}
                     <div className="space-y-2 sm:col-span-2">
-                      <label className="text-sm font-semibold flex items-center gap-2"><Video className="h-4 w-4"/> Short Video (Optional, max 30s)</label>
+                      <label className="text-sm font-semibold flex items-center gap-2"><Video className="h-4 w-4" /> Short Video (Optional, max 30s)</label>
                       <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 cursor-pointer hover:bg-muted/50 transition-colors">
                         <Upload className="h-6 w-6 text-muted-foreground mb-2" />
                         <span className="text-xs text-muted-foreground">{video ? video.name : 'Upload a short video demonstrating the issue'}</span>
@@ -272,7 +272,7 @@ export const ReturnRequestForm = () => {
                 {/* Conditions */}
                 <div className="space-y-4 pt-4 border-t">
                   <div className="bg-muted/40 p-4 rounded-xl border border-muted">
-                    <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><AlertCircle className="h-4 w-4 text-primary"/> Return Conditions</h4>
+                    <h4 className="font-semibold text-sm mb-3 flex items-center gap-2"><AlertCircle className="h-4 w-4 text-primary" /> Return Conditions</h4>
                     <ul className="text-xs text-muted-foreground space-y-2 list-disc pl-4">
                       <li>Product must be unused, unwashed, and in its original condition.</li>
                       <li>All original tags must still be attached.</li>
@@ -282,8 +282,8 @@ export const ReturnRequestForm = () => {
                     </ul>
                   </div>
                   <label className="flex items-start gap-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                       checked={agreed}
                       onChange={(e) => setAgreed(e.target.checked)}
