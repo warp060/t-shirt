@@ -10,11 +10,19 @@ import { api } from '../lib/api';
 import { cn } from '../lib/utils';
 
 const Logo = ({ className = "w-10 h-10" }: { className?: string }) => (
-  <img
-    src="/logo.png"
-    alt="Abbas Threads"
-    className={`${className} rounded-lg shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-md object-contain`}
-  />
+  <div className={`relative flex items-center justify-center ${className}`}>
+    {/* Outer glow on hover */}
+    <div className="absolute inset-0 rounded-full shadow-[0_0_20px_rgba(218,165,32,0.5)] transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-0" />
+
+    <img
+      src="/logo.jpg"
+      alt="Abbas Threads"
+      className="w-full h-full rounded-full bg-white shadow-sm border border-border/10 transition-all duration-300 group-hover:scale-[1.03] relative z-10 object-contain"
+    />
+
+    {/* T-shirt specific glowing highlight on hover */}
+    <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[50%] h-[35%] rounded-full bg-yellow-400/40 blur-[8px] mix-blend-color-dodge opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-20 animate-pulse" />
+  </div>
 );
 
 export const Navbar = () => {
@@ -102,7 +110,7 @@ export const Navbar = () => {
             <>
               <div className="flex items-center gap-4 lg:gap-6 xl:gap-8">
                 <Link to="/" className="flex items-center gap-2 lg:gap-3 xl:gap-4 group">
-                  <Logo className="w-9 h-9 lg:w-10 lg:h-10" />
+                  <Logo className="w-14 h-14 lg:w-16 lg:h-16 shrink-0" />
                   <div className="hidden lg:flex flex-col">
                     <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">{content.brand_name || 'ABBAS THREADS'}</span>
                     <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
@@ -206,7 +214,7 @@ export const Navbar = () => {
                   <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 flex flex-col">
                     <SheetHeader className="p-6 border-b text-left">
                       <Link to="/" className="flex items-center gap-4 group">
-                        <Logo className="w-12 h-12" />
+                        <Logo className="w-16 h-16 shrink-0" />
                         <div className="flex flex-col">
                           <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">ABBAS THREADS</span>
                           <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
@@ -363,7 +371,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-4 group">
-              <Logo className="w-12 h-12" />
+              <Logo className="w-16 h-16 shrink-0" />
               <div className="flex flex-col">
                 <span className="text-xl font-bold tracking-tight text-foreground leading-none uppercase">ABBAS THREADS</span>
                 <span className="text-[10px] font-bold text-muted-foreground tracking-[0.25em] uppercase leading-none mt-1">
